@@ -28,6 +28,7 @@ public class RegisterCommand implements CommandExecutor {
 		}
 		if(args.length < 1) {
 			player.sendMessage(ChatColor.RED+"Not enough arguments");
+			player.sendMessage("Usage: "+cmd.getUsage());
 			return true;
 		}
 		

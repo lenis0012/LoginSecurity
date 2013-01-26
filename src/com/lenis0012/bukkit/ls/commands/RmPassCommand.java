@@ -7,9 +7,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.lenis0012.bukkit.ls.LoginSecurity;
+import com.lenis0012.bukkit.ls.data.ValueType;
 import com.lenis0012.bukkit.ls.util.EncryptionUtil;
 
-public class LoginCommand implements CommandExecutor {
+public class RmPassCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		LoginSecurity plugin = LoginSecurity.instance;
@@ -21,12 +22,8 @@ public class LoginCommand implements CommandExecutor {
 		Player player = (Player)sender;
 		String name = player.getName();
 		
-		if(!plugin.AuthList.containsKey(name)) {
-			player.sendMessage(ChatColor.RED+"You are already logged in");
-			return true;
-		}
 		if(!plugin.data.isSet(name)) {
-			player.sendMessage(ChatColor.RED+"You do not have a password set");
+			player.sendMessage(ChatColor.RED+"You are not registered on the server");
 			return true;
 		}
 		if(args.length < 1) {
@@ -35,13 +32,15 @@ public class LoginCommand implements CommandExecutor {
 			return true;
 		}
 		
-		String password = EncryptionUtil.getMD5(args[0]);
-		if(plugin.data.getValue(name, "password").equals(password)) {
-			plugin.AuthList.remove(name);
-			player.sendMessage(ChatColor.GREEN+"Succesfully logged in");
-		} else {
-			player.sendMessage(ChatColor.RED+"Invalid password");
+		String oldPassA = EncryptionUtil.getMD5(args[0]);
+		String oldPassB = (String)plugin.data.getValue(name, "password");
+		
+		if(!oldPassA.equals(oldPassB)) {
+			player.sendMessage(ChatColor.RED+"Password Incorrect");
+			return true;
 		}
+		plugin.data.setValue(name, ValueType.REMOVE, "");
+		player.sendMessage(ChatColor.GREEN+"Succesfully removed your password");
 		return true;
 	}
 }

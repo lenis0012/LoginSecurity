@@ -10,3 +10,9 @@ commands:
   register:
     description: Set a password for your account.
     usage: /register <password>
+  changepass:
+    description: Change the password for your account.
+    usage: /changepass <old> <new>
+  rmpass:
+    description: Remove your password.
+    usage: /rmpass <password>
