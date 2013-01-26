@@ -49,6 +49,7 @@ public class Converter {
 						plugin.data.setValue(user, ValueType.INSERT, pass);
 					}
 				}
+				manager.close();
 				file.delete();
 			} catch(SQLException e) {
 				System.out.println("[LoginSecurity] FAILED CONVERTING FROM SQLITE TO MYSQL");

@@ -50,6 +50,11 @@ public class LoginSecurity extends JavaPlugin {
 		pm.registerEvents(new LoginListener(this), this);
 	}
 	
+	@Override
+	public void onDisable() {
+		data.close();
+	}
+	
 	private DataManager getDataManager(FileConfiguration config) {
 		if(config.getBoolean("MySQL.use")) {
 			return new MySQL(config);
