@@ -1,7 +1,9 @@
 package com.lenis0012.bukkit.ls.data;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -24,7 +26,7 @@ public class MySQL implements DataManager{
 	public void load() {
 		if(this.startDriver()) {
 			if(this.openConnection()) {
-				log.info("[LoginSecurity] Succesfully loaded SQLite");
+				log.info("[LoginSecurity] Succesfully loaded MySQL");
 			}
 		}
 	}
@@ -34,7 +36,7 @@ public class MySQL implements DataManager{
 			Class.forName("com.mysql.jdbc.Driver");
 			return true;
 		} catch (ClassNotFoundException e) {
-			log.warning("[LoginSecurity] Could not load SQLite driver: "+e.getMessage());
+			log.warning("[LoginSecurity] Could not load MySQL driver: "+e.getMessage());
 			return false;
 		}
 	}
@@ -46,7 +48,7 @@ public class MySQL implements DataManager{
 					" (" + "username VARCHAR(250) NOT NULL UNIQUE,password VARCHAR(250) NOT NULL);");
 			this.table = table;
 		} catch(SQLException e) {
-			log.warning("[LoginSecurity] Could not create SQLite table: "+e.getMessage());
+			log.warning("[LoginSecurity] Could not create MySQL table: "+e.getMessage());
 		}
 	}
 	
@@ -68,7 +70,7 @@ public class MySQL implements DataManager{
 			statement.setQueryTimeout(30);
 			return true;
 		} catch (SQLException e) {
-			log.warning("[LoginSecurity] Could not open SQLite connection: "+e.getMessage());
+			log.warning("[LoginSecurity] Could not open MySQL connection: "+e.getMessage());
 			return false;
 		}
 	}
@@ -76,10 +78,15 @@ public class MySQL implements DataManager{
 	@Override
 	public Object getValue(String username, String value) {
 		try {
-			ResultSet rs = statement.executeQuery("select * from "+table+" where username='"+username+"'");
-			return rs.getObject(value);
+			PreparedStatement ps = con.prepareStatement("SELECT * FROM "+table+" WHERE username=?;");
+			ps.setString(1, username);
+			ResultSet rs = ps.executeQuery();
+			if(rs.next())
+				return rs.getObject(value);
+			else
+				return null;
 		} catch(SQLException e) {
-			log.warning("[LoginSecurity] Could not get data from SQLite: "+e.getMessage());
+			log.warning("[LoginSecurity] Could not get data from MySQL: "+e.getMessage());
 			return null;
 		}
 	}
@@ -87,10 +94,10 @@ public class MySQL implements DataManager{
 	@Override
 	public boolean isSet(String username) {
 		try {
-			ResultSet rs = statement.executeQuery("select * from "+table+" where username='"+username+"'");
+			ResultSet rs = statement.executeQuery("SELECT * FROM "+table+" WHERE username='"+username+"';");
 			return rs.next();
 		} catch(SQLException e) {
-			log.warning("[LoginSecurity] Could not get data from SQLite: "+e.getMessage());
+			log.warning("[LoginSecurity] Could not get data from MySQL: "+e.getMessage());
 			return false;
 		}
 	}
@@ -102,7 +109,36 @@ public class MySQL implements DataManager{
 					replace("{USER}", username).replace("{VALUE}", value);
 			statement.executeUpdate(data);
 		} catch(SQLException e) {
-			log.warning("[LoginSecurity] Could not set data from SQLite: "+e.getMessage());
+			log.warning("[LoginSecurity] Could not set data from MySQL: "+e.getMessage());
+		}
+	}
+	
+	public boolean isCreated(String tbl) {
+		try {
+			DatabaseMetaData dbm = con.getMetaData();
+			ResultSet tables = dbm.getTables(null, null, tbl, null);
+			return tables.next();
+		} catch(SQLException e) {
+			log.warning("[LoginSecurity] Could not set data from MySQL: "+e.getMessage());
+			return false;
+		}
+	}
+	
+	
+	public ResultSet getAllUsers() {
+		try {
+			return statement.executeQuery("SELECT * FROM "+table);
+		} catch(SQLException e) {
+			log.warning("[LoginSecurity] Could not get data from MySQL: "+e.getMessage());
+			return null;
+		}
+	}
+	
+	public void removeTable(String tbl) {
+		try {
+			statement.executeUpdate("DROP TABLE "+tbl);
+		} catch(SQLException e) {
+			log.warning("[LoginSecurity] Could not drop data from MySQL: "+e.getMessage());
 		}
 	}
 	
@@ -114,7 +150,7 @@ public class MySQL implements DataManager{
 			if(con != null)
 				con.close();
 		} catch(SQLException e) {
-			log.warning("[LoginSecurity] Could not close SQLite connection: "+e.getMessage());
+			log.warning("[LoginSecurity] Could not close MySQL connection: "+e.getMessage());
 		}
 	}
 }

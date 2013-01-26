@@ -8,12 +8,13 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.lenis0012.bukkit.ls.commands.LoginCommand;
+import com.lenis0012.bukkit.ls.commands.RegisterCommand;
 import com.lenis0012.bukkit.ls.data.Converter;
 import com.lenis0012.bukkit.ls.data.Converter.FileType;
 import com.lenis0012.bukkit.ls.data.DataManager;
 import com.lenis0012.bukkit.ls.data.MySQL;
 import com.lenis0012.bukkit.ls.data.SQLite;
-import com.lenis0012.bukkit.ls.data.ValueType;
 
 public class LoginSecurity extends JavaPlugin {
 	public DataManager data;
@@ -43,11 +44,10 @@ public class LoginSecurity extends JavaPlugin {
 		data.createDefaultTable("Logins");
 		this.checkConverter();
 		
-		//do stuff
-		data.setValue("lenis0012", ValueType.INSERT, "example");
-		
 		//register events
 		pm.registerEvents(new LoginListener(this), this);
+		getCommand("login").setExecutor(new LoginCommand());
+		getCommand("register").setExecutor(new RegisterCommand());
 	}
 	
 	@Override
@@ -74,6 +74,13 @@ public class LoginSecurity extends JavaPlugin {
 		if(file.exists() && data instanceof MySQL) {
 			Converter conv = new Converter(FileType.SQLite, file);
 			conv.convert();
+		}
+		if(data instanceof MySQL) {
+			MySQL mysql = (MySQL)data;
+			if(mysql.isCreated("passwords")) {
+				Converter conv = new Converter(FileType.OldToNewMySQL, this.getFile());
+				conv.convert();
+			}
 		}
 	}
 }
