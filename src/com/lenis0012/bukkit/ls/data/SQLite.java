@@ -51,7 +51,7 @@ public class SQLite implements DataManager {
 	public void createDefaultTable(String table) {
 		try {
 			statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + table +
-					" (" + "username VARCHAR(250) NOT NULL UNIQUE,password VARCHAR(250) NOT NULL);");
+					" (" + "username VARCHAR(250) NOT NULL UNIQUE,password VARCHAR(250) NOT NULL,encrypto INTEGER);");
 			this.table = table;
 		} catch(SQLException e) {
 			log.warning("[LoginSecurity] Could not create SQLite table: "+e.getMessage());
@@ -96,14 +96,8 @@ public class SQLite implements DataManager {
 	}
 	
 	@Override
-	public void setValue(String username, ValueType type, String value) {
-		try {
-			String data = type.getUsage().replace("{TABLE}", table).
-					replace("{USER}", username).replace("{VALUE}", value);
-			statement.executeUpdate(data);
-		} catch(SQLException e) {
-			log.warning("[LoginSecurity] Could not set data from SQLite: "+e.getMessage());
-		}
+	public void setValue(String username, ValueType type, String value, int crypto) {
+		type.insert(log, con, table, username, value, crypto);
 	}
 	
 	public ResultSet getAllUsers() {
@@ -113,6 +107,11 @@ public class SQLite implements DataManager {
 			log.warning("[LoginSecurity] Could not get data from SQLite: "+e.getMessage());
 			return null;
 		}
+	}
+	
+	@Override
+	public Connection getConnection() {
+		return this.con;
 	}
 	
 	@Override

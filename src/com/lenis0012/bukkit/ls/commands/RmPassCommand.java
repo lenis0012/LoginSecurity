@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 
 import com.lenis0012.bukkit.ls.LoginSecurity;
 import com.lenis0012.bukkit.ls.data.ValueType;
-import com.lenis0012.bukkit.ls.util.EncryptionUtil;
+import com.lenis0012.bukkit.ls.encryption.PasswordManager;
 
 public class RmPassCommand implements CommandExecutor {
 	@Override
@@ -31,15 +31,11 @@ public class RmPassCommand implements CommandExecutor {
 			player.sendMessage("Usage: "+cmd.getUsage());
 			return true;
 		}
-		
-		String oldPassA = EncryptionUtil.getMD5(args[0]);
-		String oldPassB = (String)plugin.data.getValue(name, "password");
-		
-		if(!oldPassA.equals(oldPassB)) {
+		if(!PasswordManager.checkPass(name, args[0])) {
 			player.sendMessage(ChatColor.RED+"Password Incorrect");
 			return true;
 		}
-		plugin.data.setValue(name, ValueType.REMOVE, "");
+		plugin.data.setValue(name, ValueType.REMOVE, "", 0);
 		player.sendMessage(ChatColor.GREEN+"Succesfully removed your password");
 		return true;
 	}

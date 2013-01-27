@@ -33,7 +33,7 @@ public class RegisterCommand implements CommandExecutor {
 		}
 		
 		String password = EncryptionUtil.getMD5(args[0]);
-		plugin.data.setValue(name, ValueType.INSERT, password);
+		plugin.data.setValue(name, ValueType.INSERT, password, 1);
 		player.sendMessage(ChatColor.GREEN+"Registered with password: "+args[0]);
 		return true;
 	}

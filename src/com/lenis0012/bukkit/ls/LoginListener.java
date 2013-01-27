@@ -12,11 +12,9 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-
-import com.lenis0012.bukkit.ls.util.Updater.UpdateResult;
-import com.lenis0012.bukkit.ls.util.Updater.UpdateType;
 
 public class LoginListener implements Listener {
 	private LoginSecurity plugin;
@@ -27,7 +25,9 @@ public class LoginListener implements Listener {
 		Player player = event.getPlayer();
 		String name = player.getName();
 		
-		if(plugin.data.isSet(name)) {
+		if(plugin.sesUse && plugin.thread.session.containsKey(name)) {
+			player.sendMessage("Extended session from last login");
+		} else if(plugin.data.isSet(name)) {
 			plugin.AuthList.put(name, false);
 			player.sendMessage(ChatColor.RED+"Please login using /login <password>");
 			if(plugin.blindness)
@@ -38,22 +38,16 @@ public class LoginListener implements Listener {
 			if(plugin.blindness)
 				player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1728000, 15));
 		}
+		plugin.showVersion(player);
+	}
+	
+	@EventHandler
+	public void onPlayerQuit(PlayerQuitEvent event) {
+		Player player = event.getPlayer();
+		String name = player.getName();
 		
-		final Player p = player;
-		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-			public void run() {
-				Player pla = p;
-				if(pla.hasPermission("ls.admin")) {
-					if(plugin.updater != null) {
-						plugin.updater.update(UpdateType.NO_DOWNLOAD, false);
-						if(plugin.updater.getResult() == UpdateResult.UPDATE_AVAILABLE) {
-							pla.sendMessage(ChatColor.GREEN+"LoginSecurity has a new update, check BukkitDev");
-						} else
-							pla.sendMessage(ChatColor.GREEN+"LoginSecurity did not find updates");
-					}
-				}
-			}
-		}, 25);
+		if(plugin.sesUse && !plugin.AuthList.containsKey(name))
+			plugin.thread.session.put(name, plugin.sesDelay);
 	}
 	
 	@EventHandler

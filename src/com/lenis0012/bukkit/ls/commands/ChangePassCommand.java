@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 
 import com.lenis0012.bukkit.ls.LoginSecurity;
 import com.lenis0012.bukkit.ls.data.ValueType;
+import com.lenis0012.bukkit.ls.encryption.PasswordManager;
 import com.lenis0012.bukkit.ls.util.EncryptionUtil;
 
 public class ChangePassCommand implements CommandExecutor {
@@ -31,17 +32,13 @@ public class ChangePassCommand implements CommandExecutor {
 			player.sendMessage("Usage: "+cmd.getUsage());
 			return true;
 		}
-		
-		String oldPassA = EncryptionUtil.getMD5(args[0]);
-		String oldPassB = (String)plugin.data.getValue(name, "password");
-		String newPass = EncryptionUtil.getMD5(args[1]);
-		
-		if(!oldPassA.equals(oldPassB)) {
+		if(!PasswordManager.checkPass(name, args[0])) {
 			player.sendMessage(ChatColor.RED+"Password Incorrect");
 			return true;
 		}
 		
-		plugin.data.setValue(name, ValueType.UPDATE, newPass);
+		String newPass = EncryptionUtil.getMD5(args[1]);
+		plugin.data.setValue(name, ValueType.UPDATE, newPass, 1);
 		player.sendMessage(ChatColor.GREEN+"Succesfully changed password to: "+args[1]);
 		return true;
 	}

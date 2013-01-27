@@ -103,14 +103,8 @@ public class MySQL implements DataManager{
 	}
 	
 	@Override
-	public void setValue(String username, ValueType type, String value) {
-		try {
-			String data = type.getUsage().replace("{TABLE}", table).
-					replace("{USER}", username).replace("{VALUE}", value);
-			statement.executeUpdate(data);
-		} catch(SQLException e) {
-			log.warning("[LoginSecurity] Could not set data from MySQL: "+e.getMessage());
-		}
+	public void setValue(String username, ValueType type, String value, int crypto) {
+		type.insert(log, con, table, username, value, crypto);
 	}
 	
 	public boolean isCreated(String tbl) {
@@ -140,6 +134,11 @@ public class MySQL implements DataManager{
 		} catch(SQLException e) {
 			log.warning("[LoginSecurity] Could not drop data from MySQL: "+e.getMessage());
 		}
+	}
+	
+	@Override
+	public Connection getConnection() {
+		return this.con;
 	}
 	
 	@Override

@@ -1,12 +1,15 @@
 package com.lenis0012.bukkit.ls;
 
+import java.util.WeakHashMap;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class ThreadManager {
 	private LoginSecurity plugin;
-	private int msg = 0;
+	private int msg = 0, ses = 0;
+	public WeakHashMap<String, Integer> session = new WeakHashMap<String, Integer>();
 	
 	public ThreadManager(LoginSecurity plugin) {
 		this.plugin = plugin;
@@ -32,5 +35,25 @@ public class ThreadManager {
 	public void stopMsgTask() {
 		if(msg > 0)
 			plugin.getServer().getScheduler().cancelTask(msg);
+	}
+	
+	public void startSessionTask() {
+		
+		ses = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
+			public void run() {
+				for(String user : session.keySet()) {
+					int current = session.get(user);
+					if(current > 1)
+						current -= 1;
+					else
+						session.remove(user);
+				}
+			}
+		}, 20, 20);
+	}
+	
+	public void stopSessionTask() {
+		if(ses > 0)
+			plugin.getServer().getScheduler().cancelTask(ses);
 	}
 }

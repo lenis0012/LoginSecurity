@@ -5,9 +5,10 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
 
 import com.lenis0012.bukkit.ls.LoginSecurity;
-import com.lenis0012.bukkit.ls.util.EncryptionUtil;
+import com.lenis0012.bukkit.ls.encryption.PasswordManager;
 
 public class LoginCommand implements CommandExecutor {
 	@Override
@@ -34,11 +35,12 @@ public class LoginCommand implements CommandExecutor {
 			player.sendMessage("Usage: "+cmd.getUsage());
 			return true;
 		}
-		
-		String password = EncryptionUtil.getMD5(args[0]);
-		if(plugin.data.getValue(name, "password").equals(password)) {
+		;
+		if(PasswordManager.checkPass(name, args[0])) {
 			plugin.AuthList.remove(name);
 			player.sendMessage(ChatColor.GREEN+"Succesfully logged in");
+			if(player.hasPotionEffect(PotionEffectType.BLINDNESS) && plugin.blindness)
+				player.removePotionEffect(PotionEffectType.BLINDNESS);
 		} else {
 			player.sendMessage(ChatColor.RED+"Invalid password");
 		}
