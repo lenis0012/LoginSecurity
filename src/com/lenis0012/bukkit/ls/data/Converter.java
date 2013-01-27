@@ -14,6 +14,7 @@ import org.bukkit.plugin.PluginManager;
 import com.cypherx.xauth.xAuth;
 import com.lenis0012.bukkit.ls.LoginSecurity;
 import com.lenis0012.bukkit.ls.util.EncryptionUtil;
+import com.lenis0012.bukkit.ls.util.ReflectionUtil;
 import com.lenis0012.bukkit.ls.xAuth.xAuthConv;
 
 public class Converter {
@@ -26,6 +27,7 @@ public class Converter {
 	
 	private FileType type;
 	private File file;
+	private Logger log = Logger.getLogger("Minecraft");
 	
 	public Converter(FileType type, File file) {
 		this.type = type;
@@ -60,7 +62,7 @@ public class Converter {
 				file.delete();
 			} catch(SQLException e) {
 				System.out.println("[LoginSecurity] FAILED CONVERTING FROM SQLITE TO MYSQL");
-				Logger.getLogger("Minecraft").warning("[LoginSecurity] "+e.getMessage());
+				log.warning("[LoginSecurity] "+e.getMessage());
 			}
 		} else if(type == FileType.OldToNewMySQL) {
 			try {
@@ -82,14 +84,20 @@ public class Converter {
 				from.close();
 			} catch(SQLException e) {
 				System.out.println("[LoginSecurity] FAILED CONVERTING FROM SQLITE TO MYSQL");
-				Logger.getLogger("Minecraft").warning("[LoginSecurity] "+e.getMessage());
+				log.warning("[LoginSecurity] "+e.getMessage());
 			}
 		} else if(type == FileType.xAuth) {
 			PluginManager pm = Bukkit.getServer().getPluginManager();
 			xAuth xauth = (xAuth)pm.getPlugin("xAuth");
 			xAuthConv conv = new xAuthConv(xauth);
 			conv.convert();
-			pm.disablePlugin(xauth);
+			try {
+				ReflectionUtil.unloadPlugin("xAuth");
+			} catch (NoSuchFieldException e) {
+				log.warning("[LoginSecurity] Failed to unload xAuth: "+e.getMessage());
+			} catch (IllegalAccessException e) {
+				log.warning("[LoginSecurity] Failed to unload xAuth: "+e.getMessage());
+			}
 		}
 	}
 }

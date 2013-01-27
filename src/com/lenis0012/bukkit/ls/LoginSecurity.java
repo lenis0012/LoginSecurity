@@ -46,6 +46,7 @@ public class LoginSecurity extends JavaPlugin {
 		config.addDefault("settings.blindness", true);
 		config.addDefault("settings.session.use", true);
 		config.addDefault("settings.session.timeout (sec)", 60);
+		config.addDefault("settings.table prefix", "ls_");
 		config.addDefault("MySQL.use", false);
 		config.addDefault("MySQL.host", "localhost");
 		config.addDefault("MySQL.port", 3306);
@@ -59,7 +60,7 @@ public class LoginSecurity extends JavaPlugin {
 		instance = (LoginSecurity)pm.getPlugin("LoginSecurity");
 		data = this.getDataManager(config);
 		data.load();
-		data.createDefaultTable("Logins");
+		data.createDefaultTable(config.getString("settings.table prefix")+"Logins");
 		thread = new ThreadManager(this);
 		thread.startMsgTask();
 		required = config.getBoolean("settings.password-required");
@@ -68,6 +69,8 @@ public class LoginSecurity extends JavaPlugin {
 		sesDelay = config.getInt("settings.session.timeout (sec)");
 		if(sesUse)
 			thread.startSessionTask();
+		
+		//convert everything
 		this.checkConverter();
 		
 		//register events
