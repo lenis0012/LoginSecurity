@@ -40,6 +40,9 @@ public enum ValueType {
 				ps.setString(1, password);
 				ps.setString(2, username);
 				ps.executeUpdate();
+			} else if(this == REMOVE) {
+				ps.setString(1, username);
+				ps.executeUpdate();
 			} else
 				ps.executeUpdate();
 		} catch(SQLException e) {

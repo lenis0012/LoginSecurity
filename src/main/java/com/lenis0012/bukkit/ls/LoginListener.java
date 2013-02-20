@@ -3,12 +3,18 @@ package com.lenis0012.bukkit.ls;
 import java.util.Calendar;
 
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -125,6 +131,78 @@ public class LoginListener implements Listener {
 		
 		if(plugin.AuthList.containsKey(name))
 			event.setCancelled(true);
+	}
+	
+	@EventHandler
+	public void onPlayerChat(AsyncPlayerChatEvent chat){
+		Player player = chat.getPlayer();
+		String pname = player.getName();
+		if(plugin.AuthList.containsKey(pname)){
+			chat.setCancelled(true);
+		}
+	}
+	
+	@EventHandler
+	public void OnHealthRegain(EntityRegainHealthEvent event) {
+		Entity entity = event.getEntity();
+		if(!(entity instanceof Player))
+			return;
+		Player player = (Player)entity;
+		String pname = player.getName();
+			
+		if(plugin.AuthList.containsKey(pname)) {
+			event.setCancelled(true);
+		}
+	}
+	
+	@EventHandler
+	public void OnFoodLevelChange(FoodLevelChangeEvent event) {
+		Entity entity = event.getEntity();
+		if(!(entity instanceof Player))
+			return;
+		Player player = (Player)entity;
+		String pname = player.getName();
+			
+		if(plugin.AuthList.containsKey(pname)) {
+			event.setCancelled(true);
+		}
+	}
+	
+	@EventHandler
+	public void onInventoryClick(InventoryClickEvent event) {
+		Entity entity = event.getWhoClicked();
+		if(!(entity instanceof Player))
+			return;
+		Player player = (Player)entity;
+		String pname = player.getName();
+			
+		if(plugin.AuthList.containsKey(pname)) {
+			event.setCancelled(true);
+		}
+	}
+	
+	@EventHandler
+	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+		Entity defender = event.getEntity();
+		Entity damager = event.getDamager();
+		
+		if(defender instanceof Player) {
+			Player p1 = (Player) defender;
+			String n1 = p1.getName();
+			
+			if(plugin.AuthList.containsKey(n1)) {
+				event.setCancelled(true);
+				return;
+			}
+			
+			if(damager instanceof Player) {
+				Player p2 = (Player) damager;
+				String n2 = p2.getName();
+				
+				if(plugin.AuthList.containsKey(n2))
+					event.setCancelled(true);
+			}
+		}
 	}
 	
 	@EventHandler(priority=EventPriority.LOWEST)

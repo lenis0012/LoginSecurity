@@ -39,11 +39,15 @@ public class Converter {
 	public void convert() {
 		LoginSecurity plugin = LoginSecurity.instance;
 		if(type == FileType.YAML) {
+			boolean md5 = plugin.getConfig().getBoolean("options.use-MD5 Enryption", true);
 			FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 			if(config.getConfigurationSection("password.password") != null) {
 				Set<String> set = config.getConfigurationSection("password.password").getKeys(false);
 				for(String user : set) {
-					plugin.data.setValue(user, ValueType.INSERT, config.getString("password.password."+user), 1);
+					String pass = config.getString("password.password."+user);
+					if(!md5)
+						pass = EncryptionUtil.getMD5(pass);
+					plugin.data.setValue(user, ValueType.INSERT, pass, 1);
 				}
 			}
 			file.delete();
