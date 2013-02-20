@@ -28,10 +28,12 @@ public class Converter {
 	private FileType type;
 	private File file;
 	private Logger log = Logger.getLogger("Minecraft");
+	private String fileDir;
 	
-	public Converter(FileType type, File file) {
+	public Converter(FileType type, File file, String fileDir) {
 		this.type = type;
 		this.file = file;
+		this.fileDir = fileDir;
 	}
 	
 	public void convert() {
@@ -47,9 +49,9 @@ public class Converter {
 			file.delete();
 		} else if(type == FileType.SQLite && !(plugin.data instanceof SQLite)) {
 			try {
-				SQLite manager = new SQLite(file.getPath());
+				SQLite manager = new SQLite(fileDir, file.getName());
 				manager.load();
-				manager.createDefaultTable("Logins");
+				manager.setTable(Table.ACCOUNTS);
 				ResultSet result = manager.getAllUsers();
 				while(result.next()) {
 					String user = result.getString("username");
@@ -68,7 +70,7 @@ public class Converter {
 			try {
 				MySQL from = new MySQL(plugin.getConfig());
 				from.load();
-				from.createDefaultTable("passwords");
+				from.setTable(Table.OLD);
 				boolean shouldEncrypt = plugin.getConfig().getBoolean("options.use-MD5 Enryption", true);
 				ResultSet result = from.getAllUsers();
 				while(result.next()) {
@@ -93,6 +95,7 @@ public class Converter {
 			conv.convert();
 			try {
 				ReflectionUtil.unloadPlugin("xAuth");
+				plugin.registerCommands();
 			} catch (NoSuchFieldException e) {
 				log.warning("[LoginSecurity] Failed to unload xAuth: "+e.getMessage());
 			} catch (IllegalAccessException e) {

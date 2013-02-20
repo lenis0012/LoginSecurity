@@ -1,6 +1,7 @@
 package com.lenis0012.bukkit.ls;
 
-import java.util.WeakHashMap;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -8,8 +9,9 @@ import org.bukkit.entity.Player;
 
 public class ThreadManager {
 	private LoginSecurity plugin;
-	private int msg = 0, ses = 0;
-	public WeakHashMap<String, Integer> session = new WeakHashMap<String, Integer>();
+	private int msg = -1, ses = -1, to = -1;
+	public Map<String, Integer> session = new HashMap<String, Integer>();
+	public Map<String, Integer> timeout = new HashMap<String, Integer>();
 	
 	public ThreadManager(LoginSecurity plugin) {
 		this.plugin = plugin;
@@ -35,10 +37,10 @@ public class ThreadManager {
 	public void stopMsgTask() {
 		if(msg > 0)
 			plugin.getServer().getScheduler().cancelTask(msg);
+		msg = -1;
 	}
 	
 	public void startSessionTask() {
-		
 		ses = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
 			public void run() {
 				for(String user : session.keySet()) {
@@ -48,12 +50,39 @@ public class ThreadManager {
 					else
 						session.remove(user);
 				}
+				
 			}
 		}, 20, 20);
 	}
 	
 	public void stopSessionTask() {
-		if(ses > 0)
+		if(ses >= 0)
 			plugin.getServer().getScheduler().cancelTask(ses);
+		ses = -1;
+	}
+	
+	public void startTimeoutTask() {
+		ses = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
+			public void run() {
+				for(String user : timeout.keySet()) {
+					int current = timeout.get(user);
+					if(current > 1)
+						current -= 1;
+					else {
+						session.remove(user);
+						Player player = Bukkit.getPlayer(user);
+						if(player != null && player.isOnline())
+							player.kickPlayer("Login timed out");
+					}
+				}
+				
+			}
+		}, 20, 20);
+	}
+	
+	public void stopTimeoutTask() {
+		if(to >= 0)
+			plugin.getServer().getScheduler().cancelTask(to);
+		to = -1;
 	}
 }

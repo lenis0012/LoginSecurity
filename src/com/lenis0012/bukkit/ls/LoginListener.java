@@ -1,5 +1,7 @@
 package com.lenis0012.bukkit.ls;
 
+import java.util.Calendar;
+
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,6 +18,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import com.lenis0012.bukkit.ls.data.ValueType;
+
 public class LoginListener implements Listener {
 	private LoginSecurity plugin;
 	public LoginListener(LoginSecurity i) { this.plugin = i; }
@@ -24,9 +28,11 @@ public class LoginListener implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
 		String name = player.getName();
+		plugin.showVersion(player);
 		
-		if(plugin.sesUse && plugin.thread.session.containsKey(name)) {
+		if(plugin.sesUse && plugin.thread.session.containsKey(name) && this.checkLastIp(player)) {
 			player.sendMessage("Extended session from last login");
+			return;
 		} else if(plugin.data.isSet(name)) {
 			plugin.AuthList.put(name, false);
 			player.sendMessage(ChatColor.RED+"Please login using /login <password>");
@@ -38,13 +44,36 @@ public class LoginListener implements Listener {
 			if(plugin.blindness)
 				player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1728000, 15));
 		}
-		plugin.showVersion(player);
+		
+		if(plugin.timeUse) {
+			plugin.thread.timeout.put(name, plugin.timeDelay);
+		}
+	}
+	
+	private boolean checkLastIp(Player player) {
+		String name = player.getName();
+		if(plugin.lastlogin.isSet(name)) {
+			String lastIp = (String)plugin.lastlogin.getValue(name, "ip");
+			String currentIp = player.getAddress().getAddress().toString();
+			return lastIp.equalsIgnoreCase(currentIp);
+		}
+		return false;
 	}
 	
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		Player player = event.getPlayer();
 		String name = player.getName();
+		String ip = player.getAddress().getAddress().toString();
+		Calendar c = Calendar.getInstance();
+		int year = c.get(Calendar.YEAR);
+		int day = c.get(Calendar.DAY_OF_YEAR);
+		String lastlogin = String.valueOf(year + day);
+		
+		if(!plugin.lastlogin.isSet(name))
+			plugin.lastlogin.setValue(name, ValueType.INSERT, ip, lastlogin);
+		else
+			plugin.lastlogin.setValue(name, ValueType.UPDATE_IP, ip, lastlogin);
 		
 		if(plugin.sesUse && !plugin.AuthList.containsKey(name))
 			plugin.thread.session.put(name, plugin.sesDelay);

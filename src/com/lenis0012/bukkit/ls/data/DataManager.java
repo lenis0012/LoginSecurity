@@ -38,14 +38,14 @@ public interface DataManager {
 	 * @param value		value
 	 * @param crypto	encryption type
 	 */
-	public void setValue(String username, ValueType type, String value, int crypto);
+	public void setValue(String username, ValueType type, String value, Object value2);
 	
 	/**
 	 * Set the default table
 	 * 
 	 * @param table table
 	 */
-	public void createDefaultTable(String table);
+	public void setTable(Table table);
 	
 	/**
 	 * Get the database connection

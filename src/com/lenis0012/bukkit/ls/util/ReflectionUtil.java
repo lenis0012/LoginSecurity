@@ -52,9 +52,9 @@ public class ReflectionUtil {
 			cField.setAccessible(true);
 			scm = (SimpleCommandMap)cField.get(spm);
 			
-			Field cmdField = spm.getClass().getDeclaredField("knownCommands");
+			Field cmdField = scm.getClass().getDeclaredField("knownCommands");
 			cmdField.setAccessible(true);
-			commands = (Map)cmdField.get(spm);
+			commands = (Map)cmdField.get(scm);
 		}
 		
 		for(Plugin pl : pm.getPlugins()) {

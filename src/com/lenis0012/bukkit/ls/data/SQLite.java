@@ -10,19 +10,23 @@ import java.sql.Statement;
 import java.util.logging.Logger;
 
 public class SQLite implements DataManager {
-	private String filePath;
+	private String fileName;
+	private String fileDir;
 	private Logger log = Logger.getLogger("Minecraft");
 	private Connection con = null;
 	private Statement statement = null;
-	private String table;
+	private Table table;
 	
-	public SQLite(String filePath) {
-		this.filePath = filePath;
+	public SQLite(String fileDir, String fileName) {
+		this.fileName = fileName;
+		this.fileDir = fileDir;
 	}
 	
 	@Override
 	public void load() {
-		File file = new File(filePath);
+		File file = new File(fileDir+fileName);
+		File dir = new File(fileDir);
+		dir.mkdirs();
 		if(!file.exists()) {
 			try {
 				file.createNewFile();
@@ -48,10 +52,10 @@ public class SQLite implements DataManager {
 	}
 	
 	@Override
-	public void createDefaultTable(String table) {
+	public void setTable(Table table) {
 		try {
-			statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + table +
-					" (" + "username VARCHAR(250) NOT NULL UNIQUE,password VARCHAR(250) NOT NULL,encrypto INTEGER);");
+			statement.executeUpdate("CREATE TABLE IF NOT EXISTS "+table.getName()+
+					table.getUsage()+";");
 			this.table = table;
 		} catch(SQLException e) {
 			log.warning("[LoginSecurity] Could not create SQLite table: "+e.getMessage());
@@ -61,7 +65,7 @@ public class SQLite implements DataManager {
 	private boolean openConnection() {
 		try {
 			//open connection
-			con = DriverManager.getConnection("jdbc:sqlite:"+filePath);
+			con = DriverManager.getConnection("jdbc:sqlite:"+fileDir+fileName);
 			statement = con.createStatement();
 			
 			//set the timeout
@@ -76,7 +80,7 @@ public class SQLite implements DataManager {
 	@Override
 	public Object getValue(String username, String value) {
 		try {
-			ResultSet rs = statement.executeQuery("select * from "+table+" where username='"+username+"'");
+			ResultSet rs = statement.executeQuery("select * from "+table.getName()+" where username='"+username+"'");
 			return rs.getObject(value);
 		} catch(SQLException e) {
 			log.warning("[LoginSecurity] Could not get data from SQLite: "+e.getMessage());
@@ -87,7 +91,7 @@ public class SQLite implements DataManager {
 	@Override
 	public boolean isSet(String username) {
 		try {
-			ResultSet rs = statement.executeQuery("select * from "+table+" where username='"+username+"'");
+			ResultSet rs = statement.executeQuery("select * from "+table.getName()+" where username='"+username+"'");
 			return rs.next();
 		} catch(SQLException e) {
 			log.warning("[LoginSecurity] Could not get data from SQLite: "+e.getMessage());
@@ -96,8 +100,8 @@ public class SQLite implements DataManager {
 	}
 	
 	@Override
-	public void setValue(String username, ValueType type, String value, int crypto) {
-		type.insert(log, con, table, username, value, crypto);
+	public void setValue(String username, ValueType type, String value, Object value2) {
+		type.insert(log, con, table, username, value, value2);
 	}
 	
 	public ResultSet getAllUsers() {

@@ -35,7 +35,6 @@ public class LoginCommand implements CommandExecutor {
 			player.sendMessage("Usage: "+cmd.getUsage());
 			return true;
 		}
-		;
 		if(PasswordManager.checkPass(name, args[0])) {
 			plugin.AuthList.remove(name);
 			player.sendMessage(ChatColor.GREEN+"Succesfully logged in");

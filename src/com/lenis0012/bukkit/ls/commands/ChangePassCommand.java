@@ -38,7 +38,7 @@ public class ChangePassCommand implements CommandExecutor {
 		}
 		
 		String newPass = EncryptionUtil.getMD5(args[1]);
-		plugin.data.setValue(name, ValueType.UPDATE, newPass, 1);
+		plugin.data.setValue(name, ValueType.UPDATE_PASSWORD, newPass, 1);
 		player.sendMessage(ChatColor.GREEN+"Succesfully changed password to: "+args[1]);
 		return true;
 	}

@@ -17,3 +17,6 @@ commands:
   rmpass:
     description: Remove your password.
     usage: /rmpass <password>
+  logout:
+    description: Logout
+    usage: /logout

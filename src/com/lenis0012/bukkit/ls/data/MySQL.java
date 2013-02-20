@@ -16,7 +16,7 @@ public class MySQL implements DataManager{
 	private FileConfiguration config;
 	private Connection con = null;
 	private Statement statement = null;
-	private String table;
+	private Table table;
 	
 	public MySQL(FileConfiguration config) {
 		this.config = config;
@@ -42,10 +42,10 @@ public class MySQL implements DataManager{
 	}
 	
 	@Override
-	public void createDefaultTable(String table) {
+	public void setTable(Table table) {
 		try {
-			statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + table +
-					" (" + "username VARCHAR(250) NOT NULL UNIQUE,password VARCHAR(250) NOT NULL);");
+			statement.executeUpdate("CREATE TABLE IF NOT EXISTS "+table.getName()
+					+table.getUsage()+";");
 			this.table = table;
 		} catch(SQLException e) {
 			log.warning("[LoginSecurity] Could not create MySQL table: "+e.getMessage());
@@ -78,7 +78,7 @@ public class MySQL implements DataManager{
 	@Override
 	public Object getValue(String username, String value) {
 		try {
-			PreparedStatement ps = con.prepareStatement("SELECT * FROM "+table+" WHERE username=?;");
+			PreparedStatement ps = con.prepareStatement("SELECT * FROM "+table.getName()+" WHERE username=?;");
 			ps.setString(1, username);
 			ResultSet rs = ps.executeQuery();
 			if(rs.next())
@@ -94,7 +94,7 @@ public class MySQL implements DataManager{
 	@Override
 	public boolean isSet(String username) {
 		try {
-			ResultSet rs = statement.executeQuery("SELECT * FROM "+table+" WHERE username='"+username+"';");
+			ResultSet rs = statement.executeQuery("SELECT * FROM "+table.getName()+" WHERE username='"+username+"';");
 			return rs.next();
 		} catch(SQLException e) {
 			log.warning("[LoginSecurity] Could not get data from MySQL: "+e.getMessage());
@@ -103,8 +103,8 @@ public class MySQL implements DataManager{
 	}
 	
 	@Override
-	public void setValue(String username, ValueType type, String value, int crypto) {
-		type.insert(log, con, table, username, value, crypto);
+	public void setValue(String username, ValueType type, String value, Object value2) {
+		type.insert(log, con, table, username, value, value2);
 	}
 	
 	public boolean isCreated(String tbl) {
