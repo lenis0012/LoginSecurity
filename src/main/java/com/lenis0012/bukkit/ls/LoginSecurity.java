@@ -77,10 +77,12 @@ public class LoginSecurity extends JavaPlugin {
 		blindness = config.getBoolean("settings.blindness");
 		sesUse = config.getBoolean("settings.session.use");
 		sesDelay = config.getInt("settings.session.timeout (sec)");
-		sesUse = config.getBoolean("settings.timeout.use");
-		sesDelay = config.getInt("settings.timeout.timeout (sec)");
+		timeUse = config.getBoolean("settings.timeout.use");
+		timeDelay = config.getInt("settings.timeout.timeout (sec)");
 		if(sesUse)
 			thread.startSessionTask();
+		if(timeUse)
+			thread.startTimeoutTask();
 		
 		//convert everything
 		this.checkConverter();

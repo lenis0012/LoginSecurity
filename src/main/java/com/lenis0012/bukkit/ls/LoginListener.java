@@ -81,7 +81,7 @@ public class LoginListener implements Listener {
 		else
 			plugin.lastlogin.setValue(name, ValueType.UPDATE_IP, ip, lastlogin);
 		
-		if(plugin.sesUse && !plugin.AuthList.containsKey(name))
+		if(plugin.sesUse && !plugin.AuthList.containsKey(name) && plugin.data.isSet(name))
 			plugin.thread.session.put(name, plugin.sesDelay);
 	}
 	

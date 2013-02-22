@@ -45,7 +45,7 @@ public class ThreadManager {
 			public void run() {
 				for(String user : session.keySet()) {
 					int current = session.get(user);
-					if(current > 1)
+					if(current >= 1)
 						current -= 1;
 					else
 						session.remove(user);
@@ -66,7 +66,7 @@ public class ThreadManager {
 			public void run() {
 				for(String user : timeout.keySet()) {
 					int current = timeout.get(user);
-					if(current > 1)
+					if(current >= 1)
 						current -= 1;
 					else {
 						session.remove(user);
