@@ -127,7 +127,7 @@ public class LoginSecurity extends JavaPlugin {
 		if(config.getBoolean("MySQL.use")) {
 			return new MySQL(config);
 		} else {
-			return new SQLite("plugins/LoginSecurity/sql/", fileName+".db");
+			return new SQLite("plugins"+File.separator+"LoginSecurity"+File.separator+"sql"+File.separator, fileName+".db");
 		}
 	}
 	
@@ -136,7 +136,7 @@ public class LoginSecurity extends JavaPlugin {
 		File file;
 		file = new File(this.getDataFolder(), "data.yml");
 		if(file.exists()) {
-			Converter conv = new Converter(FileType.YAML, file, "plugins/LoginSecurity/sql/");
+			Converter conv = new Converter(FileType.YAML, file, "plugins"+File.separator+"LoginSecurity"+File.separator+"sql"+File.separator);
 			conv.convert();
 		}
 		file = new File(this.getDataFolder(), "data.db");
