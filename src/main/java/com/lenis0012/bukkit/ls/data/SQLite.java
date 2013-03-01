@@ -19,7 +19,7 @@ public class SQLite implements DataManager {
 	
 	public SQLite(String fileDir, String fileName) {
 		this.fileName = fileName;
-		this.fileDir = fileDir;
+		this.fileDir = fileDir.replaceAll("/", File.separator);
 	}
 	
 	@Override
@@ -62,7 +62,8 @@ public class SQLite implements DataManager {
 		}
 	}
 	
-	private boolean openConnection() {
+	@Override
+	public boolean openConnection() {
 		try {
 			//open connection
 			con = DriverManager.getConnection("jdbc:sqlite:"+fileDir+fileName);

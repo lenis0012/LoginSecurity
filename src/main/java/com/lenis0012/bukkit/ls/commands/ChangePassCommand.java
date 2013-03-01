@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 import com.lenis0012.bukkit.ls.LoginSecurity;
 import com.lenis0012.bukkit.ls.data.ValueType;
 import com.lenis0012.bukkit.ls.encryption.PasswordManager;
-import com.lenis0012.bukkit.ls.util.EncryptionUtil;
 
 public class ChangePassCommand implements CommandExecutor {
 	@Override
@@ -37,8 +36,8 @@ public class ChangePassCommand implements CommandExecutor {
 			return true;
 		}
 		
-		String newPass = EncryptionUtil.getMD5(args[1]);
-		plugin.data.setValue(name, ValueType.UPDATE_PASSWORD, newPass, 1);
+		String newPass = plugin.hasher.hash(args[1]);
+		plugin.data.setValue(name, ValueType.UPDATE_PASSWORD, newPass, plugin.hasher.getTypeId());
 		player.sendMessage(ChatColor.GREEN+"Succesfully changed password to: "+args[1]);
 		return true;
 	}

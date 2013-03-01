@@ -6,15 +6,44 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 
 public class ThreadManager {
 	private LoginSecurity plugin;
 	private int msg = -1, ses = -1, to = -1;
+	private BukkitTask main = null;
 	public Map<String, Integer> session = new HashMap<String, Integer>();
 	public Map<String, Integer> timeout = new HashMap<String, Integer>();
+	private long nextRefresh;
 	
 	public ThreadManager(LoginSecurity plugin) {
 		this.plugin = plugin;
+	}
+	
+	public void startMainTask() {
+		this.nextRefresh = System.currentTimeMillis() + 3000000;
+		main = plugin.getServer().getScheduler().runTaskTimer(plugin, new Runnable() {
+
+			@Override
+			public void run() {
+				long time = System.currentTimeMillis();
+				if(time >= nextRefresh) {
+					if(plugin != null && plugin.data != null) {
+						plugin.data.close();
+						plugin.data.openConnection();
+					}
+					nextRefresh = System.currentTimeMillis() + 3000000;
+				}
+			}
+			
+		}, 20, 20);
+	}
+	
+	public void stopMainTask() {
+		if(this.main != null) {
+			this.main.cancel();
+			this.main = null;
+		}
 	}
 	
 	public void startMsgTask() {
@@ -46,7 +75,7 @@ public class ThreadManager {
 				for(String user : session.keySet()) {
 					int current = session.get(user);
 					if(current >= 1)
-						current -= 1;
+						current--;
 					else
 						session.remove(user);
 				}

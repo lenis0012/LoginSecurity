@@ -27,4 +27,9 @@ public class CryptoDigest implements Encryptor {
 		}
 	}
 
+	@Override
+	public String hash(String value) {
+		return null;
+	}
+
 }

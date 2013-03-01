@@ -53,4 +53,11 @@ public interface DataManager {
 	 * @return conenction
 	 */
 	public Connection getConnection();
+	
+	/**
+	 * Open the database connection
+	 * 
+	 * @return Connection open?
+	 */
+	public boolean openConnection();
 }

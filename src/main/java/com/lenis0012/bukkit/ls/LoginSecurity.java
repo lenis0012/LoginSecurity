@@ -22,6 +22,7 @@ import com.lenis0012.bukkit.ls.data.DataManager;
 import com.lenis0012.bukkit.ls.data.MySQL;
 import com.lenis0012.bukkit.ls.data.SQLite;
 import com.lenis0012.bukkit.ls.data.Table;
+import com.lenis0012.bukkit.ls.encryption.EncryptionType;
 import com.lenis0012.bukkit.ls.util.Metrics;
 import com.lenis0012.bukkit.ls.util.Updater;
 import com.lenis0012.bukkit.ls.util.Updater.UpdateResult;
@@ -38,6 +39,7 @@ public class LoginSecurity extends JavaPlugin {
 	public Logger log = Logger.getLogger("Minecraft");
 	public ThreadManager thread;
 	public String prefix;
+	public EncryptionType hasher;
 	
 	@Override
 	public void onEnable() {
@@ -83,6 +85,9 @@ public class LoginSecurity extends JavaPlugin {
 			thread.startSessionTask();
 		if(timeUse)
 			thread.startTimeoutTask();
+		this.hasher = EncryptionType.MD5;
+		
+		thread.startMainTask();
 		
 		//convert everything
 		this.checkConverter();
@@ -110,9 +115,12 @@ public class LoginSecurity extends JavaPlugin {
 	
 	@Override
 	public void onDisable() {
-		data.close();
-		thread.stopMsgTask();
-		thread.stopSessionTask();
+		if(data != null)
+			data.close();
+		if(thread != null) {
+			thread.stopMsgTask();
+			thread.stopSessionTask();
+		}
 	}
 	
 	private DataManager getDataManager(FileConfiguration config, String fileName) {

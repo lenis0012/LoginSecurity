@@ -9,4 +9,9 @@ public class SaltedWhirlpool implements Encryptor {
 		check = EncryptionUtil.getSaltedWhirlpool(real, check);
 		return check.equals(real);
 	}
+
+	@Override
+	public String hash(String value) {
+		return null;
+	}
 }

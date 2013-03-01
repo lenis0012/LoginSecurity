@@ -435,4 +435,9 @@ bufferPos
 		check = EncryptionUtil.getWhirlpool(check);
 		return check.equals(real);
 	}
+
+	@Override
+	public String hash(String value) {
+		return null;
+	}
 }

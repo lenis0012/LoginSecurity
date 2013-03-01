@@ -9,7 +9,6 @@ import org.bukkit.potion.PotionEffectType;
 
 import com.lenis0012.bukkit.ls.LoginSecurity;
 import com.lenis0012.bukkit.ls.data.ValueType;
-import com.lenis0012.bukkit.ls.util.EncryptionUtil;
 
 public class RegisterCommand implements CommandExecutor {
 	@Override
@@ -33,8 +32,8 @@ public class RegisterCommand implements CommandExecutor {
 			return true;
 		}
 		
-		String password = EncryptionUtil.getMD5(args[0]);
-		plugin.data.setValue(name, ValueType.INSERT, password, 1);
+		String password = plugin.hasher.hash(args[0]);
+		plugin.data.setValue(name, ValueType.INSERT, password, plugin.hasher.getTypeId());
 		plugin.AuthList.remove(name);
 		if(player.hasPotionEffect(PotionEffectType.BLINDNESS) && plugin.blindness)
 			player.removePotionEffect(PotionEffectType.BLINDNESS);

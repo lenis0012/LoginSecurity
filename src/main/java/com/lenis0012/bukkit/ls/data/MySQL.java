@@ -52,7 +52,8 @@ public class MySQL implements DataManager{
 		}
 	}
 	
-	private boolean openConnection() {
+	@Override
+	public boolean openConnection() {
 		try {
 			//get config info
 			String host = config.getString("MySQL.host", "localhost");

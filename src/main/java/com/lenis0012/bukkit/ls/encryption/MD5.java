@@ -9,4 +9,9 @@ public class MD5 implements Encryptor {
 		check = EncryptionUtil.getMD5(check);
 		return check.equals(real);
 	}
+
+	@Override
+	public String hash(String value) {
+		return EncryptionUtil.getMD5(value);
+	}
 }
