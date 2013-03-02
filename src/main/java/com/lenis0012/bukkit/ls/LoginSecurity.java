@@ -40,6 +40,7 @@ public class LoginSecurity extends JavaPlugin {
 	public ThreadManager thread;
 	public String prefix;
 	public EncryptionType hasher;
+	public static int PHP_VERSION;
 	
 	@Override
 	public void onEnable() {
@@ -49,6 +50,8 @@ public class LoginSecurity extends JavaPlugin {
 		
 		//setup config
 		config.addDefault("settings.password-required", false);
+		config.addDefault("settings.encryption", "MD5");
+		config.addDefault("settings.PHP_VERSION", 4);
 		config.addDefault("settings.blindness", true);
 		config.addDefault("settings.session.use", true);
 		config.addDefault("settings.session.timeout (sec)", 60);
@@ -81,11 +84,12 @@ public class LoginSecurity extends JavaPlugin {
 		sesDelay = config.getInt("settings.session.timeout (sec)", 60);
 		timeUse = config.getBoolean("settings.timeout.use", true);
 		timeDelay = config.getInt("settings.timeout.timeout (sec)", 60);
+		PHP_VERSION = config.getInt("settings.PHP_VERSION", 4);
 		if(sesUse)
 			thread.startSessionTask();
 		if(timeUse)
 			thread.startTimeoutTask();
-		this.hasher = EncryptionType.MD5;
+		this.hasher = EncryptionType.fromString(config.getString("settings.encryption"));
 		
 		thread.startMainTask();
 		

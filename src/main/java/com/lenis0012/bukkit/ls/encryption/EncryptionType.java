@@ -7,6 +7,7 @@ import com.lenis0012.bukkit.ls.xAuth.Whirlpool;
 
 public enum EncryptionType {
 	MD5(1, new MD5()),
+	PHPBB3(2, new PHPBB3()),
 	xAuth_Authme_SHA256(10, new Sha256()),
 	xAuth_DEFAULT(11, new SaltedWhirlpool()),
 	xAuth_MD5(12, new CryptoDigest("MD5")),
@@ -45,10 +46,9 @@ public enum EncryptionType {
 	public static EncryptionType fromString(String from) {
 		if(from.equalsIgnoreCase("md5"))
 			return MD5;
-		/*else if(from.equalsIgnoreCase("loginhash1"))
-			return LOGINHASH1;
+		else if(from.equalsIgnoreCase("phpbb3"))
+			return PHPBB3;
 		else
-			return LOGINHASH1;*/
-		return MD5;
+			return MD5;
 	}
 }
