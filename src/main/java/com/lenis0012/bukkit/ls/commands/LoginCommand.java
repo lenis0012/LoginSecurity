@@ -38,6 +38,7 @@ public class LoginCommand implements CommandExecutor {
 		if(PasswordManager.checkPass(name, args[0])) {
 			plugin.AuthList.remove(name);
 			player.sendMessage(ChatColor.GREEN+"Succesfully logged in");
+			plugin.thread.timeout.remove(player.getName());
 			if(player.hasPotionEffect(PotionEffectType.BLINDNESS) && plugin.blindness)
 				player.removePotionEffect(PotionEffectType.BLINDNESS);
 		} else {
