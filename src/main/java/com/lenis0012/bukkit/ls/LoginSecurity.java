@@ -77,10 +77,10 @@ public class LoginSecurity extends JavaPlugin {
 		thread.startMsgTask();
 		required = config.getBoolean("settings.password-required");
 		blindness = config.getBoolean("settings.blindness");
-		sesUse = config.getBoolean("settings.session.use");
-		sesDelay = config.getInt("settings.session.timeout (sec)");
-		timeUse = config.getBoolean("settings.timeout.use");
-		timeDelay = config.getInt("settings.timeout.timeout (sec)");
+		sesUse = config.getBoolean("settings.session.use", true);
+		sesDelay = config.getInt("settings.session.timeout (sec)", 60);
+		timeUse = config.getBoolean("settings.timeout.use", true);
+		timeDelay = config.getInt("settings.timeout.timeout (sec)", 60);
 		if(sesUse)
 			thread.startSessionTask();
 		if(timeUse)

@@ -28,9 +28,16 @@ public class ThreadManager {
 			public void run() {
 				long time = System.currentTimeMillis();
 				if(time >= nextRefresh) {
-					if(plugin != null && plugin.data != null) {
-						plugin.data.close();
-						plugin.data.openConnection();
+					if(plugin != null) {
+						if(plugin.data != null) {
+							plugin.data.close();
+							plugin.data.openConnection();
+						}
+						
+						if(plugin.lastlogin != null) {
+							plugin.lastlogin.close();
+							plugin.lastlogin.openConnection();
+						}
 					}
 					nextRefresh = System.currentTimeMillis() + 3000000;
 				}
@@ -74,9 +81,10 @@ public class ThreadManager {
 			public void run() {
 				for(String user : session.keySet()) {
 					int current = session.get(user);
-					if(current >= 1)
-						current--;
-					else
+					if(current >= 1) {
+						current-= 1;
+						session.put(user, current);
+					} else
 						session.remove(user);
 				}
 				
@@ -95,9 +103,10 @@ public class ThreadManager {
 			public void run() {
 				for(String user : timeout.keySet()) {
 					int current = timeout.get(user);
-					if(current >= 1)
+					if(current >= 1) {
 						current -= 1;
-					else {
+						timeout.put(user, current);
+					} else {
 						session.remove(user);
 						Player player = Bukkit.getPlayer(user);
 						if(player != null && player.isOnline())

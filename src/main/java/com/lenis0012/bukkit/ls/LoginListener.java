@@ -25,6 +25,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import com.lenis0012.bukkit.ls.data.ValueType;
+import com.lenis0012.bukkit.ls.util.StringUtil;
 
 public class LoginListener implements Listener {
 	private LoginSecurity plugin;
@@ -33,8 +34,13 @@ public class LoginListener implements Listener {
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
-		String name = player.getName();
+		String name = player.getName().toLowerCase();
 		plugin.showVersion(player);
+		
+		if(!name.equals(StringUtil.cleanString(name))) {
+			player.kickPlayer("Invalid username!");
+			return;
+		}
 		
 		if(plugin.sesUse && plugin.thread.session.containsKey(name) && this.checkLastIp(player)) {
 			player.sendMessage("Extended session from last login");

@@ -20,7 +20,7 @@ public class LoginCommand implements CommandExecutor {
 		}
 		
 		Player player = (Player)sender;
-		String name = player.getName();
+		String name = player.getName().toLowerCase();
 		
 		if(!plugin.AuthList.containsKey(name)) {
 			player.sendMessage(ChatColor.RED+"You are already logged in");

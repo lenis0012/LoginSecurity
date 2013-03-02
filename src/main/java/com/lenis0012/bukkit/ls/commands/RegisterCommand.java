@@ -20,7 +20,7 @@ public class RegisterCommand implements CommandExecutor {
 		}
 		
 		Player player = (Player)sender;
-		String name = player.getName();
+		String name = player.getName().toLowerCase();
 		
 		if(plugin.data.isSet(name)) {
 			player.sendMessage(ChatColor.RED+"You are already registered");
