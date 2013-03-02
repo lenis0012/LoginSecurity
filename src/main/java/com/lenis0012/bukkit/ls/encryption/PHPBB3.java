@@ -187,8 +187,7 @@ public class PHPBB3 implements Encryptor {
 
 	@Override
 	public boolean check(String check, String real) {
-		String hashed = this.hash(check);
-		return hashed.equals(real);
+		return this.phpbb_check_hash(check, real);
 	}
 
 	@Override
