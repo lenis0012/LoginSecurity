@@ -55,7 +55,8 @@ public class LoginListener implements Listener {
 			player.sendMessage(ChatColor.RED+"Please register using /register <password>");
 			if(plugin.blindness)
 				player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1728000, 15));
-		}
+		} else
+			return;
 		
 		if(plugin.timeUse) {
 			plugin.thread.timeout.put(name, plugin.timeDelay);
