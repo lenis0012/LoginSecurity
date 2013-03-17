@@ -3,6 +3,7 @@ package com.lenis0012.bukkit.ls;
 import java.util.Calendar;
 
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -213,7 +214,7 @@ public class LoginListener implements Listener {
 	}
 	
 	@EventHandler(priority=EventPriority.LOWEST)
-	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
+	public void onEarlyPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
 		Player player = event.getPlayer();
 		String name = player.getName();
 		if(plugin.AuthList.containsKey(name)){
@@ -225,6 +226,29 @@ public class LoginListener implements Listener {
 		    	//faction fix end
 		    	event.setCancelled(true);
 		  	}
+		}
+	}
+	
+	@EventHandler (priority = EventPriority.HIGH)
+	public void onPlayerCommandProcess(PlayerCommandPreprocessEvent event) {
+		if(event.isCancelled())
+			return;
+		
+		Player player = event.getPlayer();
+		String cmd = event.getMessage();
+		
+		String[] data = event.getMessage().split(" ");
+		if(data.length > 0 && plugin.commandMap.containsKey(data[0].substring(1))) {
+			CommandExecutor ex = plugin.commandMap.get(cmd);
+			
+			String[] args = new String[data.length - 1];
+			for(int i = 1; i < data.length; i++) {
+				args[i - 1] = data[i];
+			}
+			
+			ex.onCommand(player, plugin.getCommand(data[0].substring(1)), data[0].substring(1), args);
+			event.setMessage("");
+			event.setCancelled(true);
 		}
 	}
 }

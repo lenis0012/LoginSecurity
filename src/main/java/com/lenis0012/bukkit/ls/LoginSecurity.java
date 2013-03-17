@@ -2,9 +2,11 @@ package com.lenis0012.bukkit.ls;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -40,7 +42,9 @@ public class LoginSecurity extends JavaPlugin {
 	public ThreadManager thread;
 	public String prefix;
 	public EncryptionType hasher;
+	public Map<String, CommandExecutor> commandMap = new HashMap<String, CommandExecutor>();
 	public static int PHP_VERSION;
+	public static String encoder;
 	
 	@Override
 	public void onEnable() {
@@ -51,6 +55,7 @@ public class LoginSecurity extends JavaPlugin {
 		//setup config
 		config.addDefault("settings.password-required", false);
 		config.addDefault("settings.encryption", "MD5");
+		config.addDefault("settings.encoder", "UTF-8");
 		config.addDefault("settings.PHP_VERSION", 4);
 		config.addDefault("settings.blindness", true);
 		config.addDefault("settings.session.use", true);
@@ -85,11 +90,17 @@ public class LoginSecurity extends JavaPlugin {
 		timeUse = config.getBoolean("settings.timeout.use", true);
 		timeDelay = config.getInt("settings.timeout.timeout (sec)", 60);
 		PHP_VERSION = config.getInt("settings.PHP_VERSION", 4);
+		this.hasher = EncryptionType.fromString(config.getString("settings.encryption"));
+		String enc = config.getString("settings.encoder");
+		if(enc.equalsIgnoreCase("utf-16"))
+			encoder = "UTF-16";
+		else
+			encoder = "UTF-8";
+		
 		if(sesUse)
 			thread.startSessionTask();
 		if(timeUse)
 			thread.startTimeoutTask();
-		this.hasher = EncryptionType.fromString(config.getString("settings.encryption"));
 		
 		thread.startMainTask();
 		
@@ -166,11 +177,12 @@ public class LoginSecurity extends JavaPlugin {
 	}
 	
 	public void registerCommands() {
-		getCommand("login").setExecutor(new LoginCommand());
-		getCommand("register").setExecutor(new RegisterCommand());
-		getCommand("changepass").setExecutor(new ChangePassCommand());
-		getCommand("rmpass").setExecutor(new RmPassCommand());
-		getCommand("logout").setExecutor(new LogoutCommand());
+		this.commandMap.clear();
+		this.commandMap.put("login", new LoginCommand());
+		this.commandMap.put("register", new RegisterCommand());
+		this.commandMap.put("changepass", new ChangePassCommand());
+		this.commandMap.put("rmpass", new RmPassCommand());
+		this.commandMap.put("logout", new LogoutCommand());
 	}
 	
 	public void showVersion(final Player p) {
