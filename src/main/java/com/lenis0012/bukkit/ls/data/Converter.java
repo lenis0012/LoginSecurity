@@ -28,12 +28,12 @@ public class Converter {
 	private FileType type;
 	private File file;
 	private Logger log = Logger.getLogger("Minecraft");
-	private String fileDir;
+	private File fileDir;
 	
-	public Converter(FileType type, File file, String fileDir) {
+	public Converter(FileType type, File file) {
 		this.type = type;
 		this.file = file;
-		this.fileDir = fileDir;
+		this.fileDir = file == null ? null : file.getParentFile();
 	}
 	
 	public void convert() {
@@ -53,7 +53,7 @@ public class Converter {
 			file.delete();
 		} else if(type == FileType.SQLite && !(plugin.data instanceof SQLite)) {
 			try {
-				SQLite manager = new SQLite(fileDir, file.getName());
+				SQLite manager = new SQLite(fileDir.getPath(), file.getName());
 				manager.load();
 				manager.setTable(Table.ACCOUNTS);
 				ResultSet result = manager.getAllUsers();

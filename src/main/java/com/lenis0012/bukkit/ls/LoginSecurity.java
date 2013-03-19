@@ -151,25 +151,25 @@ public class LoginSecurity extends JavaPlugin {
 		File file;
 		file = new File(this.getDataFolder(), "data.yml");
 		if(file.exists()) {
-			Converter conv = new Converter(FileType.YAML, file, "plugins"+File.separator+"LoginSecurity"+File.separator+"sql"+File.separator);
+			Converter conv = new Converter(FileType.YAML, file);
 			conv.convert();
 		}
 		file = new File(this.getDataFolder(), "data.db");
 		if(file.exists() && data instanceof MySQL) {
-			Converter conv = new Converter(FileType.SQLite, file, null);
+			Converter conv = new Converter(FileType.SQLite, file);
 			conv.convert();
 		}
 		if(data instanceof MySQL) {
 			MySQL mysql = (MySQL)data;
 			if(mysql.isCreated("passwords")) {
-				Converter conv = new Converter(FileType.OldToNewMySQL, this.getFile(), null);
+				Converter conv = new Converter(FileType.OldToNewMySQL, null);
 				conv.convert();
 			}
 		}
 		Plugin xAuth = pm.getPlugin("xAuth");
 		if(xAuth != null) {
 			if(xAuth.isEnabled()) {
-				Converter conv = new Converter(FileType.xAuth, this.getFile(), null);
+				Converter conv = new Converter(FileType.xAuth, null);
 				conv.convert();
 				log.info("[LoginSecurity] Converted data from xAuth to LoginSecurity");
 			}

@@ -2,6 +2,7 @@ package com.lenis0012.bukkit.ls;
 
 import java.util.Calendar;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.entity.Entity;
@@ -16,6 +17,8 @@ import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -64,8 +67,24 @@ public class LoginListener implements Listener {
 		}
 	}
 	
+	@EventHandler (priority = EventPriority.LOWEST)
+	public void onPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
+		String name = event.getName();
+		//Check if the player is already online
+		for(Player player : Bukkit.getServer().getOnlinePlayers()) {
+			String pname = player.getName().toLowerCase();
+			if(plugin.AuthList.containsKey(pname))
+				continue;
+			
+			if(pname.equalsIgnoreCase(name)) {
+				event.setLoginResult(Result.KICK_OTHER);
+				event.setKickMessage("A player with this name is already online!");
+			}
+		}
+	}
+	
 	private boolean checkLastIp(Player player) {
-		String name = player.getName();
+		String name = player.getName().toLowerCase();
 		if(plugin.lastlogin.isSet(name)) {
 			String lastIp = (String)plugin.lastlogin.getValue(name, "ip");
 			String currentIp = player.getAddress().getAddress().toString();
@@ -77,7 +96,7 @@ public class LoginListener implements Listener {
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		Player player = event.getPlayer();
-		String name = player.getName();
+		String name = player.getName().toLowerCase();
 		String ip = player.getAddress().getAddress().toString();
 		Calendar c = Calendar.getInstance();
 		int year = c.get(Calendar.YEAR);
@@ -96,7 +115,7 @@ public class LoginListener implements Listener {
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Player player = event.getPlayer();
-		String name = player.getName();
+		String name = player.getName().toLowerCase();
 		
 		if(plugin.AuthList.containsKey(name))
 			player.teleport(event.getFrom());
@@ -108,7 +127,7 @@ public class LoginListener implements Listener {
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event) {
 		Player player = event.getPlayer();
-		String name = player.getName();
+		String name = player.getName().toLowerCase();
 		
 		if(plugin.AuthList.containsKey(name))
 			event.setCancelled(true);
@@ -117,7 +136,7 @@ public class LoginListener implements Listener {
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
 		Player player = event.getPlayer();
-		String name = player.getName();
+		String name = player.getName().toLowerCase();
 		
 		if(plugin.AuthList.containsKey(name))
 			event.setCancelled(true);
@@ -126,7 +145,7 @@ public class LoginListener implements Listener {
 	@EventHandler
 	public void onPlayerDropItem(PlayerDropItemEvent event) {
 		Player player = event.getPlayer();
-		String name = player.getName();
+		String name = player.getName().toLowerCase();
 		
 		if(plugin.AuthList.containsKey(name))
 			event.setCancelled(true);
@@ -135,7 +154,7 @@ public class LoginListener implements Listener {
 	@EventHandler
 	public void onPlayerPickupItem(PlayerPickupItemEvent event) {
 		Player player = event.getPlayer();
-		String name = player.getName();
+		String name = player.getName().toLowerCase();
 		
 		if(plugin.AuthList.containsKey(name))
 			event.setCancelled(true);
@@ -144,7 +163,7 @@ public class LoginListener implements Listener {
 	@EventHandler
 	public void onPlayerChat(AsyncPlayerChatEvent chat){
 		Player player = chat.getPlayer();
-		String pname = player.getName();
+		String pname = player.getName().toLowerCase();
 		if(plugin.AuthList.containsKey(pname)){
 			chat.setCancelled(true);
 		}
@@ -156,7 +175,7 @@ public class LoginListener implements Listener {
 		if(!(entity instanceof Player))
 			return;
 		Player player = (Player)entity;
-		String pname = player.getName();
+		String pname = player.getName().toLowerCase();
 			
 		if(plugin.AuthList.containsKey(pname)) {
 			event.setCancelled(true);
