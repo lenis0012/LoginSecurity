@@ -4,7 +4,12 @@ import com.lenis0012.bukkit.ls.LoginSecurity;
 import com.lenis0012.bukkit.ls.util.EncryptionUtil;
 
 public class SHA implements Encryptor {
-
+	private String type;
+	
+	public SHA(String type) {
+		this.type = type;
+	}
+	
 	@Override
 	public boolean check(String check, String real) {
 		String hashed = hash(check);
@@ -13,6 +18,6 @@ public class SHA implements Encryptor {
 
 	@Override
 	public String hash(String value) {
-		return EncryptionUtil.encrypt(value, "SHA", LoginSecurity.encoder);
+		return EncryptionUtil.encrypt(value, this.type, LoginSecurity.encoder);
 	}
 }
