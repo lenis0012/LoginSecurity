@@ -241,7 +241,7 @@ public class LoginListener implements Listener {
 		  	{
 		    	//faction fix start
 		    	if(event.getMessage().startsWith("/f"))
-		    		event.setMessage("/blablablablabla"); //this command does not exist :P
+		    		event.setMessage("/blocked_By_LoginSecurity"); //this command does not exist :P
 		    	//faction fix end
 		    	event.setCancelled(true);
 		  	}

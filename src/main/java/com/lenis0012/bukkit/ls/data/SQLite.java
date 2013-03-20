@@ -36,8 +36,18 @@ public class SQLite implements DataManager {
 		}
 		if(this.startDriver()) {
 			if(this.openConnection()) {
+				this.beginTransaction();
 				log.info("[LoginSecurity] Succesfully loaded SQLite");
 			}
+		}
+	}
+	
+	void beginTransaction() {
+		try {
+			if(this.statement != null)
+				statement.executeUpdate("BEGIN TRANSACTION");
+		} catch(SQLException e) {
+			e.printStackTrace();
 		}
 	}
 	

@@ -3,6 +3,7 @@ package com.lenis0012.bukkit.ls;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
@@ -183,6 +184,13 @@ public class LoginSecurity extends JavaPlugin {
 		this.commandMap.put("changepass", new ChangePassCommand());
 		this.commandMap.put("rmpass", new RmPassCommand());
 		this.commandMap.put("logout", new LogoutCommand());
+		
+		for(Entry<String, CommandExecutor> entry : this.commandMap.entrySet()) {
+			String cmd = entry.getKey();
+			CommandExecutor ex = entry.getValue();
+			
+			this.getCommand(cmd).setExecutor(ex);
+		}
 	}
 	
 	public void showVersion(final Player p) {
