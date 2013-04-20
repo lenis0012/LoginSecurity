@@ -2,6 +2,7 @@ package com.lenis0012.bukkit.ls;
 
 import java.util.Calendar;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
@@ -241,14 +242,13 @@ public class LoginListener implements Listener {
 		  	{
 		    	//faction fix start
 		    	if(event.getMessage().startsWith("/f"))
-		    		event.setMessage("/blocked_By_LoginSecurity"); //this command does not exist :P
+		    		event.setMessage("/" + RandomStringUtils.randomAscii(name.length())); //this command does not exist :P
 		    	//faction fix end
 		    	event.setCancelled(true);
 		  	}
 		}
 	}
 	
-	@EventHandler (priority = EventPriority.HIGH)
 	public void onPlayerCommandProcess(PlayerCommandPreprocessEvent event) {
 		if(event.isCancelled())
 			return;
