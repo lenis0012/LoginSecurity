@@ -27,7 +27,6 @@ import com.lenis0012.bukkit.ls.util.Metrics;
 
 public class LoginSecurity extends JavaPlugin {
 	public DataManager data;
-	public DataManager lastlogin;
 	public static LoginSecurity instance;
 	public HashMap<String, Boolean> AuthList = new HashMap<String, Boolean>();
 	public boolean required, blindness, sesUse, timeUse;

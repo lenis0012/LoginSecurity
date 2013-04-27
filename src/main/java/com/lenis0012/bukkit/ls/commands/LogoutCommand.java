@@ -26,6 +26,8 @@ public class LogoutCommand implements CommandExecutor {
 		if(plugin.AuthList.containsKey(name)) {
 			player.sendMessage(ChatColor.RED+"You must login first");
 			return true;
+		} if(!plugin.data.isRegistered(name)) {
+			player.sendMessage(ChatColor.RED+"You are not registered!");
 		}
 		
 		plugin.AuthList.put(name, false);

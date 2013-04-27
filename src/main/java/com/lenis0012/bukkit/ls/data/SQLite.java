@@ -19,6 +19,7 @@ public class SQLite implements DataManager {
 	private Connection con;
 	
 	public SQLite(File file) {
+		this.file = file;
 		File dir = file.getParentFile();
 		dir.mkdir();
 		if(!file.exists()) {
@@ -29,7 +30,12 @@ public class SQLite implements DataManager {
 			}
 		}
 		
-		this.file = file;
+		try {
+			Class.forName("org.sqlite.JDBC");
+		} catch (ClassNotFoundException e) {
+			log.log(Level.SEVERE, "Failed to load SQLite driver", e);
+		}
+		
 	}
 	
 	@Override
@@ -39,7 +45,7 @@ public class SQLite implements DataManager {
 			Statement st = con.createStatement();
 			
 			st.setQueryTimeout(30);
-			st.executeUpdate("CREATE TEABLE IF NOT EXISTS users (username VARCHAR(130) NOT NULL UNIQUE,password VARCHAR(300) NOT NULL,encryption INT,ip VARCHAR(130) NOT NULL);");
+			st.executeUpdate("CREATE TABLE IF NOT EXISTS users (username VARCHAR(130) NOT NULL UNIQUE,password VARCHAR(300) NOT NULL,encryption INT,ip VARCHAR(130) NOT NULL);");
 		} catch (SQLException e) {
 			log.log(Level.SEVERE, "Failed to open SQLite connection", e);
 		}
@@ -76,6 +82,7 @@ public class SQLite implements DataManager {
 			ps.setString(2, password);
 			ps.setInt(3, encryption);
 			ps.setString(4, ip);
+			ps.executeUpdate();
 		} catch (SQLException e) {
 			log.log(Level.SEVERE, "Failed to create user", e);
 		}

@@ -82,7 +82,7 @@ public class LoginListener implements Listener {
 	
 	private boolean checkLastIp(Player player) {
 		String name = player.getName().toLowerCase();
-		if(plugin.lastlogin.isRegistered(name)) {
+		if(plugin.data.isRegistered(name)) {
 			String lastIp = plugin.data.getIp(name);
 			String currentIp = player.getAddress().getAddress().toString();
 			return lastIp.equalsIgnoreCase(currentIp);

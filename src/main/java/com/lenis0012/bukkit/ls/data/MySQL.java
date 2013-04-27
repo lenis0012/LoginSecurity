@@ -23,6 +23,12 @@ public class MySQL implements DataManager{
 	public MySQL(FileConfiguration config, String table) {
 		this.config = config;
 		this.table = table;
+		
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+		} catch (ClassNotFoundException e) {
+			log.log(Level.SEVERE, "Failed to load MySQL driver", e);
+		}
 	}
 
 	@Override
@@ -76,6 +82,7 @@ public class MySQL implements DataManager{
 			ps.setString(2, password);
 			ps.setInt(3, encryption);
 			ps.setString(4, ip);
+			ps.executeUpdate();
 		} catch (SQLException e) {
 			log.log(Level.SEVERE, "Failed to create user", e);
 		}

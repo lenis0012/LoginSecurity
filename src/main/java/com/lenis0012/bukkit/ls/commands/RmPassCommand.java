@@ -24,16 +24,18 @@ public class RmPassCommand implements CommandExecutor {
 		if(!plugin.data.isRegistered(name)) {
 			player.sendMessage(ChatColor.RED+"You are not registered on the server");
 			return true;
-		}
-		if(args.length < 1) {
+		}if(args.length < 1) {
 			player.sendMessage(ChatColor.RED+"Not enough arguments");
 			player.sendMessage("Usage: "+cmd.getUsage());
 			return true;
-		}
-		if(!PasswordManager.checkPass(name, args[0])) {
+		} if(!PasswordManager.checkPass(name, args[0])) {
 			player.sendMessage(ChatColor.RED+"Password Incorrect");
 			return true;
+		} if(plugin.required) {
+			player.sendMessage(ChatColor.RED+"Passwords are required on this server!");
+			return true;
 		}
+		
 		plugin.data.removeUser(name);
 		player.sendMessage(ChatColor.GREEN+"Succesfully removed your password");
 		return true;
