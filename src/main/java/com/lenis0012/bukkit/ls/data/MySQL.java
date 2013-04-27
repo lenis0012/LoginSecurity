@@ -7,150 +7,188 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
+import com.lenis0012.bukkit.ls.encryption.EncryptionType;
+
 public class MySQL implements DataManager{
-	private Logger log = Logger.getLogger("Minecraft");
+	private Logger log = Logger.getLogger("Minecraft.LoginSecruity");
 	private FileConfiguration config;
-	private Connection con = null;
-	private Statement statement = null;
-	private Table table;
+	private Connection con;
+	private String table;
 	
-	public MySQL(FileConfiguration config) {
+	public MySQL(FileConfiguration config, String table) {
 		this.config = config;
+		this.table = table;
 	}
-	
+
 	@Override
-	public void load() {
-		if(this.startDriver()) {
-			if(this.openConnection()) {
-				log.info("[LoginSecurity] Succesfully loaded MySQL");
-			}
+	public void openConnection() {
+		String host = config.getString("MySQL.host", "localhost");
+		String port = String.valueOf(config.getInt("MySQL.port", 3306));
+		String database = config.getString("MySQL.database", "bukkit");
+		String user = config.getString("MySQL.username", "root");
+		String pass = config.getString("MySQL.password", "");
+		
+		try {
+			this.con = DriverManager.getConnection("jdbc:mysql://"+host+':'+port+
+					'/'+database+'?'+"user="+user+"&password="+pass);
+			
+			Statement st = con.createStatement();
+			st.setQueryTimeout(30);
+			st.executeUpdate("CREATE TABLE IF NOT EXISTS " + table);
+		} catch(SQLException e) {
+			log.log(Level.SEVERE, "Faield to load MySQL", e);
 		}
 	}
-	
-	private boolean startDriver() {
+
+	@Override
+	public void closeConnection() {
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			return true;
-		} catch (ClassNotFoundException e) {
-			log.warning("[LoginSecurity] Could not load MySQL driver: "+e.getMessage());
+			if(con != null)
+				con.close();
+		} catch(SQLException e) {
+			log.log(Level.SEVERE, "Failed to close SQLite connection", e);
+		}
+	}
+
+	@Override
+	public boolean isRegistered(String user) {
+		try {
+			PreparedStatement ps = con.prepareStatement("SELECT * FROM " + table + " WHERE username=?;");
+			ps.setString(1, user);
+			ResultSet result = ps.executeQuery();
+			return result.next();
+		} catch(SQLException e) {
+			log.log(Level.SEVERE, "Failed to get data from SQLite db", e);
 			return false;
 		}
 	}
-	
+
 	@Override
-	public void setTable(Table table) {
+	public void register(String user, String password, int encryption, String ip) {
 		try {
-			statement.executeUpdate("CREATE TABLE IF NOT EXISTS "+table.getName()
-					+table.getUsage()+";");
-			this.table = table;
-		} catch(SQLException e) {
-			log.warning("[LoginSecurity] Could not create MySQL table: "+e.getMessage());
-		}
-	}
-	
-	@Override
-	public boolean openConnection() {
-		try {
-			//get config info
-			String host = config.getString("MySQL.host", "localhost");
-			String port = String.valueOf(config.getInt("MySQL.port", 3306));
-			String databse = config.getString("MySQL.database", "loginsecurity");
-			String username = config.getString("MySQL.username", "root");
-			String pass = config.getString("MySQL.password", "");
-			
-			//open connection
-			con = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port +"/" + databse + "?" +
-					"user=" + username + "&password=" + pass);
-			statement = con.createStatement();
-			
-			//set the timeout
-			statement.setQueryTimeout(30);
-			return true;
+			PreparedStatement ps = con.prepareStatement("INSERT INTO " + table + "(username,password,encryption,ip) VALUES(?,?,?,?);");
+			ps.setString(1, user);
+			ps.setString(2, password);
+			ps.setInt(3, encryption);
+			ps.setString(4, ip);
 		} catch (SQLException e) {
-			log.warning("[LoginSecurity] Could not open MySQL connection: "+e.getMessage());
-			return false;
+			log.log(Level.SEVERE, "Failed to create user", e);
 		}
 	}
-	
+
 	@Override
-	public Object getValue(String username, String value) {
+	public void updatePassword(String user, String password, int encryption) {
 		try {
-			PreparedStatement ps = con.prepareStatement("SELECT * FROM "+table.getName()+" WHERE username=?;");
-			ps.setString(1, username);
-			ResultSet rs = ps.executeQuery();
-			if(rs.next())
-				return rs.getObject(value);
-			else
-				return null;
-		} catch(SQLException e) {
-			log.warning("[LoginSecurity] Could not get data from MySQL: "+e.getMessage());
+			PreparedStatement ps = con.prepareStatement("UPDATE " + table + " SET password=?,encryption=? WHERE username=?;");
+			ps.setString(1, password);
+			ps.setInt(2, encryption);
+			ps.setString(3, user);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			log.log(Level.SEVERE, "Failed to update user password", e);
+		}
+	}
+
+	@Override
+	public void updateIp(String user, String ip) {
+		try {
+			PreparedStatement ps = con.prepareStatement("UPDATE " + table + " SET ip=? WHERE username=?;");
+			ps.setString(1, ip);
+			ps.setString(2, user);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			log.log(Level.SEVERE, "Failed to update user ip", e);
+		}
+	}
+
+	@Override
+	public String getPassword(String user) {
+		try {
+			PreparedStatement ps = con.prepareStatement("SELECT * FROM " + table + " WHERE username=?;");
+			ps.setString(1, user);
+			ResultSet result = ps.executeQuery();
+			return result.getString("password");
+		} catch (SQLException e) {
+			log.log(Level.SEVERE, "Failed to get user password", e);
 			return null;
 		}
 	}
-	
+
 	@Override
-	public boolean isSet(String username) {
+	public int getEncryptionTypeId(String user) {
 		try {
-			ResultSet rs = statement.executeQuery("SELECT * FROM "+table.getName()+" WHERE username='"+username+"';");
-			return rs.next();
-		} catch(SQLException e) {
-			log.warning("[LoginSecurity] Could not get data from MySQL: "+e.getMessage());
-			return false;
+			PreparedStatement ps = con.prepareStatement("SELECT * FROM " + table + " WHERE username=?;");
+			ps.setString(1, user);
+			ResultSet result = ps.executeQuery();
+			return result.getInt("encryption");
+		} catch (SQLException e) {
+			log.log(Level.SEVERE, "Failed to get user encryption type", e);
+			return EncryptionType.MD5.getTypeId();
 		}
 	}
-	
+
 	@Override
-	public void setValue(String username, ValueType type, String value, Object value2) {
-		type.insert(log, con, table, username, value, value2);
-	}
-	
-	public boolean isCreated(String tbl) {
+	public String getIp(String user) {
 		try {
-			DatabaseMetaData dbm = con.getMetaData();
-			ResultSet tables = dbm.getTables(null, null, tbl, null);
-			return tables.next();
-		} catch(SQLException e) {
-			log.warning("[LoginSecurity] Could not set data from MySQL: "+e.getMessage());
-			return false;
-		}
-	}
-	
-	
-	public ResultSet getAllUsers() {
-		try {
-			return statement.executeQuery("SELECT * FROM "+table);
-		} catch(SQLException e) {
-			log.warning("[LoginSecurity] Could not get data from MySQL: "+e.getMessage());
+			PreparedStatement ps = con.prepareStatement("SELECT * FROM " + table + " WHERE username=?;");
+			ps.setString(1, user);
+			ResultSet result = ps.executeQuery();
+			return result.getString("ip");
+		} catch (SQLException e) {
+			log.log(Level.SEVERE, "Failed to get user ip", e);
 			return null;
 		}
 	}
-	
-	public void removeTable(String tbl) {
+
+	@Override
+	public void removeUser(String user) {
 		try {
-			statement.executeUpdate("DROP TABLE "+tbl);
+			PreparedStatement ps = con.prepareStatement("DELETE FROM " + table + " WHERE username=?;");
+			ps.setString(1, user);
+			ps.executeUpdate();
 		} catch(SQLException e) {
-			log.warning("[LoginSecurity] Could not drop data from MySQL: "+e.getMessage());
+			log.log(Level.SEVERE, "Failed to remove user", e);
 		}
 	}
-	
+
 	@Override
 	public Connection getConnection() {
 		return this.con;
 	}
-	
+
 	@Override
-	public void close() {
+	public ResultSet getAllUsers() {
 		try {
-			if(statement != null)
-				statement.close();
-			if(con != null)
-				con.close();
-		} catch(SQLException e) {
-			log.warning("[LoginSecurity] Could not close MySQL connection: "+e.getMessage());
+			PreparedStatement ps = con.prepareStatement("SELECT * FROM " + table + "");
+			return ps.executeQuery();
+		} catch (SQLException e) {
+			return null;
+		}
+	}
+	
+	public boolean tableExists(String name) {
+		try {
+			DatabaseMetaData dbm = con.getMetaData();
+			ResultSet tables = dbm.getTables(null, null, name, null);
+			return tables.next();
+		} catch (SQLException e) {
+			log.log(Level.SEVERE, "Failed to check if table exists", e);
+			return false;
+		}
+	}
+	
+	public void dropTable(String name) {
+		try {
+			Statement st = con.createStatement();
+			st.setQueryTimeout(30);
+			st.executeUpdate("DROP TABLE " + name);
+		} catch (SQLException e) {
+			log.log(Level.SEVERE, "Failed to drop table", e);
 		}
 	}
 }

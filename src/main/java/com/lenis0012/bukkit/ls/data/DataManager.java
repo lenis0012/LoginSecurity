@@ -1,63 +1,97 @@
 package com.lenis0012.bukkit.ls.data;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 
 public interface DataManager {
-	/**
-	 * Load the manager
-	 */
-	public void load();
 	
 	/**
-	 * Close the connection
+	 * Open SQL connection
 	 */
-	public void close();
+	public void openConnection();
 	
 	/**
-	 * Get a value from the manager
+	 * Close SQL connection
+	 */
+	public void closeConnection();
+	
+	/**
+	 * Check if a player is registered
 	 * 
-	 * @param 			username username
-	 * @param 			value value to recive
-	 * @return 			value
+	 * @param user Username
+	 * @return User registered?
 	 */
-	public Object getValue(String username, String value);
+	public boolean isRegistered(String user);
 	
 	/**
-	 * Check if a user is set to the table
+	 * Register a user
 	 * 
-	 * @param username 	username
-	 * @return 			user is set?
+	 * @param user Username
+	 * @param password Password
+	 * @param encryption Encryption type id
+	 * @param ip User address
 	 */
-	public boolean isSet(String username);
+	public void register(String user, String password, int encryption, String ip);
 	
 	/**
-	 * Insert data into the manager
+	 * Update a player's password
 	 * 
-	 * @param username	username
-	 * @param type		data type
-	 * @param value		value
-	 * @param crypto	encryption type
+	 * @param user Username
+	 * @param password New password
+	 * @param encryption Encryption type id
 	 */
-	public void setValue(String username, ValueType type, String value, Object value2);
+	public void updatePassword(String user, String password, int encryption);
 	
 	/**
-	 * Set the default table
+	 * Update a user ip
 	 * 
-	 * @param table table
+	 * @param user Username
+	 * @param ip New address
 	 */
-	public void setTable(Table table);
+	public void updateIp(String user, String ip);
+	
+	/**
+	 * Get a user password
+	 * 
+	 * @param user Username
+	 * @return Password
+	 */
+	public String getPassword(String user);
+	
+	/**
+	 * Get a user encryption type
+	 * 
+	 * @param user Username
+	 * @return Encryption type id
+	 */
+	public int getEncryptionTypeId(String user);
+	
+	/**
+	 * Get a user ip address
+	 * 
+	 * @param user Username
+	 * @return Encryption type id
+	 */
+	public String getIp(String user);
+	
+	/**
+	 * Remove a user from the database
+	 * 
+	 * @param user Username
+	 */
+	public void removeUser(String user);
+	
+	/**
+	 * Get all registered users
+	 * 
+	 * @return All registered users
+	 */
+	public ResultSet getAllUsers();
 	
 	/**
 	 * Get the database connection
 	 * 
-	 * @return conenction
+	 * @return Connection
 	 */
 	public Connection getConnection();
-	
-	/**
-	 * Open the database connection
-	 * 
-	 * @return Connection open?
-	 */
-	public boolean openConnection();
 }

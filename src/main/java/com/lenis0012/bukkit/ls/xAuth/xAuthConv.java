@@ -5,11 +5,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.apache.commons.lang.RandomStringUtils;
+
 import com.cypherx.xauth.xAuth;
 import com.cypherx.xauth.database.Table;
 import com.cypherx.xauth.password.PasswordType;
 import com.lenis0012.bukkit.ls.LoginSecurity;
-import com.lenis0012.bukkit.ls.data.ValueType;
 
 public class xAuthConv {
 	private xAuth auth;
@@ -32,8 +33,8 @@ public class xAuthConv {
 				String password = result.getString("password");
 				PasswordType type = PasswordType.getType(result.getInt("pwtype"));
 				int key = getEncryptor(type);
-				if(!plugin.data.isSet(username))
-					plugin.data.setValue(username, ValueType.INSERT, password, key);
+				if(!plugin.data.isRegistered(username))
+					plugin.data.register(username, password, key, RandomStringUtils.randomAscii(25));
 			}
 		} catch(SQLException e) {
 			//Failed to load xAuth

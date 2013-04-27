@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -28,12 +29,10 @@ public class Converter {
 	private FileType type;
 	private File file;
 	private Logger log = Logger.getLogger("Minecraft");
-	private File fileDir;
 	
 	public Converter(FileType type, File file) {
 		this.type = type;
 		this.file = file;
-		this.fileDir = file == null ? null : file.getParentFile();
 	}
 	
 	public void convert() {
@@ -47,24 +46,24 @@ public class Converter {
 					String pass = config.getString("password.password."+user);
 					if(!md5)
 						pass = EncryptionUtil.getMD5(pass);
-					plugin.data.setValue(user, ValueType.INSERT, pass, 1);
+					plugin.data.register(user, pass, 1, RandomStringUtils.randomAscii(25));
 				}
 			}
 			file.delete();
 		} else if(type == FileType.SQLite && !(plugin.data instanceof SQLite)) {
 			try {
-				SQLite manager = new SQLite(fileDir.getPath(), file.getName());
-				manager.load();
-				manager.setTable(Table.ACCOUNTS);
+				SQLite manager = new SQLite(file);
+				manager.openConnection();
 				ResultSet result = manager.getAllUsers();
 				while(result.next()) {
 					String user = result.getString("username");
-					if(!plugin.data.isSet(user)) {
+					if(!plugin.data.isRegistered(user)) {
 						String pass = result.getString("password");
-						plugin.data.setValue(user, ValueType.INSERT, pass, 1);
+						plugin.data.register(user, pass, 1, RandomStringUtils.randomAscii(25));
 					}
 				}
-				manager.close();
+				
+				manager.closeConnection();
 				file.delete();
 			} catch(SQLException e) {
 				System.out.println("[LoginSecurity] FAILED CONVERTING FROM SQLITE TO MYSQL");
@@ -72,22 +71,21 @@ public class Converter {
 			}
 		} else if(type == FileType.OldToNewMySQL) {
 			try {
-				MySQL from = new MySQL(plugin.getConfig());
-				from.load();
-				from.setTable(Table.OLD);
+				MySQL from = new MySQL(plugin.getConfig(), "passwords");
+				from.openConnection();
 				boolean shouldEncrypt = plugin.getConfig().getBoolean("options.use-MD5 Enryption", true);
 				ResultSet result = from.getAllUsers();
 				while(result.next()) {
 					String user = result.getString("username");
-					if(!plugin.data.isSet(user)) {
+					if(!plugin.data.isRegistered(user)) {
 						String pass = result.getString("password");
 						if(!shouldEncrypt)
 							pass = EncryptionUtil.getMD5(pass);
-						plugin.data.setValue(user, ValueType.INSERT, pass, 1);
+						plugin.data.register(user, pass, 1, RandomStringUtils.randomAscii(25));
 					}
 				}
-				from.removeTable("passwords");
-				from.close();
+				from.dropTable("passwords");
+				from.closeConnection();
 			} catch(SQLException e) {
 				System.out.println("[LoginSecurity] FAILED CONVERTING FROM SQLITE TO MYSQL");
 				log.warning("[LoginSecurity] "+e.getMessage());

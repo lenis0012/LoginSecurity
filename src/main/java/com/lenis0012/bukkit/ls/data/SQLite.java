@@ -4,140 +4,170 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.lenis0012.bukkit.ls.encryption.EncryptionType;
+
 public class SQLite implements DataManager {
-	private String fileName;
-	private String fileDir;
-	private Logger log = Logger.getLogger("Minecraft");
-	private Connection con = null;
-	private Statement statement = null;
-	private Table table;
+	private final Logger log = Logger.getLogger("Minecraft.LoginSecurity");
+	private File file;
+	private Connection con;
 	
-	public SQLite(String fileDir, String fileName) {
-		this.fileName = fileName;
-		this.fileDir = fileDir.replaceAll("/", File.separator);
-	}
-	
-	@Override
-	public void load() {
-		File file = new File(fileDir+fileName);
-		File dir = new File(fileDir);
-		dir.mkdirs();
+	public SQLite(File file) {
+		File dir = file.getParentFile();
+		dir.mkdir();
 		if(!file.exists()) {
 			try {
 				file.createNewFile();
-			} catch (IOException e) {
-				log.warning("[LoginSecurity] Failed to create SQLite file: "+e.getMessage());
+			} catch(IOException e) {
+				log.log(Level.SEVERE, "Failed to create file", e);
 			}
 		}
-		if(this.startDriver()) {
-			if(this.openConnection()) {
-				this.beginTransaction();
-				log.info("[LoginSecurity] Succesfully loaded SQLite");
-			}
-		}
-	}
-	
-	void beginTransaction() {
-		try {
-			if(this.statement != null)
-				statement.executeUpdate("BEGIN TRANSACTION");
-		} catch(SQLException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	private boolean startDriver() {
-		try {
-			Class.forName("org.sqlite.JDBC");
-			return true;
-		} catch (ClassNotFoundException e) {
-			log.warning("[LoginSecurity] Could not load SQLite driver: "+e.getMessage());
-			return false;
-		}
+		
+		this.file = file;
 	}
 	
 	@Override
-	public void setTable(Table table) {
+	public void openConnection() {
 		try {
-			statement.executeUpdate("CREATE TABLE IF NOT EXISTS "+table.getName()+
-					table.getUsage()+";");
-			this.table = table;
-		} catch(SQLException e) {
-			log.warning("[LoginSecurity] Could not create SQLite table: "+e.getMessage());
-		}
-	}
-	
-	@Override
-	public boolean openConnection() {
-		try {
-			//open connection
-			con = DriverManager.getConnection("jdbc:sqlite:"+fileDir+fileName);
-			statement = con.createStatement();
+			this.con = DriverManager.getConnection("jdbc:sqlite:" + file.getPath());
+			Statement st = con.createStatement();
 			
-			//set the timeout
-			statement.setQueryTimeout(30);
-			return true;
+			st.setQueryTimeout(30);
+			st.executeUpdate("CREATE TEABLE IF NOT EXISTS users (username VARCHAR(130) NOT NULL UNIQUE,password VARCHAR(300) NOT NULL,encryption INT,ip VARCHAR(130) NOT NULL);");
 		} catch (SQLException e) {
-			log.warning("[LoginSecurity] Could not open SQLite connection: "+e.getMessage());
+			log.log(Level.SEVERE, "Failed to open SQLite connection", e);
+		}
+	}
+
+	@Override
+	public void closeConnection() {
+		try {
+			if(con != null)
+				con.close();
+		} catch(SQLException e) {
+			log.log(Level.SEVERE, "Failed to close SQLite connection", e);
+		}
+	}
+
+	@Override
+	public boolean isRegistered(String user) {
+		try {
+			PreparedStatement ps = con.prepareStatement("SELECT * FROM users WHERE username=?;");
+			ps.setString(1, user);
+			ResultSet result = ps.executeQuery();
+			return result.next();
+		} catch(SQLException e) {
+			log.log(Level.SEVERE, "Failed to get data from SQLite db", e);
 			return false;
 		}
 	}
-	
+
 	@Override
-	public Object getValue(String username, String value) {
+	public void register(String user, String password, int encryption, String ip) {
 		try {
-			ResultSet rs = statement.executeQuery("select * from "+table.getName()+" where username='"+username+"'");
-			return rs.getObject(value);
-		} catch(SQLException e) {
-			log.warning("[LoginSecurity] Could not get data from SQLite: "+e.getMessage());
+			PreparedStatement ps = con.prepareStatement("INSERT INTO users(username,password,encryption,ip) VALUES(?,?,?,?);");
+			ps.setString(1, user);
+			ps.setString(2, password);
+			ps.setInt(3, encryption);
+			ps.setString(4, ip);
+		} catch (SQLException e) {
+			log.log(Level.SEVERE, "Failed to create user", e);
+		}
+	}
+
+	@Override
+	public void updatePassword(String user, String password, int encryption) {
+		try {
+			PreparedStatement ps = con.prepareStatement("UPDATE users SET password=?,encryption=? WHERE username=?;");
+			ps.setString(1, password);
+			ps.setInt(2, encryption);
+			ps.setString(3, user);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			log.log(Level.SEVERE, "Failed to update user password", e);
+		}
+	}
+
+	@Override
+	public void updateIp(String user, String ip) {
+		try {
+			PreparedStatement ps = con.prepareStatement("UPDATE users SET ip=? WHERE username=?;");
+			ps.setString(1, ip);
+			ps.setString(2, user);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			log.log(Level.SEVERE, "Failed to update user ip", e);
+		}
+	}
+
+	@Override
+	public String getPassword(String user) {
+		try {
+			PreparedStatement ps = con.prepareStatement("SELECT * FROM users WHERE username=?;");
+			ps.setString(1, user);
+			ResultSet result = ps.executeQuery();
+			return result.getString("password");
+		} catch (SQLException e) {
+			log.log(Level.SEVERE, "Failed to get user password", e);
 			return null;
 		}
 	}
-	
+
 	@Override
-	public boolean isSet(String username) {
+	public int getEncryptionTypeId(String user) {
 		try {
-			ResultSet rs = statement.executeQuery("select * from "+table.getName()+" where username='"+username+"'");
-			return rs.next();
-		} catch(SQLException e) {
-			log.warning("[LoginSecurity] Could not get data from SQLite: "+e.getMessage());
-			return false;
+			PreparedStatement ps = con.prepareStatement("SELECT * FROM users WHERE username=?;");
+			ps.setString(1, user);
+			ResultSet result = ps.executeQuery();
+			return result.getInt("encryption");
+		} catch (SQLException e) {
+			log.log(Level.SEVERE, "Failed to get user encryption type", e);
+			return EncryptionType.MD5.getTypeId();
 		}
 	}
-	
+
 	@Override
-	public void setValue(String username, ValueType type, String value, Object value2) {
-		type.insert(log, con, table, username, value, value2);
-	}
-	
-	public ResultSet getAllUsers() {
+	public String getIp(String user) {
 		try {
-			return statement.executeQuery("SELECT * FROM "+table);
-		} catch(SQLException e) {
-			log.warning("[LoginSecurity] Could not get data from SQLite: "+e.getMessage());
+			PreparedStatement ps = con.prepareStatement("SELECT * FROM users WHERE username=?;");
+			ps.setString(1, user);
+			ResultSet result = ps.executeQuery();
+			return result.getString("ip");
+		} catch (SQLException e) {
+			log.log(Level.SEVERE, "Failed to get user ip", e);
 			return null;
 		}
 	}
-	
+
+	@Override
+	public void removeUser(String user) {
+		try {
+			PreparedStatement ps = con.prepareStatement("DELETE FROM users WHERE username=?;");
+			ps.setString(1, user);
+			ps.executeUpdate();
+		} catch(SQLException e) {
+			log.log(Level.SEVERE, "Failed to remove user", e);
+		}
+	}
+
 	@Override
 	public Connection getConnection() {
 		return this.con;
 	}
-	
+
 	@Override
-	public void close() {
+	public ResultSet getAllUsers() {
 		try {
-			if(statement != null)
-				statement.close();
-			if(con != null)
-				con.close();
-		} catch(SQLException e) {
-			log.warning("[LoginSecurity] Could not close SQLite connection: "+e.getMessage());
+			PreparedStatement ps = con.prepareStatement("SELECT * FROM users");
+			return ps.executeQuery();
+		} catch (SQLException e) {
+			return null;
 		}
 	}
 }

@@ -30,15 +30,11 @@ public class ThreadManager {
 				if(time >= nextRefresh) {
 					if(plugin != null) {
 						if(plugin.data != null) {
-							plugin.data.close();
+							plugin.data.closeConnection();
 							plugin.data.openConnection();
 						}
-						
-						if(plugin.lastlogin != null) {
-							plugin.lastlogin.close();
-							plugin.lastlogin.openConnection();
-						}
 					}
+					
 					nextRefresh = System.currentTimeMillis() + 3000000;
 				}
 			}

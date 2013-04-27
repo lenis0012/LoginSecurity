@@ -7,7 +7,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.lenis0012.bukkit.ls.LoginSecurity;
-import com.lenis0012.bukkit.ls.data.ValueType;
 import com.lenis0012.bukkit.ls.encryption.PasswordManager;
 
 public class RmPassCommand implements CommandExecutor {
@@ -22,7 +21,7 @@ public class RmPassCommand implements CommandExecutor {
 		Player player = (Player)sender;
 		String name = player.getName().toLowerCase();
 		
-		if(!plugin.data.isSet(name)) {
+		if(!plugin.data.isRegistered(name)) {
 			player.sendMessage(ChatColor.RED+"You are not registered on the server");
 			return true;
 		}
@@ -35,7 +34,7 @@ public class RmPassCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.RED+"Password Incorrect");
 			return true;
 		}
-		plugin.data.setValue(name, ValueType.REMOVE, "", 0);
+		plugin.data.removeUser(name);
 		player.sendMessage(ChatColor.GREEN+"Succesfully removed your password");
 		return true;
 	}

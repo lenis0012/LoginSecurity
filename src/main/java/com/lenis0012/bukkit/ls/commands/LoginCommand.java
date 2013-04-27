@@ -26,7 +26,7 @@ public class LoginCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.RED+"You are already logged in");
 			return true;
 		}
-		if(!plugin.data.isSet(name)) {
+		if(!plugin.data.isRegistered(name)) {
 			player.sendMessage(ChatColor.RED+"You do not have a password set");
 			return true;
 		}
