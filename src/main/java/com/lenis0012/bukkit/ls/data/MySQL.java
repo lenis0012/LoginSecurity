@@ -45,7 +45,7 @@ public class MySQL implements DataManager{
 			
 			Statement st = con.createStatement();
 			st.setQueryTimeout(30);
-			st.executeUpdate("CREATE TABLE IF NOT EXISTS " + table);
+			st.executeUpdate("CREATE TABLE IF NOT EXISTS " + table + " (username VARCHAR(130) NOT NULL UNIQUE,password VARCHAR(300) NOT NULL,encryption INT,ip VARCHAR(130) NOT NULL);");
 		} catch(SQLException e) {
 			log.log(Level.SEVERE, "Faield to load MySQL", e);
 		}

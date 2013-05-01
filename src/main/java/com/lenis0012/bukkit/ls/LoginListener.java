@@ -3,7 +3,6 @@ package com.lenis0012.bukkit.ls;
 import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -69,7 +68,7 @@ public class LoginListener implements Listener {
 		String name = event.getName();
 		//Check if the player is already online
 		for(Player player : Bukkit.getServer().getOnlinePlayers()) {
-			String pname = player.getName().toLowerCase();
+			String pname = player.getName();
 			if(plugin.AuthList.containsKey(pname))
 				continue;
 			
@@ -180,7 +179,7 @@ public class LoginListener implements Listener {
 		if(!(entity instanceof Player))
 			return;
 		Player player = (Player)entity;
-		String pname = player.getName();
+		String pname = player.getName().toLowerCase();
 			
 		if(plugin.AuthList.containsKey(pname)) {
 			event.setCancelled(true);
@@ -193,7 +192,7 @@ public class LoginListener implements Listener {
 		if(!(entity instanceof Player))
 			return;
 		Player player = (Player)entity;
-		String pname = player.getName();
+		String pname = player.getName().toLowerCase();
 			
 		if(plugin.AuthList.containsKey(pname)) {
 			event.setCancelled(true);
@@ -207,7 +206,7 @@ public class LoginListener implements Listener {
 		
 		if(defender instanceof Player) {
 			Player p1 = (Player) defender;
-			String n1 = p1.getName();
+			String n1 = p1.getName().toLowerCase();
 			
 			if(plugin.AuthList.containsKey(n1)) {
 				event.setCancelled(true);
@@ -216,7 +215,7 @@ public class LoginListener implements Listener {
 			
 			if(damager instanceof Player) {
 				Player p2 = (Player) damager;
-				String n2 = p2.getName();
+				String n2 = p2.getName().toLowerCase();
 				
 				if(plugin.AuthList.containsKey(n2))
 					event.setCancelled(true);
@@ -225,40 +224,17 @@ public class LoginListener implements Listener {
 	}
 	
 	@EventHandler(priority=EventPriority.LOWEST)
-	public void onEarlyPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
+	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
 		Player player = event.getPlayer();
-		String name = player.getName();
+		String name = player.getName().toLowerCase();
 		if(plugin.AuthList.containsKey(name)){
-		    if(!event.getMessage().startsWith("/login") && !event.getMessage().startsWith("/register"))
-		  	{
+		    if(!event.getMessage().startsWith("/login") && !event.getMessage().startsWith("/register")) {
 		    	//faction fix start
 		    	if(event.getMessage().startsWith("/f"))
 		    		event.setMessage("/" + RandomStringUtils.randomAscii(name.length())); //this command does not exist :P
 		    	//faction fix end
 		    	event.setCancelled(true);
 		  	}
-		}
-	}
-	
-	public void onPlayerCommandProcess(PlayerCommandPreprocessEvent event) {
-		if(event.isCancelled())
-			return;
-		
-		Player player = event.getPlayer();
-		String cmd = event.getMessage();
-		
-		String[] data = event.getMessage().split(" ");
-		if(data.length > 0 && plugin.commandMap.containsKey(data[0].substring(1))) {
-			CommandExecutor ex = plugin.commandMap.get(cmd);
-			
-			String[] args = new String[data.length - 1];
-			for(int i = 1; i < data.length; i++) {
-				args[i - 1] = data[i];
-			}
-			
-			ex.onCommand(player, plugin.getCommand(data[0].substring(1)), data[0].substring(1), args);
-			event.setMessage("");
-			event.setCancelled(true);
 		}
 	}
 }
