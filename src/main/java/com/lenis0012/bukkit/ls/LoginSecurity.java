@@ -6,8 +6,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -29,7 +31,7 @@ public class LoginSecurity extends JavaPlugin {
 	public DataManager data;
 	public static LoginSecurity instance;
 	public HashMap<String, Boolean> AuthList = new HashMap<String, Boolean>();
-	public boolean required, blindness, sesUse, timeUse;
+	public boolean required, blindness, sesUse, timeUse, messager;
 	public int sesDelay, timeDelay;
 	public Logger log = Logger.getLogger("Minecraft");
 	public ThreadManager thread;
@@ -50,6 +52,7 @@ public class LoginSecurity extends JavaPlugin {
 		config.addDefault("settings.encryption", "MD5");
 		config.addDefault("settings.encoder", "UTF-8");
 		config.addDefault("settings.PHP_VERSION", 4);
+		config.addDefault("settings.messager-api", true);
 		config.addDefault("settings.blindness", true);
 		config.addDefault("settings.session.use", true);
 		config.addDefault("settings.session.timeout (sec)", 60);
@@ -67,6 +70,7 @@ public class LoginSecurity extends JavaPlugin {
 		
 		//intalize fields
 		instance = (LoginSecurity)pm.getPlugin("LoginSecurity");
+		messager = config.getBoolean("settings.messager-api", true);
 		prefix = config.getString("settings.table prefix");
 		data = this.getDataManager(config, "users.db");
 		data.openConnection();
@@ -97,6 +101,10 @@ public class LoginSecurity extends JavaPlugin {
 		this.checkConverter();
 		
 		//register events
+		if(messager) {
+			Bukkit.getMessenger().registerIncomingPluginChannel(this, "LoginSecurity", new LoginMessager(this));
+			Bukkit.getMessenger().registerOutgoingPluginChannel(this, "LoginSecurtiy");
+		}
 		pm.registerEvents(new LoginListener(this), this);
 		this.registerCommands();
 		
@@ -180,5 +188,21 @@ public class LoginSecurity extends JavaPlugin {
 			
 			this.getCommand(cmd).setExecutor(ex);
 		}
+	}
+	
+	
+	public boolean checkLastIp(Player player) {
+		String name = player.getName().toLowerCase();
+		if(data.isRegistered(name)) {
+			String lastIp = data.getIp(name);
+			String currentIp = player.getAddress().getAddress().toString();
+			return lastIp.equalsIgnoreCase(currentIp);
+		}
+		
+		return false;
+	}
+	
+	public void sendCustomPayload(Player player, String msg) {
+		player.sendPluginMessage(this, "LoginSecurity", msg.getBytes());
 	}
 }

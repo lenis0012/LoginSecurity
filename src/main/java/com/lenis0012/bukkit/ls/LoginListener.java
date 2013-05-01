@@ -42,16 +42,18 @@ public class LoginListener implements Listener {
 			return;
 		}
 		
-		if(plugin.sesUse && plugin.thread.session.containsKey(name) && this.checkLastIp(player)) {
+		if(plugin.sesUse && plugin.thread.session.containsKey(name) && plugin.checkLastIp(player)) {
 			player.sendMessage("Extended session from last login");
 			return;
 		} else if(plugin.data.isRegistered(name)) {
 			plugin.AuthList.put(name, false);
-			player.sendMessage(ChatColor.RED+"Please login using /login <password>");
+			if(!plugin.messager)
+				player.sendMessage(ChatColor.RED+"Please login using /login <password>");
 			if(plugin.blindness)
 				player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1728000, 15));
 		} else if(plugin.required) {
 			plugin.AuthList.put(name, true);
+			if(!plugin.messager)
 			player.sendMessage(ChatColor.RED+"Please register using /register <password>");
 			if(plugin.blindness)
 				player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1728000, 15));
@@ -68,7 +70,7 @@ public class LoginListener implements Listener {
 		String name = event.getName();
 		//Check if the player is already online
 		for(Player player : Bukkit.getServer().getOnlinePlayers()) {
-			String pname = player.getName();
+			String pname = player.getName().toLowerCase();
 			if(plugin.AuthList.containsKey(pname))
 				continue;
 			
@@ -77,17 +79,6 @@ public class LoginListener implements Listener {
 				event.setKickMessage("A player with this name is already online!");
 			}
 		}
-	}
-	
-	private boolean checkLastIp(Player player) {
-		String name = player.getName().toLowerCase();
-		if(plugin.data.isRegistered(name)) {
-			String lastIp = plugin.data.getIp(name);
-			String currentIp = player.getAddress().getAddress().toString();
-			return lastIp.equalsIgnoreCase(currentIp);
-		}
-		
-		return false;
 	}
 	
 	@EventHandler

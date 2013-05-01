@@ -34,6 +34,7 @@ public class RegisterCommand implements CommandExecutor {
 		String password = plugin.hasher.hash(args[0]);
 		plugin.data.register(name, password, plugin.hasher.getTypeId(), player.getAddress().getAddress().toString());
 		plugin.AuthList.remove(name);
+		plugin.thread.timeout.remove(name);
 		if(player.hasPotionEffect(PotionEffectType.BLINDNESS) && plugin.blindness)
 			player.removePotionEffect(PotionEffectType.BLINDNESS);
 		player.sendMessage(ChatColor.GREEN+"Registered with password: "+args[0]);
