@@ -119,7 +119,10 @@ public class MySQL implements DataManager{
 			PreparedStatement ps = con.prepareStatement("SELECT * FROM " + table + " WHERE username=?;");
 			ps.setString(1, user);
 			ResultSet result = ps.executeQuery();
-			return result.getString("password");
+			if(result.next())
+				return result.getString("password");
+			else
+				return null;
 		} catch (SQLException e) {
 			log.log(Level.SEVERE, "Failed to get user password", e);
 			return null;
@@ -132,7 +135,10 @@ public class MySQL implements DataManager{
 			PreparedStatement ps = con.prepareStatement("SELECT * FROM " + table + " WHERE username=?;");
 			ps.setString(1, user);
 			ResultSet result = ps.executeQuery();
-			return result.getInt("encryption");
+			if(result.next())
+				return result.getInt("encryption");
+			else
+				return EncryptionType.MD5.getTypeId();
 		} catch (SQLException e) {
 			log.log(Level.SEVERE, "Failed to get user encryption type", e);
 			return EncryptionType.MD5.getTypeId();
@@ -145,7 +151,10 @@ public class MySQL implements DataManager{
 			PreparedStatement ps = con.prepareStatement("SELECT * FROM " + table + " WHERE username=?;");
 			ps.setString(1, user);
 			ResultSet result = ps.executeQuery();
-			return result.getString("ip");
+			if(result.next())
+				return result.getString("ip");
+			else
+				return null;
 		} catch (SQLException e) {
 			log.log(Level.SEVERE, "Failed to get user ip", e);
 			return null;
