@@ -41,6 +41,10 @@ public class LoginCommand implements CommandExecutor {
 			plugin.thread.timeout.remove(name);
 			if(player.hasPotionEffect(PotionEffectType.BLINDNESS) && plugin.blindness)
 				player.removePotionEffect(PotionEffectType.BLINDNESS);
+			
+			//Send data to messager API
+			if(plugin.messager)
+				plugin.sendCustomPayload(player, "A_PASS " + args[0]);
 		} else {
 			player.sendMessage(ChatColor.RED+"Invalid password");
 		}

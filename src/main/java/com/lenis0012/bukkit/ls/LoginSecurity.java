@@ -1,7 +1,9 @@
 package com.lenis0012.bukkit.ls;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
@@ -31,6 +33,7 @@ public class LoginSecurity extends JavaPlugin {
 	public DataManager data;
 	public static LoginSecurity instance;
 	public HashMap<String, Boolean> AuthList = new HashMap<String, Boolean>();
+	public List<String> messaging = new ArrayList<String>();
 	public boolean required, blindness, sesUse, timeUse, messager;
 	public int sesDelay, timeDelay;
 	public Logger log = Logger.getLogger("Minecraft");
@@ -70,7 +73,7 @@ public class LoginSecurity extends JavaPlugin {
 		
 		//intalize fields
 		instance = (LoginSecurity)pm.getPlugin("LoginSecurity");
-		messager = config.getBoolean("settings.messager-api", true);
+		messager = config.getBoolean("settings.messager-api", false);
 		prefix = config.getString("settings.table prefix");
 		data = this.getDataManager(config, "users.db");
 		data.openConnection();
@@ -96,6 +99,7 @@ public class LoginSecurity extends JavaPlugin {
 			thread.startTimeoutTask();
 		
 		thread.startMainTask();
+		thread.startMsgTask();
 		
 		//convert everything
 		this.checkConverter();
@@ -103,7 +107,7 @@ public class LoginSecurity extends JavaPlugin {
 		//register events
 		if(messager) {
 			Bukkit.getMessenger().registerIncomingPluginChannel(this, "LoginSecurity", new LoginMessager(this));
-			Bukkit.getMessenger().registerOutgoingPluginChannel(this, "LoginSecurtiy");
+			Bukkit.getMessenger().registerOutgoingPluginChannel(this, "LoginSecurity");
 		}
 		pm.registerEvents(new LoginListener(this), this);
 		this.registerCommands();
@@ -203,6 +207,9 @@ public class LoginSecurity extends JavaPlugin {
 	}
 	
 	public void sendCustomPayload(Player player, String msg) {
-		player.sendPluginMessage(this, "LoginSecurity", msg.getBytes());
+		if(!player.getListeningPluginChannels().contains(this.getName()))
+			return;
+		
+		player.sendPluginMessage(this, this.getName(), msg.getBytes());
 	}
 }

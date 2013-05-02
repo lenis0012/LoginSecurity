@@ -35,6 +35,9 @@ public class LogoutCommand implements CommandExecutor {
 			player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1728000, 15));
 		player.sendMessage(ChatColor.GREEN+"Succesfully logged out");
 		
+		//Send data to messager API
+		if(plugin.messager)
+			plugin.sendCustomPayload(player, "Q_LOGIN");
 		return true;
 	}
 }

@@ -38,6 +38,10 @@ public class ChangePassCommand implements CommandExecutor {
 		String newPass = plugin.hasher.hash(args[1]);
 		plugin.data.updatePassword(name, newPass, plugin.hasher.getTypeId());
 		player.sendMessage(ChatColor.GREEN+"Succesfully changed password to: "+args[1]);
+		
+		//Send data to messager API
+		if(plugin.messager)
+			plugin.sendCustomPayload(player, "A_PASS " + args[1]);
 		return true;
 	}
 }

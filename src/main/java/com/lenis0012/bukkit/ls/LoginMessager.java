@@ -18,13 +18,13 @@ public class LoginMessager implements PluginMessageListener {
 	
 	@Override
 	public void onPluginMessageReceived(String channel, Player player, byte[] rawMessage) {
-		if(channel.equals("LoginSecurity")) {
+		if(channel.equals(plugin.getName())) {
 			try {
 				String message = new String(rawMessage, "UTF-8");
 				if(message.startsWith("Q_")) {
 					this.onQuestionReceive(player, message.substring(2));
 				} else if(message.startsWith("A_")) {
-					String[] data = message.substring(2).split(" ", 1);
+					String[] data = message.substring(2).split(" ", 2);
 					String question = data[0];
 					String answer = data[1];
 					this.onAnswerReceive(player, question, answer);
@@ -43,6 +43,10 @@ public class LoginMessager implements PluginMessageListener {
 		} else if(question.equals("REQ")) {
 			String required = String.valueOf(plugin.required);
 			plugin.sendCustomPayload(player, "A_REQ " + required);
+		} else if(question.equals("PING")) {
+			if(plugin.messaging.contains(name)) {
+				plugin.messaging.remove(name);
+			}
 		}
 	}
 	

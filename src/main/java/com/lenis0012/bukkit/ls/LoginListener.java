@@ -34,8 +34,8 @@ public class LoginListener implements Listener {
 	
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		Player player = event.getPlayer();
-		String name = player.getName().toLowerCase();
+		final Player player = event.getPlayer();
+		final String name = player.getName().toLowerCase();
 		
 		if(!name.equals(StringUtil.cleanString(name))) {
 			player.kickPlayer("Invalid username!");
@@ -54,7 +54,7 @@ public class LoginListener implements Listener {
 		} else if(plugin.required) {
 			plugin.AuthList.put(name, true);
 			if(!plugin.messager)
-			player.sendMessage(ChatColor.RED+"Please register using /register <password>");
+				player.sendMessage(ChatColor.RED+"Please register using /register <password>");
 			if(plugin.blindness)
 				player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1728000, 15));
 		} else
@@ -62,6 +62,25 @@ public class LoginListener implements Listener {
 		
 		if(plugin.timeUse) {
 			plugin.thread.timeout.put(name, plugin.timeDelay);
+		}
+		
+		//Send daat to messager API
+		if(plugin.messager) {
+		plugin.messaging.add(name);
+			Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+				@Override
+				public void run() {
+					if(plugin.messaging.contains(name)) {
+						boolean register = plugin.AuthList.get(name);
+						plugin.messaging.remove(name);
+						if(register)
+							player.sendMessage(ChatColor.RED+"Please register using /register <password>");
+						else
+							player.sendMessage(ChatColor.RED+"Please login using /login <password>");
+					} else
+						plugin.sendCustomPayload(player, "Q_LOGIN");
+				}
+			}, 20);
 		}
 	}
 	
