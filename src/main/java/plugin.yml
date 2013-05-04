@@ -7,16 +7,16 @@ softdepend: [xAuth]
 commands:
   login:
     description: Login with your account.
-    usage: /login <password>
+    usage: /login <username>
   register:
     description: Set a password for your account.
-    usage: /register <password>
+    usage: /register <username>
   changepass:
     description: Change the password for your account.
-    usage: /changepass <old> <new>
+    usage: /changeuser <old> <new>
   rmpass:
     description: Remove your password.
-    usage: /rmpass <password>
+    usage: /rmuser <username>
   logout:
     description: Logout
     usage: /logout
