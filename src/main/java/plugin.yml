@@ -18,5 +18,8 @@ commands:
     description: Remove your password.
     usage: /rmuser <username>
   logout:
-    description: Logout
+    description: Logout.
     usage: /logout
+  lac:
+    description: LoginSecurity Admind command.
+    usage: /lac
