@@ -16,6 +16,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.lenis0012.bukkit.ls.commands.AdminCommand;
 import com.lenis0012.bukkit.ls.commands.ChangePassCommand;
 import com.lenis0012.bukkit.ls.commands.LoginCommand;
 import com.lenis0012.bukkit.ls.commands.LogoutCommand;
@@ -185,6 +186,7 @@ public class LoginSecurity extends JavaPlugin {
 		this.commandMap.put("changepass", new ChangePassCommand());
 		this.commandMap.put("rmpass", new RmPassCommand());
 		this.commandMap.put("logout", new LogoutCommand());
+		this.commandMap.put("lac", new AdminCommand());
 		
 		for(Entry<String, CommandExecutor> entry : this.commandMap.entrySet()) {
 			String cmd = entry.getKey();
