@@ -37,7 +37,7 @@ public class LoginListener implements Listener {
 		final Player player = event.getPlayer();
 		final String name = player.getName().toLowerCase();
 		
-		if(!name.equals(StringUtil.cleanString(name))) {
+		if(!player.getName().equals(StringUtil.cleanString(player.getName()))) {
 			player.kickPlayer("Invalid username!");
 			return;
 		}
