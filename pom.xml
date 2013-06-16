@@ -4,7 +4,7 @@
 
   <groupId>me.lenis0012.ls</groupId>
   <artifactId>LoginSecurity</artifactId>
-  <version>2.0.4</version>
+  <version>2.0.5-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>LoginSecurity</name>
@@ -70,7 +70,7 @@
 		  <source>1.6</source>
 		  <target>1.6</target>
 		  <showWarnings>true</showWarnings>
-		  <showDeprecation>true</showDeprecation>
+		  <showDeprecation>false</showDeprecation>
 		</configuration>
       </plugin>
     </plugins>

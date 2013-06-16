@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -33,9 +34,10 @@ import com.lenis0012.bukkit.ls.util.Metrics;
 public class LoginSecurity extends JavaPlugin {
 	public DataManager data;
 	public static LoginSecurity instance;
-	public HashMap<String, Boolean> AuthList = new HashMap<String, Boolean>();
+	public Map<String, Boolean> AuthList = new HashMap<String, Boolean>();
+	public Map<String, Location> loginLocations = new HashMap<String, Location>();
 	public List<String> messaging = new ArrayList<String>();
-	public boolean required, blindness, sesUse, timeUse, messager;
+	public boolean required, blindness, sesUse, timeUse, messager, spawntp;
 	public int sesDelay, timeDelay;
 	public Logger log = Logger.getLogger("Minecraft");
 	public ThreadManager thread;
@@ -58,6 +60,7 @@ public class LoginSecurity extends JavaPlugin {
 		config.addDefault("settings.PHP_VERSION", 4);
 		config.addDefault("settings.messager-api", true);
 		config.addDefault("settings.blindness", true);
+		config.addDefault("settings.fake-location", false);
 		config.addDefault("settings.session.use", true);
 		config.addDefault("settings.session.timeout (sec)", 60);
 		config.addDefault("settings.timeout.use", true);
@@ -82,6 +85,7 @@ public class LoginSecurity extends JavaPlugin {
 		thread.startMsgTask();
 		required = config.getBoolean("settings.password-required");
 		blindness = config.getBoolean("settings.blindness");
+		spawntp = config.getBoolean("settings.fake-location");
 		sesUse = config.getBoolean("settings.session.use", true);
 		sesDelay = config.getInt("settings.session.timeout (sec)", 60);
 		timeUse = config.getBoolean("settings.timeout.use", true);

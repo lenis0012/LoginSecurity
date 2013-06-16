@@ -1,6 +1,7 @@
 package com.lenis0012.bukkit.ls;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
@@ -75,15 +76,16 @@ public class ThreadManager {
 	public void startSessionTask() {
 		ses = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
 			public void run() {
-				for(String user : session.keySet()) {
+				Iterator<String> it = session.keySet().iterator();
+				while(it.hasNext()) {
+					String user = it.next();
 					int current = session.get(user);
 					if(current >= 1) {
 						current-= 1;
 						session.put(user, current);
 					} else
-						session.remove(user);
+						it.remove();
 				}
-				
 			}
 		}, 20, 20);
 	}
@@ -97,19 +99,20 @@ public class ThreadManager {
 	public void startTimeoutTask() {
 		ses = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
 			public void run() {
-				for(String user : timeout.keySet()) {
+				Iterator<String> it = timeout.keySet().iterator();
+				while(it.hasNext()) {
+					String user = it.next();
 					int current = timeout.get(user);
 					if(current >= 1) {
 						current -= 1;
 						timeout.put(user, current);
 					} else {
-						session.remove(user);
+						it.remove();
 						Player player = Bukkit.getPlayer(user);
 						if(player != null && player.isOnline())
 							player.kickPlayer("Login timed out");
 					}
 				}
-				
 			}
 		}, 20, 20);
 	}

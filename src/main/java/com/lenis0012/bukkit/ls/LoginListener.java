@@ -14,20 +14,21 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
+import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.player.PlayerPreLoginEvent;
+import org.bukkit.event.player.PlayerPreLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import com.lenis0012.bukkit.ls.util.StringUtil;
 
+@SuppressWarnings("deprecation")
 public class LoginListener implements Listener {
 	private LoginSecurity plugin;
 	public LoginListener(LoginSecurity i) { this.plugin = i; }
@@ -49,22 +50,23 @@ public class LoginListener implements Listener {
 			plugin.AuthList.put(name, false);
 			if(!plugin.messager)
 				player.sendMessage(ChatColor.RED+"Please login using /login <password>");
-			if(plugin.blindness)
-				player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1728000, 15));
 		} else if(plugin.required) {
 			plugin.AuthList.put(name, true);
 			if(!plugin.messager)
 				player.sendMessage(ChatColor.RED+"Please register using /register <password>");
-			if(plugin.blindness)
-				player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1728000, 15));
 		} else
 			return;
 		
-		if(plugin.timeUse) {
+		if(plugin.blindness)
+			player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1728000, 15));
+		if(plugin.timeUse)
 			plugin.thread.timeout.put(name, plugin.timeDelay);
+		if(plugin.spawntp) {
+			plugin.loginLocations.put(name, player.getLocation().clone());
+			player.teleport(player.getWorld().getSpawnLocation());
 		}
 		
-		//Send daat to messager API
+		//Send data to messager API
 		if(plugin.messager) {
 		plugin.messaging.add(name);
 			Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
@@ -85,7 +87,7 @@ public class LoginListener implements Listener {
 	}
 	
 	@EventHandler (priority = EventPriority.LOWEST)
-	public void onPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
+	public void onPlayerPreLogin(PlayerPreLoginEvent event) {
 		String name = event.getName();
 		//Check if the player is already online
 		for(Player player : Bukkit.getServer().getOnlinePlayers()) {
@@ -94,7 +96,7 @@ public class LoginListener implements Listener {
 				continue;
 			
 			if(pname.equalsIgnoreCase(name)) {
-				event.setLoginResult(Result.KICK_OTHER);
+				event.setResult(Result.KICK_OTHER);
 				event.setKickMessage("A player with this name is already online!");
 			}
 		}
@@ -162,7 +164,7 @@ public class LoginListener implements Listener {
 	}
 	
 	@EventHandler
-	public void onPlayerChat(AsyncPlayerChatEvent chat){
+	public void onPlayerChat(PlayerChatEvent chat){
 		Player player = chat.getPlayer();
 		String pname = player.getName().toLowerCase();
 		if(plugin.AuthList.containsKey(pname)){
