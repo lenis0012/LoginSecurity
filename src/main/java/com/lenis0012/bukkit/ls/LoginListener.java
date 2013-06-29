@@ -43,7 +43,7 @@ public class LoginListener implements Listener {
 			return;
 		}
 		
-		if(plugin.sesUse && plugin.thread.session.containsKey(name) && plugin.checkLastIp(player)) {
+		if(plugin.sesUse && plugin.thread.getSession().containsKey(name) && plugin.checkLastIp(player)) {
 			player.sendMessage("Extended session from last login");
 			return;
 		} else if(plugin.data.isRegistered(name)) {
@@ -112,7 +112,7 @@ public class LoginListener implements Listener {
 			plugin.data.updateIp(name, ip);
 		
 		if(plugin.sesUse && !plugin.AuthList.containsKey(name) && plugin.data.isRegistered(name))
-			plugin.thread.session.put(name, plugin.sesDelay);
+			plugin.thread.getSession().put(name, plugin.sesDelay);
 	}
 	
 	@EventHandler
