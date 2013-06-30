@@ -21,6 +21,10 @@ public class ThreadManager {
 		this.plugin = plugin;
 	}
 	
+	public synchronized Map<String, Integer> getSession(){
+		return this.session;
+	}
+	
 	public void startMainTask() {
 		this.nextRefresh = System.currentTimeMillis() + 3000000;
 		main = plugin.getServer().getScheduler().runTaskTimer(plugin, new Runnable() {
@@ -76,13 +80,13 @@ public class ThreadManager {
 	public void startSessionTask() {
 		ses = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
 			public void run() {
-				Iterator<String> it = session.keySet().iterator();
+				Iterator<String> it = getSession().keySet().iterator();
 				while(it.hasNext()) {
 					String user = it.next();
-					int current = session.get(user);
+					int current = getSession().get(user);
 					if(current >= 1) {
 						current-= 1;
-						session.put(user, current);
+						getSession().put(user, current);
 					} else
 						it.remove();
 				}
