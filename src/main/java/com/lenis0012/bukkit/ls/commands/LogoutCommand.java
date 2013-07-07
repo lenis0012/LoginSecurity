@@ -9,6 +9,8 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import com.lenis0012.bukkit.ls.LoginSecurity;
+import java.util.Iterator;
+import org.bukkit.GameMode;
 
 public class LogoutCommand implements CommandExecutor {
 
@@ -31,8 +33,12 @@ public class LogoutCommand implements CommandExecutor {
 		}
 		
 		plugin.AuthList.put(name, false);
-		if(plugin.blindness)
-			player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1728000, 15));
+		plugin.debilitatePlayer(player);
+		// terminate user's current session
+		if (plugin.sesUse)
+			plugin.thread.getSession().remove(name);
+		
+			
 		player.sendMessage(ChatColor.GREEN+"Succesfully logged out");
 		
 		//Send data to messager API

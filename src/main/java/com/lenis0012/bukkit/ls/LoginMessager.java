@@ -58,18 +58,12 @@ public class LoginMessager implements PluginMessageListener {
 				plugin.data.register(name, pass, plugin.hasher.getTypeId(), player.getAddress().getAddress().toString());
 				plugin.AuthList.remove(name);
 				plugin.thread.timeout.remove(name);
-				if(player.hasPotionEffect(PotionEffectType.BLINDNESS))
-					player.removePotionEffect(PotionEffectType.BLINDNESS);
-				player.setGameMode(plugin.oldGameMode);
 			}
 		} else if(question.equals("LOGIN")) {
 			if(plugin.AuthList.containsKey(name)) {
 				if(PasswordManager.checkPass(name, answer)) {
 					plugin.AuthList.remove(name);
 					plugin.thread.timeout.remove(name);
-					if(player.hasPotionEffect(PotionEffectType.BLINDNESS))
-						player.removePotionEffect(PotionEffectType.BLINDNESS);
-					player.setGameMode(plugin.oldGameMode);
 				}
 			}
 		}

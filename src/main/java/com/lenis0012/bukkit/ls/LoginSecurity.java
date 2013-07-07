@@ -31,6 +31,8 @@ import com.lenis0012.bukkit.ls.data.SQLite;
 import com.lenis0012.bukkit.ls.encryption.EncryptionType;
 import com.lenis0012.bukkit.ls.util.Metrics;
 import org.bukkit.GameMode;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 public class LoginSecurity extends JavaPlugin {
 	public DataManager data;
@@ -216,10 +218,35 @@ public class LoginSecurity extends JavaPlugin {
 		return false;
 	}
 	
+	public void debilitatePlayer(Player player) {
+		final String name = player.getName().toLowerCase();
+		if (godMode) 
+			oldGameMode = player.getGameMode();
+			player.setGameMode(GameMode.CREATIVE);
+		if (blindness)
+			player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1728000, 15));	
+		if (spawntp) {
+			loginLocations.put(name, player.getLocation().clone());
+			player.teleport(player.getWorld().getSpawnLocation());
+		}
+			
+	}
+	
+	public void rehabPlayer(Player player, String name) {
+		final String name = player.getName().toLowerCase();
+		player.setGameMode(oldGameMode);
+		player.removePotionEffect(PotionEffectType.BLINDNESS);
+		if (spawntp) {
+				if(loginLocations.containsKey(name))
+				player.teleport(loginLocations.remove(name));
+		}
+	}
+	
 	public void sendCustomPayload(Player player, String msg) {
 		if(!player.getListeningPluginChannels().contains(this.getName()))
 			return;
 		
 		player.sendPluginMessage(this, this.getName(), msg.getBytes());
 	}
+
 }

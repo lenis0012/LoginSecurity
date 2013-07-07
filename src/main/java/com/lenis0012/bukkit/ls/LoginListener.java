@@ -45,7 +45,7 @@ public class LoginListener implements Listener {
 		}
 		
 		if(plugin.sesUse && plugin.thread.getSession().containsKey(name) && plugin.checkLastIp(player)) {
-			player.sendMessage("Extended session from last login");
+			player.sendMessage(ChatColor.GREEN+"Extended session from last login");
 			return;
 		} else if(plugin.data.isRegistered(name)) {
 			plugin.AuthList.put(name, false);
@@ -58,20 +58,7 @@ public class LoginListener implements Listener {
 		} else
 			return;
 		
-		if(plugin.blindness)
-			player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1728000, 15));
-		if(plugin.timeUse)
-			plugin.thread.timeout.put(name, plugin.timeDelay);
-		if(plugin.spawntp) {
-			plugin.loginLocations.put(name, player.getLocation().clone());
-			player.teleport(player.getWorld().getSpawnLocation());
-		}
-		if(plugin.godMode) {
-			plugin.oldGameMode = player.getGameMode();
-			player.setGameMode(GameMode.CREATIVE);
-		}
-			
-				
+		plugin.debilitatePlayer(player);
 		
 		//Send data to messager API
 		if(plugin.messager) {
@@ -129,9 +116,6 @@ public class LoginListener implements Listener {
 		
 		if(plugin.AuthList.containsKey(name))
 			player.teleport(event.getFrom());
-		else if(player.hasPotionEffect(PotionEffectType.BLINDNESS) && plugin.blindness)
-			player.removePotionEffect(PotionEffectType.BLINDNESS);
-		player.setGameMode(plugin.oldGameMode);
 				
 	}
 	
