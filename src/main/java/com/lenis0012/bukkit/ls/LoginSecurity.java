@@ -222,9 +222,10 @@ public class LoginSecurity extends JavaPlugin {
 		if (godMode) 
 			oldGameMode = player.getGameMode();
 			player.setGameMode(GameMode.CREATIVE);
-		if (blindness)
+		if (blindness) {
 			player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1728000, 15));
 			player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 178000, 15));
+		}
 		if (spawntp) {
 			loginLocations.put(name, player.getLocation().clone());
 			player.teleport(player.getWorld().getSpawnLocation());
