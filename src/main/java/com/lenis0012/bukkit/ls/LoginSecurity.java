@@ -223,7 +223,8 @@ public class LoginSecurity extends JavaPlugin {
 			oldGameMode = player.getGameMode();
 			player.setGameMode(GameMode.CREATIVE);
 		if (blindness)
-			player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1728000, 15));	
+			player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1728000, 15));
+			player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 178000, 15));
 		if (spawntp) {
 			loginLocations.put(name, player.getLocation().clone());
 			player.teleport(player.getWorld().getSpawnLocation());
@@ -234,6 +235,7 @@ public class LoginSecurity extends JavaPlugin {
 	public void rehabPlayer(Player player, String name) {
 		player.setGameMode(oldGameMode);
 		player.removePotionEffect(PotionEffectType.BLINDNESS);
+		player.removePotionEffect(PotionEffectType.NIGHT_VISION);
 		if (spawntp) {
 				if(loginLocations.containsKey(name))
 				player.teleport(loginLocations.remove(name));
