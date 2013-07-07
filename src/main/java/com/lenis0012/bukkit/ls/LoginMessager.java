@@ -60,6 +60,7 @@ public class LoginMessager implements PluginMessageListener {
 				plugin.thread.timeout.remove(name);
 				if(player.hasPotionEffect(PotionEffectType.BLINDNESS))
 					player.removePotionEffect(PotionEffectType.BLINDNESS);
+				player.setGameMode(plugin.oldGameMode);
 			}
 		} else if(question.equals("LOGIN")) {
 			if(plugin.AuthList.containsKey(name)) {
@@ -68,6 +69,7 @@ public class LoginMessager implements PluginMessageListener {
 					plugin.thread.timeout.remove(name);
 					if(player.hasPotionEffect(PotionEffectType.BLINDNESS))
 						player.removePotionEffect(PotionEffectType.BLINDNESS);
+					player.setGameMode(plugin.oldGameMode);
 				}
 			}
 		}

@@ -27,6 +27,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import com.lenis0012.bukkit.ls.util.StringUtil;
+import org.bukkit.GameMode;
 
 @SuppressWarnings("deprecation")
 public class LoginListener implements Listener {
@@ -65,6 +66,12 @@ public class LoginListener implements Listener {
 			plugin.loginLocations.put(name, player.getLocation().clone());
 			player.teleport(player.getWorld().getSpawnLocation());
 		}
+		if(plugin.godMode) {
+			plugin.oldGameMode = player.getGameMode();
+			player.setGameMode(GameMode.CREATIVE);
+		}
+			
+				
 		
 		//Send data to messager API
 		if(plugin.messager) {
@@ -124,6 +131,7 @@ public class LoginListener implements Listener {
 			player.teleport(event.getFrom());
 		else if(player.hasPotionEffect(PotionEffectType.BLINDNESS) && plugin.blindness)
 			player.removePotionEffect(PotionEffectType.BLINDNESS);
+		player.setGameMode(plugin.oldGameMode);
 				
 	}
 	

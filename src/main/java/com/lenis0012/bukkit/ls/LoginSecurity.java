@@ -30,6 +30,7 @@ import com.lenis0012.bukkit.ls.data.MySQL;
 import com.lenis0012.bukkit.ls.data.SQLite;
 import com.lenis0012.bukkit.ls.encryption.EncryptionType;
 import com.lenis0012.bukkit.ls.util.Metrics;
+import org.bukkit.GameMode;
 
 public class LoginSecurity extends JavaPlugin {
 	public DataManager data;
@@ -37,7 +38,8 @@ public class LoginSecurity extends JavaPlugin {
 	public Map<String, Boolean> AuthList = new HashMap<String, Boolean>();
 	public Map<String, Location> loginLocations = new HashMap<String, Location>();
 	public List<String> messaging = new ArrayList<String>();
-	public boolean required, blindness, sesUse, timeUse, messager, spawntp;
+	public boolean required, blindness, sesUse, timeUse, messager, spawntp, godMode;
+	public GameMode oldGameMode;
 	public int sesDelay, timeDelay;
 	public Logger log = Logger.getLogger("Minecraft");
 	public ThreadManager thread;
@@ -60,6 +62,7 @@ public class LoginSecurity extends JavaPlugin {
 		config.addDefault("settings.PHP_VERSION", 4);
 		config.addDefault("settings.messager-api", true);
 		config.addDefault("settings.blindness", true);
+		config.addDefault("settings.godMode", true);
 		config.addDefault("settings.fake-location", false);
 		config.addDefault("settings.session.use", true);
 		config.addDefault("settings.session.timeout (sec)", 60);
@@ -85,6 +88,7 @@ public class LoginSecurity extends JavaPlugin {
 		thread.startMsgTask();
 		required = config.getBoolean("settings.password-required");
 		blindness = config.getBoolean("settings.blindness");
+		godMode = config.getBoolean("settings.godMode");
 		spawntp = config.getBoolean("settings.fake-location");
 		sesUse = config.getBoolean("settings.session.use", true);
 		sesDelay = config.getInt("settings.session.timeout (sec)", 60);

@@ -40,6 +40,7 @@ public class LoginCommand implements CommandExecutor {
 			plugin.thread.timeout.remove(name);
 			if(player.hasPotionEffect(PotionEffectType.BLINDNESS) && plugin.blindness)
 				player.removePotionEffect(PotionEffectType.BLINDNESS);
+			player.setGameMode(plugin.oldGameMode);
 			if(plugin.loginLocations.containsKey(name))
 				player.teleport(plugin.loginLocations.remove(name));
 			player.sendMessage(ChatColor.GREEN+"Succesfully logged in");
