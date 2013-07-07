@@ -176,20 +176,7 @@ public class LoginListener implements Listener {
 			event.setCancelled(true);
 		}
 	}
-	
-	@EventHandler
-	public void OnFoodLevelChange(FoodLevelChangeEvent event) {
-		Entity entity = event.getEntity();
-		if(!(entity instanceof Player))
-			return;
-		Player player = (Player)entity;
-		String pname = player.getName().toLowerCase();
-			
-		if(plugin.AuthList.containsKey(pname)) {
-			event.setCancelled(true);
-		}
-	}
-	
+
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent event) {
 		Entity entity = event.getWhoClicked();
@@ -200,30 +187,6 @@ public class LoginListener implements Listener {
 			
 		if(plugin.AuthList.containsKey(pname)) {
 			event.setCancelled(true);
-		}
-	}
-	
-	@EventHandler
-	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-		Entity defender = event.getEntity();
-		Entity damager = event.getDamager();
-		
-		if(defender instanceof Player) {
-			Player p1 = (Player) defender;
-			String n1 = p1.getName().toLowerCase();
-			
-			if(plugin.AuthList.containsKey(n1)) {
-				event.setCancelled(true);
-				return;
-			}
-			
-			if(damager instanceof Player) {
-				Player p2 = (Player) damager;
-				String n2 = p2.getName().toLowerCase();
-				
-				if(plugin.AuthList.containsKey(n2))
-					event.setCancelled(true);
-			}
 		}
 	}
 	
