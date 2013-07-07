@@ -58,7 +58,7 @@ public class LoginListener implements Listener {
 		} else
 			return;
 		
-		plugin.debilitatePlayer(player);
+		plugin.debilitatePlayer(player, name);
 		
 		//Send data to messager API
 		if(plugin.messager) {

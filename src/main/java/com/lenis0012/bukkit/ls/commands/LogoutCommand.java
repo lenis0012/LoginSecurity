@@ -33,7 +33,7 @@ public class LogoutCommand implements CommandExecutor {
 		}
 		
 		plugin.AuthList.put(name, false);
-		plugin.debilitatePlayer(player);
+		plugin.debilitatePlayer(player, name);
 		// terminate user's current session
 		if (plugin.sesUse)
 			plugin.thread.getSession().remove(name);

@@ -218,8 +218,7 @@ public class LoginSecurity extends JavaPlugin {
 		return false;
 	}
 	
-	public void debilitatePlayer(Player player) {
-		final String name = player.getName().toLowerCase();
+	public void debilitatePlayer(Player player, String name) {
 		if (godMode) 
 			oldGameMode = player.getGameMode();
 			player.setGameMode(GameMode.CREATIVE);
@@ -233,7 +232,6 @@ public class LoginSecurity extends JavaPlugin {
 	}
 	
 	public void rehabPlayer(Player player, String name) {
-		final String name = player.getName().toLowerCase();
 		player.setGameMode(oldGameMode);
 		player.removePotionEffect(PotionEffectType.BLINDNESS);
 		if (spawntp) {
