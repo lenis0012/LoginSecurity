@@ -30,7 +30,9 @@ import com.lenis0012.bukkit.ls.data.MySQL;
 import com.lenis0012.bukkit.ls.data.SQLite;
 import com.lenis0012.bukkit.ls.encryption.EncryptionType;
 import com.lenis0012.bukkit.ls.util.Metrics;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -50,6 +52,8 @@ public class LoginSecurity extends JavaPlugin {
 	public Map<String, CommandExecutor> commandMap = new HashMap<String, CommandExecutor>();
 	public static int PHP_VERSION;
 	public static String encoder;
+	
+	private static String metaDataKey = "LS_oldGameMode";
 	
 	@Override
 	public void onEnable() {
@@ -149,6 +153,7 @@ public class LoginSecurity extends JavaPlugin {
 			thread.stopMsgTask();
 			thread.stopSessionTask();
 		}
+		// TODO: Fix reloads for connected but un-aunthenticated players
 	}
 	
 	private DataManager getDataManager(FileConfiguration config, String fileName) {
@@ -218,10 +223,47 @@ public class LoginSecurity extends JavaPlugin {
 		return false;
 	}
 	
+	public void playerJoinPrompt(final Player player, final String name) {
+		if(sesUse && thread.getSession().containsKey(name) && checkLastIp(player)) {
+			player.sendMessage(ChatColor.GREEN+"Extended session from last login");
+			return;
+		} else if(data.isRegistered(name)) {
+			AuthList.put(name, false);
+			if(!messager)
+				player.sendMessage(ChatColor.RED+"Please login using /login <password>");
+		} else if(required) {
+			AuthList.put(name, true);
+			if(!messager)
+				player.sendMessage(ChatColor.RED+"Please register using /register <password>");
+		} else
+			return;
+				
+		//Send data to messager API
+		if(messager) {
+		messaging.add(name);
+			Bukkit.getScheduler().runTaskLater(this, new Runnable() {
+				@Override
+				public void run() {
+					if(messaging.contains(name)) {
+						boolean register = AuthList.get(name);
+						messaging.remove(name);
+						if(register)
+							player.sendMessage(ChatColor.RED+"Please register using /register <password>");
+						else
+							player.sendMessage(ChatColor.RED+"Please login using /login <password>");
+					} else
+						sendCustomPayload(player, "Q_LOGIN");
+				}
+			}, 20);
+		}
+	}
+	
 	public void debilitatePlayer(Player player, String name) {
-		if (godMode) 
-			oldGameMode = player.getGameMode();
+		if (godMode) {
+			player.setMetadata(metaDataKey, new FixedMetadataValue(this, player.getGameMode().getValue()));
 			player.setGameMode(GameMode.CREATIVE);
+		}		
+		
 		if (blindness) {
 			player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1728000, 15));
 			player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 178000, 15));
@@ -229,12 +271,12 @@ public class LoginSecurity extends JavaPlugin {
 		if (spawntp) {
 			loginLocations.put(name, player.getLocation().clone());
 			player.teleport(player.getWorld().getSpawnLocation());
-		}
+		}			
 			
 	}
 	
 	public void rehabPlayer(Player player, String name) {
-		player.setGameMode(oldGameMode);
+		player.setGameMode(GameMode.getByValue(player.getMetadata(metaDataKey).get(0).asInt()));
 		player.removePotionEffect(PotionEffectType.BLINDNESS);
 		player.removePotionEffect(PotionEffectType.NIGHT_VISION);
 		if (spawntp) {

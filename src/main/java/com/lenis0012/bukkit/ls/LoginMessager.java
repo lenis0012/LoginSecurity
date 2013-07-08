@@ -5,8 +5,6 @@ import java.util.logging.Level;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
-import org.bukkit.potion.PotionEffectType;
-
 import com.lenis0012.bukkit.ls.encryption.PasswordManager;
 
 public class LoginMessager implements PluginMessageListener {

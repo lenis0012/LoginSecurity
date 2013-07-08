@@ -2,7 +2,6 @@ package com.lenis0012.bukkit.ls;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -10,9 +9,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityRegainHealthEvent;
-import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -23,11 +19,8 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerPreLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import com.lenis0012.bukkit.ls.util.StringUtil;
-import org.bukkit.GameMode;
 
 @SuppressWarnings("deprecation")
 public class LoginListener implements Listener {
@@ -44,40 +37,8 @@ public class LoginListener implements Listener {
 			return;
 		}
 		
-		if(plugin.sesUse && plugin.thread.getSession().containsKey(name) && plugin.checkLastIp(player)) {
-			player.sendMessage(ChatColor.GREEN+"Extended session from last login");
-			return;
-		} else if(plugin.data.isRegistered(name)) {
-			plugin.AuthList.put(name, false);
-			if(!plugin.messager)
-				player.sendMessage(ChatColor.RED+"Please login using /login <password>");
-		} else if(plugin.required) {
-			plugin.AuthList.put(name, true);
-			if(!plugin.messager)
-				player.sendMessage(ChatColor.RED+"Please register using /register <password>");
-		} else
-			return;
-		
+		plugin.playerJoinPrompt(player, name);
 		plugin.debilitatePlayer(player, name);
-		
-		//Send data to messager API
-		if(plugin.messager) {
-		plugin.messaging.add(name);
-			Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-				@Override
-				public void run() {
-					if(plugin.messaging.contains(name)) {
-						boolean register = plugin.AuthList.get(name);
-						plugin.messaging.remove(name);
-						if(register)
-							player.sendMessage(ChatColor.RED+"Please register using /register <password>");
-						else
-							player.sendMessage(ChatColor.RED+"Please login using /login <password>");
-					} else
-						plugin.sendCustomPayload(player, "Q_LOGIN");
-				}
-			}, 20);
-		}
 	}
 	
 	@EventHandler (priority = EventPriority.LOWEST)
