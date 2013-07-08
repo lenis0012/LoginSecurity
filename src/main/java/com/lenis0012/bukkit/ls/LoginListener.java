@@ -75,8 +75,7 @@ public class LoginListener implements Listener {
 		String name = player.getName().toLowerCase();
 		
 		if(plugin.AuthList.containsKey(name))
-			player.teleport(event.getFrom());
-				
+			player.teleport(event.getFrom());	
 	}
 	
 	@EventHandler

@@ -260,11 +260,6 @@ public class LoginSecurity extends JavaPlugin {
 	}
 	
 	public void debilitatePlayer(Player player, String name, boolean logout) {
-		if (godMode && !logout) {
-			player.setMetadata(metadataKey, new FixedMetadataValue(this, player.getGameMode().getValue()));
-			player.setGameMode(GameMode.CREATIVE);
-		}		
-		
 		if (blindness) {
 			player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1728000, 15));
 			player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 178000, 15));
@@ -277,7 +272,6 @@ public class LoginSecurity extends JavaPlugin {
 	}
 	
 	public void rehabPlayer(Player player, String name) {
-		player.setGameMode(GameMode.getByValue(player.getMetadata(metadataKey).get(0).asInt()));
 		player.removePotionEffect(PotionEffectType.BLINDNESS);
 		player.removePotionEffect(PotionEffectType.NIGHT_VISION);
 		if (spawntp) {
