@@ -278,7 +278,9 @@ public class LoginSecurity extends JavaPlugin {
 		player.removePotionEffect(PotionEffectType.BLINDNESS);
 		if (spawntp) {
 			if (loginLocations.containsKey(name)) {
-				player.teleport(loginLocations.remove(name));
+				Location fixedLocation = loginLocations.remove(name);
+				fixedLocation.add(0, 0.2, 0); // fix for players falling into ground
+				player.teleport(fixedLocation);
 			}
 		}
 		// ensure that player does not drown after logging in
