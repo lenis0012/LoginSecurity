@@ -122,6 +122,19 @@ public class LoginListener implements Listener {
 			chat.setCancelled(true);
 		}
 	}
+	
+	@EventHandler
+	public void OnHealthRegain(EntityRegainHealthEvent event) {
+		Entity entity = event.getEntity();
+		if(!(entity instanceof Player))
+			return;
+		Player player = (Player)entity;
+		String pname = player.getName().toLowerCase();
+			
+		if(plugin.AuthList.containsKey(pname)) {
+			event.setCancelled(true);
+		}
+	}
 
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent event) {
