@@ -25,6 +25,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -231,6 +232,20 @@ public class LoginListener implements Listener {
 				if (plugin.AuthList.containsKey(n2)) {
 					event.setCancelled(true);
 				}
+			}
+		}
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+	public void onEntityTarget(EntityTargetEvent event) {
+		Entity entity = event.getTarget();
+
+		if (entity instanceof Player) {
+			Player player = (Player) entity;
+			String name = player.getName().toLowerCase();
+
+			if (plugin.AuthList.containsKey(name)) {
+				event.setCancelled(true);
 			}
 		}
 	}
