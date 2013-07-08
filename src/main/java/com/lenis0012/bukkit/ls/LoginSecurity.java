@@ -35,6 +35,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class LoginSecurity extends JavaPlugin {
+
 	public DataManager data;
 	public static LoginSecurity instance;
 	public Map<String, Boolean> AuthList = new HashMap<String, Boolean>();
@@ -49,15 +50,14 @@ public class LoginSecurity extends JavaPlugin {
 	public Map<String, CommandExecutor> commandMap = new HashMap<String, CommandExecutor>();
 	public static int PHP_VERSION;
 	public static String encoder;
-	
 	private static String metadataKey = "LS_oldGameMode";
-	
+
 	@Override
 	public void onEnable() {
 		//setup quickcalls
 		FileConfiguration config = this.getConfig();
 		PluginManager pm = this.getServer().getPluginManager();
-		
+
 		//setup config
 		config.addDefault("settings.password-required", false);
 		config.addDefault("settings.encryption", "MD5");
@@ -79,9 +79,9 @@ public class LoginSecurity extends JavaPlugin {
 		config.addDefault("MySQL.password", "password");
 		config.options().copyDefaults(true);
 		saveConfig();
-		
+
 		//intalize fields
-		instance = (LoginSecurity)pm.getPlugin("LoginSecurity");
+		instance = (LoginSecurity) pm.getPlugin("LoginSecurity");
 		messager = config.getBoolean("settings.messager-api", false);
 		prefix = config.getString("settings.table prefix");
 		data = this.getDataManager(config, "users.db");
@@ -98,97 +98,101 @@ public class LoginSecurity extends JavaPlugin {
 		PHP_VERSION = config.getInt("settings.PHP_VERSION", 4);
 		this.hasher = EncryptionType.fromString(config.getString("settings.encryption"));
 		String enc = config.getString("settings.encoder");
-		if(enc.equalsIgnoreCase("utf-16"))
+		if (enc.equalsIgnoreCase("utf-16")) {
 			encoder = "UTF-16";
-		else
+		} else {
 			encoder = "UTF-8";
-		
-		if(sesUse)
+		}
+
+		if (sesUse) {
 			thread.startSessionTask();
-		if(timeUse)
+		}
+		if (timeUse) {
 			thread.startTimeoutTask();
-		
+		}
+
 		thread.startMainTask();
 		thread.startMsgTask();
-		
+
 		//convert everything
 		this.checkConverter();
-		
+
 		//register events
-		if(messager) {
+		if (messager) {
 			Bukkit.getMessenger().registerIncomingPluginChannel(this, "LoginSecurity", new LoginMessager(this));
 			Bukkit.getMessenger().registerOutgoingPluginChannel(this, "LoginSecurity");
 		}
 		pm.registerEvents(new LoginListener(this), this);
 		this.registerCommands();
-		
+
 		//clear old config
-		if(config.contains("options")) {
+		if (config.contains("options")) {
 			config.set("options", null);
 			this.saveConfig();
 		}
-		
+
 		//metrics
 		try {
 			Metrics metrics = new Metrics(this);
 			metrics.start();
-			if(config.getBoolean("settings.update-checker")) {
+			if (config.getBoolean("settings.update-checker")) {
 				//TODO: Recode update checker
 			}
-		} catch(Exception e) {
+		} catch (Exception e) {
 			log.info("[LoginSecurity] Failed sending stats to mcstats.org");
 		}
 	}
-	
+
 	@Override
 	public void onDisable() {
-		if(data != null)
+		if (data != null) {
 			data.closeConnection();
-		if(thread != null) {
+		}
+		if (thread != null) {
 			thread.stopMsgTask();
 			thread.stopSessionTask();
 		}
 		// TODO: Fix reloads for connected but un-aunthenticated players
 	}
-	
+
 	private DataManager getDataManager(FileConfiguration config, String fileName) {
-		if(config.getBoolean("MySQL.use")) {
+		if (config.getBoolean("MySQL.use")) {
 			return new MySQL(config, "users");
 		} else {
 			return new SQLite(new File(this.getDataFolder(), fileName));
 		}
 	}
-	
+
 	private void checkConverter() {
 		PluginManager pm = this.getServer().getPluginManager();
 		File file;
 		file = new File(this.getDataFolder(), "data.yml");
-		if(file.exists()) {
+		if (file.exists()) {
 			Converter conv = new Converter(FileType.YAML, file);
 			conv.convert();
 		}
 		file = new File(this.getDataFolder(), "data.db");
-		if(file.exists() && data instanceof MySQL) {
+		if (file.exists() && data instanceof MySQL) {
 			Converter conv = new Converter(FileType.SQLite, file);
 			conv.convert();
 		}
-		if(data instanceof MySQL) {
-			MySQL mysql = (MySQL)data;
-			if(mysql.tableExists("passwords")) {
+		if (data instanceof MySQL) {
+			MySQL mysql = (MySQL) data;
+			if (mysql.tableExists("passwords")) {
 				Converter conv = new Converter(FileType.OldToNewMySQL, null);
 				conv.convert();
 			}
 		}
 		Plugin xAuth = pm.getPlugin("xAuth");
-		if(xAuth != null) {
-			if(xAuth.isEnabled()) {
+		if (xAuth != null) {
+			if (xAuth.isEnabled()) {
 				Converter conv = new Converter(FileType.xAuth, null);
 				conv.convert();
 				log.info("[LoginSecurity] Converted data from xAuth to LoginSecurity");
 			}
 		}
 	}
-	
+
 	public void registerCommands() {
 		this.commandMap.clear();
 		this.commandMap.put("login", new LoginCommand());
@@ -197,90 +201,95 @@ public class LoginSecurity extends JavaPlugin {
 		this.commandMap.put("rmpass", new RmPassCommand());
 		this.commandMap.put("logout", new LogoutCommand());
 		this.commandMap.put("lac", new AdminCommand());
-		
-		for(Entry<String, CommandExecutor> entry : this.commandMap.entrySet()) {
+
+		for (Entry<String, CommandExecutor> entry : this.commandMap.entrySet()) {
 			String cmd = entry.getKey();
 			CommandExecutor ex = entry.getValue();
-			
+
 			this.getCommand(cmd).setExecutor(ex);
 		}
 	}
-	
-	
+
 	public boolean checkLastIp(Player player) {
 		String name = player.getName().toLowerCase();
-		if(data.isRegistered(name)) {
+		if (data.isRegistered(name)) {
 			String lastIp = data.getIp(name);
 			String currentIp = player.getAddress().getAddress().toString();
 			return lastIp.equalsIgnoreCase(currentIp);
 		}
-		
+
 		return false;
 	}
-	
+
 	public void playerJoinPrompt(final Player player, final String name) {
-		if(sesUse && thread.getSession().containsKey(name) && checkLastIp(player)) {
-			player.sendMessage(ChatColor.GREEN+"Extended session from last login");
+		if (sesUse && thread.getSession().containsKey(name) && checkLastIp(player)) {
+			player.sendMessage(ChatColor.GREEN + "Extended session from last login");
 			return;
-		} else if(data.isRegistered(name)) {
+		} else if (data.isRegistered(name)) {
 			AuthList.put(name, false);
-			if(!messager)
-				player.sendMessage(ChatColor.RED+"Please login using /login <password>");
-		} else if(required) {
+			if (!messager) {
+				player.sendMessage(ChatColor.RED + "Please login using /login <password>");
+			}
+		} else if (required) {
 			AuthList.put(name, true);
-			if(!messager)
-				player.sendMessage(ChatColor.RED+"Please register using /register <password>");
-		} else
+			if (!messager) {
+				player.sendMessage(ChatColor.RED + "Please register using /register <password>");
+			}
+		} else {
 			return;
-				
+		}
+
 		//Send data to messager API
-		if(messager) {
-		messaging.add(name);
+		if (messager) {
+			messaging.add(name);
 			Bukkit.getScheduler().runTaskLater(this, new Runnable() {
 				@Override
 				public void run() {
-					if(messaging.contains(name)) {
+					if (messaging.contains(name)) {
 						boolean register = AuthList.get(name);
 						messaging.remove(name);
-						if(register)
-							player.sendMessage(ChatColor.RED+"Please register using /register <password>");
-						else
-							player.sendMessage(ChatColor.RED+"Please login using /login <password>");
-					} else
+						if (register) {
+							player.sendMessage(ChatColor.RED + "Please register using /register <password>");
+						} else {
+							player.sendMessage(ChatColor.RED + "Please login using /login <password>");
+						}
+					} else {
 						sendCustomPayload(player, "Q_LOGIN");
+					}
 				}
 			}, 20);
 		}
-		
+
 		debilitatePlayer(player, name, false);
 	}
-	
+
 	public void debilitatePlayer(Player player, String name, boolean logout) {
 		if (blindness) {
 			player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1728000, 15));
-			player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 178000, 15));
 		}
 		if (spawntp && !logout) {
 			loginLocations.put(name, player.getLocation().clone());
 			player.teleport(player.getWorld().getSpawnLocation());
-		}			
-			
-	}
-	
-	public void rehabPlayer(Player player, String name) {
-		player.removePotionEffect(PotionEffectType.BLINDNESS);
-		player.removePotionEffect(PotionEffectType.NIGHT_VISION);
-		if (spawntp) {
-				if(loginLocations.containsKey(name))
-				player.teleport(loginLocations.remove(name));
 		}
-	}
-	
-	public void sendCustomPayload(Player player, String msg) {
-		if(!player.getListeningPluginChannels().contains(this.getName()))
-			return;
-		
-		player.sendPluginMessage(this, this.getName(), msg.getBytes());
+
 	}
 
+	public void rehabPlayer(Player player, String name) {
+		player.removePotionEffect(PotionEffectType.BLINDNESS);
+		if (spawntp) {
+			if (loginLocations.containsKey(name)) {
+				player.teleport(loginLocations.remove(name));
+			}
+		}
+		// ensure that player does not drown after logging in
+		player.setRemainingAir(player.getMaximumAir()); 
+	}
+
+	public void sendCustomPayload(Player player, String msg) {
+		if (!player.getListeningPluginChannels().contains(this.getName())) {
+			return;
+		}
+
+		player.sendPluginMessage(this, this.getName(), msg.getBytes());
+	}
 }
