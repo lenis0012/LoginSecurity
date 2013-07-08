@@ -256,10 +256,10 @@ public class LoginSecurity extends JavaPlugin {
 			}, 20);
 		}
 		
-		debilitatePlayer(player, name);
+		debilitatePlayer(player, name, false);
 	}
 	
-	public void debilitatePlayer(Player player, String name) {
+	public void debilitatePlayer(Player player, String name, boolean logout) {
 		if (godMode) {
 			player.setMetadata(metaDataKey, new FixedMetadataValue(this, player.getGameMode().getValue()));
 			player.setGameMode(GameMode.CREATIVE);
@@ -269,7 +269,7 @@ public class LoginSecurity extends JavaPlugin {
 			player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1728000, 15));
 			player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 178000, 15));
 		}
-		if (spawntp) {
+		if (spawntp && !logout) {
 			loginLocations.put(name, player.getLocation().clone());
 			player.teleport(player.getWorld().getSpawnLocation());
 		}			
