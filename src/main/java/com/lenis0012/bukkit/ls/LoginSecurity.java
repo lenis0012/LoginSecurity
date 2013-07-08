@@ -30,6 +30,7 @@ import com.lenis0012.bukkit.ls.data.MySQL;
 import com.lenis0012.bukkit.ls.data.SQLite;
 import com.lenis0012.bukkit.ls.encryption.EncryptionType;
 import com.lenis0012.bukkit.ls.util.Metrics;
+import java.util.logging.Filter;
 import org.bukkit.ChatColor;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -50,7 +51,6 @@ public class LoginSecurity extends JavaPlugin {
 	public Map<String, CommandExecutor> commandMap = new HashMap<String, CommandExecutor>();
 	public static int PHP_VERSION;
 	public static String encoder;
-	private static String metadataKey = "LS_oldGameMode";
 
 	@Override
 	public void onEnable() {
@@ -141,6 +141,9 @@ public class LoginSecurity extends JavaPlugin {
 		} catch (Exception e) {
 			log.info("[LoginSecurity] Failed sending stats to mcstats.org");
 		}
+		// filter commands from log
+		log.setFilter(null);
+		
 	}
 
 	@Override
