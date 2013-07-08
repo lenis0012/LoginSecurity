@@ -256,7 +256,7 @@ public class LoginSecurity extends JavaPlugin {
 			}, 20);
 		}
 		
-				plugin.debilitatePlayer(player, name);
+		debilitatePlayer(player, name);
 	}
 	
 	public void debilitatePlayer(Player player, String name) {
