@@ -52,7 +52,7 @@ public class LoginSecurity extends JavaPlugin {
 	public static int PHP_VERSION;
 	public static String encoder;
 	
-	private static String metaDataKey = "LS_oldGameMode";
+	private static String metadataKey = "LS_oldGameMode";
 	
 	@Override
 	public void onEnable() {
@@ -260,8 +260,8 @@ public class LoginSecurity extends JavaPlugin {
 	}
 	
 	public void debilitatePlayer(Player player, String name, boolean logout) {
-		if (godMode) {
-			player.setMetadata(metaDataKey, new FixedMetadataValue(this, player.getGameMode().getValue()));
+		if (godMode && !logout) {
+			player.setMetadata(metadataKey, new FixedMetadataValue(this, player.getGameMode().getValue()));
 			player.setGameMode(GameMode.CREATIVE);
 		}		
 		
@@ -277,7 +277,7 @@ public class LoginSecurity extends JavaPlugin {
 	}
 	
 	public void rehabPlayer(Player player, String name) {
-		player.setGameMode(GameMode.getByValue(player.getMetadata(metaDataKey).get(0).asInt()));
+		player.setGameMode(GameMode.getByValue(player.getMetadata(metadataKey).get(0).asInt()));
 		player.removePotionEffect(PotionEffectType.BLINDNESS);
 		player.removePotionEffect(PotionEffectType.NIGHT_VISION);
 		if (spawntp) {
