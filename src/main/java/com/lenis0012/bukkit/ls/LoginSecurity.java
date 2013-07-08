@@ -30,6 +30,11 @@ import com.lenis0012.bukkit.ls.data.MySQL;
 import com.lenis0012.bukkit.ls.data.SQLite;
 import com.lenis0012.bukkit.ls.encryption.EncryptionType;
 import com.lenis0012.bukkit.ls.util.Metrics;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 public class LoginSecurity extends JavaPlugin {
 	public DataManager data;
@@ -37,7 +42,7 @@ public class LoginSecurity extends JavaPlugin {
 	public Map<String, Boolean> AuthList = new HashMap<String, Boolean>();
 	public Map<String, Location> loginLocations = new HashMap<String, Location>();
 	public List<String> messaging = new ArrayList<String>();
-	public boolean required, blindness, sesUse, timeUse, messager, spawntp;
+	public boolean required, blindness, sesUse, timeUse, messager, spawntp, godMode;
 	public int sesDelay, timeDelay;
 	public Logger log = Logger.getLogger("Minecraft");
 	public ThreadManager thread;
@@ -46,6 +51,8 @@ public class LoginSecurity extends JavaPlugin {
 	public Map<String, CommandExecutor> commandMap = new HashMap<String, CommandExecutor>();
 	public static int PHP_VERSION;
 	public static String encoder;
+	
+	private static String metadataKey = "LS_oldGameMode";
 	
 	@Override
 	public void onEnable() {
@@ -60,6 +67,7 @@ public class LoginSecurity extends JavaPlugin {
 		config.addDefault("settings.PHP_VERSION", 4);
 		config.addDefault("settings.messager-api", true);
 		config.addDefault("settings.blindness", true);
+		config.addDefault("settings.godMode", true);
 		config.addDefault("settings.fake-location", false);
 		config.addDefault("settings.session.use", true);
 		config.addDefault("settings.session.timeout (sec)", 60);
@@ -85,6 +93,7 @@ public class LoginSecurity extends JavaPlugin {
 		thread.startMsgTask();
 		required = config.getBoolean("settings.password-required");
 		blindness = config.getBoolean("settings.blindness");
+		godMode = config.getBoolean("settings.godMode");
 		spawntp = config.getBoolean("settings.fake-location");
 		sesUse = config.getBoolean("settings.session.use", true);
 		sesDelay = config.getInt("settings.session.timeout (sec)", 60);
@@ -143,6 +152,7 @@ public class LoginSecurity extends JavaPlugin {
 			thread.stopMsgTask();
 			thread.stopSessionTask();
 		}
+		// TODO: Fix reloads for connected but un-aunthenticated players
 	}
 	
 	private DataManager getDataManager(FileConfiguration config, String fileName) {
@@ -212,10 +222,75 @@ public class LoginSecurity extends JavaPlugin {
 		return false;
 	}
 	
+	public void playerJoinPrompt(final Player player, final String name) {
+		if(sesUse && thread.getSession().containsKey(name) && checkLastIp(player)) {
+			player.sendMessage(ChatColor.GREEN+"Extended session from last login");
+			return;
+		} else if(data.isRegistered(name)) {
+			AuthList.put(name, false);
+			if(!messager)
+				player.sendMessage(ChatColor.RED+"Please login using /login <password>");
+		} else if(required) {
+			AuthList.put(name, true);
+			if(!messager)
+				player.sendMessage(ChatColor.RED+"Please register using /register <password>");
+		} else
+			return;
+				
+		//Send data to messager API
+		if(messager) {
+		messaging.add(name);
+			Bukkit.getScheduler().runTaskLater(this, new Runnable() {
+				@Override
+				public void run() {
+					if(messaging.contains(name)) {
+						boolean register = AuthList.get(name);
+						messaging.remove(name);
+						if(register)
+							player.sendMessage(ChatColor.RED+"Please register using /register <password>");
+						else
+							player.sendMessage(ChatColor.RED+"Please login using /login <password>");
+					} else
+						sendCustomPayload(player, "Q_LOGIN");
+				}
+			}, 20);
+		}
+		
+		debilitatePlayer(player, name, false);
+	}
+	
+	public void debilitatePlayer(Player player, String name, boolean logout) {
+		if (godMode && !logout) {
+			player.setMetadata(metadataKey, new FixedMetadataValue(this, player.getGameMode().getValue()));
+			player.setGameMode(GameMode.CREATIVE);
+		}		
+		
+		if (blindness) {
+			player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1728000, 15));
+			player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 178000, 15));
+		}
+		if (spawntp && !logout) {
+			loginLocations.put(name, player.getLocation().clone());
+			player.teleport(player.getWorld().getSpawnLocation());
+		}			
+			
+	}
+	
+	public void rehabPlayer(Player player, String name) {
+		player.setGameMode(GameMode.getByValue(player.getMetadata(metadataKey).get(0).asInt()));
+		player.removePotionEffect(PotionEffectType.BLINDNESS);
+		player.removePotionEffect(PotionEffectType.NIGHT_VISION);
+		if (spawntp) {
+				if(loginLocations.containsKey(name))
+				player.teleport(loginLocations.remove(name));
+		}
+	}
+	
 	public void sendCustomPayload(Player player, String msg) {
 		if(!player.getListeningPluginChannels().contains(this.getName()))
 			return;
 		
 		player.sendPluginMessage(this, this.getName(), msg.getBytes());
 	}
+
 }

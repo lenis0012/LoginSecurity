@@ -2,7 +2,6 @@ package com.lenis0012.bukkit.ls;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -10,9 +9,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityRegainHealthEvent;
-import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -23,8 +19,6 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerPreLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import com.lenis0012.bukkit.ls.util.StringUtil;
 
@@ -43,47 +37,7 @@ public class LoginListener implements Listener {
 			return;
 		}
 		
-		if(plugin.sesUse && plugin.thread.getSession().containsKey(name) && plugin.checkLastIp(player)) {
-			player.sendMessage("Extended session from last login");
-			return;
-		} else if(plugin.data.isRegistered(name)) {
-			plugin.AuthList.put(name, false);
-			if(!plugin.messager)
-				player.sendMessage(ChatColor.RED+"Please login using /login <password>");
-		} else if(plugin.required) {
-			plugin.AuthList.put(name, true);
-			if(!plugin.messager)
-				player.sendMessage(ChatColor.RED+"Please register using /register <password>");
-		} else
-			return;
-		
-		if(plugin.blindness)
-			player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1728000, 15));
-		if(plugin.timeUse)
-			plugin.thread.timeout.put(name, plugin.timeDelay);
-		if(plugin.spawntp) {
-			plugin.loginLocations.put(name, player.getLocation().clone());
-			player.teleport(player.getWorld().getSpawnLocation());
-		}
-		
-		//Send data to messager API
-		if(plugin.messager) {
-		plugin.messaging.add(name);
-			Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-				@Override
-				public void run() {
-					if(plugin.messaging.contains(name)) {
-						boolean register = plugin.AuthList.get(name);
-						plugin.messaging.remove(name);
-						if(register)
-							player.sendMessage(ChatColor.RED+"Please register using /register <password>");
-						else
-							player.sendMessage(ChatColor.RED+"Please login using /login <password>");
-					} else
-						plugin.sendCustomPayload(player, "Q_LOGIN");
-				}
-			}, 20);
-		}
+		plugin.playerJoinPrompt(player, name);
 	}
 	
 	@EventHandler (priority = EventPriority.LOWEST)
@@ -122,8 +76,6 @@ public class LoginListener implements Listener {
 		
 		if(plugin.AuthList.containsKey(name))
 			player.teleport(event.getFrom());
-		else if(player.hasPotionEffect(PotionEffectType.BLINDNESS) && plugin.blindness)
-			player.removePotionEffect(PotionEffectType.BLINDNESS);
 				
 	}
 	
@@ -171,33 +123,7 @@ public class LoginListener implements Listener {
 			chat.setCancelled(true);
 		}
 	}
-	
-	@EventHandler
-	public void OnHealthRegain(EntityRegainHealthEvent event) {
-		Entity entity = event.getEntity();
-		if(!(entity instanceof Player))
-			return;
-		Player player = (Player)entity;
-		String pname = player.getName().toLowerCase();
-			
-		if(plugin.AuthList.containsKey(pname)) {
-			event.setCancelled(true);
-		}
-	}
-	
-	@EventHandler
-	public void OnFoodLevelChange(FoodLevelChangeEvent event) {
-		Entity entity = event.getEntity();
-		if(!(entity instanceof Player))
-			return;
-		Player player = (Player)entity;
-		String pname = player.getName().toLowerCase();
-			
-		if(plugin.AuthList.containsKey(pname)) {
-			event.setCancelled(true);
-		}
-	}
-	
+
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent event) {
 		Entity entity = event.getWhoClicked();
@@ -208,30 +134,6 @@ public class LoginListener implements Listener {
 			
 		if(plugin.AuthList.containsKey(pname)) {
 			event.setCancelled(true);
-		}
-	}
-	
-	@EventHandler
-	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-		Entity defender = event.getEntity();
-		Entity damager = event.getDamager();
-		
-		if(defender instanceof Player) {
-			Player p1 = (Player) defender;
-			String n1 = p1.getName().toLowerCase();
-			
-			if(plugin.AuthList.containsKey(n1)) {
-				event.setCancelled(true);
-				return;
-			}
-			
-			if(damager instanceof Player) {
-				Player p2 = (Player) damager;
-				String n2 = p2.getName().toLowerCase();
-				
-				if(plugin.AuthList.containsKey(n2))
-					event.setCancelled(true);
-			}
 		}
 	}
 	
