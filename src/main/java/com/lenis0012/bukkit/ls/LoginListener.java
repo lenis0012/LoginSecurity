@@ -38,7 +38,6 @@ public class LoginListener implements Listener {
 		}
 		
 		plugin.playerJoinPrompt(player, name);
-		plugin.debilitatePlayer(player, name);
 	}
 	
 	@EventHandler (priority = EventPriority.LOWEST)

@@ -43,7 +43,6 @@ public class LoginSecurity extends JavaPlugin {
 	public Map<String, Location> loginLocations = new HashMap<String, Location>();
 	public List<String> messaging = new ArrayList<String>();
 	public boolean required, blindness, sesUse, timeUse, messager, spawntp, godMode;
-	public GameMode oldGameMode;
 	public int sesDelay, timeDelay;
 	public Logger log = Logger.getLogger("Minecraft");
 	public ThreadManager thread;
@@ -256,6 +255,8 @@ public class LoginSecurity extends JavaPlugin {
 				}
 			}, 20);
 		}
+		
+				plugin.debilitatePlayer(player, name);
 	}
 	
 	public void debilitatePlayer(Player player, String name) {
