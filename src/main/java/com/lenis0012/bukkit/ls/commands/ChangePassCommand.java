@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 
 import com.lenis0012.bukkit.ls.LoginSecurity;
 import com.lenis0012.bukkit.ls.encryption.PasswordManager;
+import java.util.logging.Level;
 
 public class ChangePassCommand implements CommandExecutor {
 	@Override
@@ -38,6 +39,7 @@ public class ChangePassCommand implements CommandExecutor {
 		String newPass = plugin.hasher.hash(args[1]);
 		plugin.data.updatePassword(name, newPass, plugin.hasher.getTypeId());
 		player.sendMessage(ChatColor.GREEN+"Succesfully changed password to: "+args[1]);
+		plugin.log.log(Level.INFO, "[LoginSecurity] {0} sucessfully changed password", name);
 		
 		//Send data to messager API
 		if(plugin.messager)

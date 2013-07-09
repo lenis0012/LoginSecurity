@@ -9,6 +9,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import com.lenis0012.bukkit.ls.LoginSecurity;
 import com.lenis0012.bukkit.ls.encryption.PasswordManager;
+import java.util.logging.Level;
 
 public class LoginCommand implements CommandExecutor {
 	@Override
@@ -40,13 +41,18 @@ public class LoginCommand implements CommandExecutor {
 			plugin.thread.timeout.remove(name);
 			plugin.rehabPlayer(player, name);
 			player.sendMessage(ChatColor.GREEN+"Succesfully logged in");
+			plugin.log.log(Level.INFO, "[LoginSecurity] {0} authenticated", name);
 			
-			//Send data to messager API
-			if(plugin.messager)
+		//Send data to messager API
+		if(plugin.messager)
 				plugin.sendCustomPayload(player, "A_PASS " + args[0]);
 		} else {
 			player.sendMessage(ChatColor.RED+"Invalid password");
+			plugin.log.log(Level.WARNING, "[LoginSecurity] {0} entered an incorrect password", name);
 		}
+		
+		
+		
 		return true;
 	}
 }

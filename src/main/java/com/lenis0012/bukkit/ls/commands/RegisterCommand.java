@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
 import com.lenis0012.bukkit.ls.LoginSecurity;
+import java.util.logging.Level;
 
 public class RegisterCommand implements CommandExecutor {
 	@Override
@@ -37,6 +38,7 @@ public class RegisterCommand implements CommandExecutor {
 		plugin.thread.timeout.remove(name);
 		plugin.rehabPlayer(player, name);
 		player.sendMessage(ChatColor.GREEN+"Registered with password: "+args[0]);
+		plugin.log.log(Level.INFO, "[LoginSecurity] {0} registered sucessfully", name);
 		return true;
 	}
 }
