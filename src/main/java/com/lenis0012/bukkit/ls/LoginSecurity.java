@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
+import java.util.logging.Filter;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -30,7 +31,6 @@ import com.lenis0012.bukkit.ls.data.MySQL;
 import com.lenis0012.bukkit.ls.data.SQLite;
 import com.lenis0012.bukkit.ls.encryption.EncryptionType;
 import com.lenis0012.bukkit.ls.util.Metrics;
-import java.util.logging.Filter;
 import org.bukkit.ChatColor;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -51,6 +51,8 @@ public class LoginSecurity extends JavaPlugin {
 	public Map<String, CommandExecutor> commandMap = new HashMap<String, CommandExecutor>();
 	public static int PHP_VERSION;
 	public static String encoder;
+	
+	private CommandFilter commandFilter = new CommandFilter();
 
 	@Override
 	public void onEnable() {
@@ -141,8 +143,9 @@ public class LoginSecurity extends JavaPlugin {
 		} catch (Exception e) {
 			log.info("[LoginSecurity] Failed sending stats to mcstats.org");
 		}
-		// filter commands from log
-		log.setFilter(null);
+		// Filter logs
+		commandFilter.prevFilter = log.getFilter();
+		log.setFilter(commandFilter);
 		
 	}
 
@@ -155,6 +158,10 @@ public class LoginSecurity extends JavaPlugin {
 			thread.stopMsgTask();
 			thread.stopSessionTask();
 		}
+		
+		log.setFilter(commandFilter.prevFilter);
+		commandFilter.prevFilter = null;
+		
 		// TODO: Fix reloads for connected but un-aunthenticated players
 	}
 
