@@ -26,14 +26,14 @@ public class LogoutCommand implements CommandExecutor {
 		Player player = (Player)sender;
 		String name = player.getName().toLowerCase();
 		
-		if(plugin.AuthList.containsKey(name)) {
+		if(plugin.authList.containsKey(name)) {
 			player.sendMessage(ChatColor.RED+"You must login first");
 			return true;
 		} if(!plugin.data.isRegistered(name)) {
 			player.sendMessage(ChatColor.RED+"You are not registered!");
 		}
 		
-		plugin.AuthList.put(name, false);
+		plugin.authList.put(name, false);
 		plugin.debilitatePlayer(player, name, true);
 		// terminate user's current session
 		if (plugin.sesUse)
@@ -41,7 +41,7 @@ public class LogoutCommand implements CommandExecutor {
 		
 			
 		player.sendMessage(ChatColor.GREEN+"Succesfully logged out");
-		plugin.log.log(Level.INFO, "[LoginSecurity] {0} logged out", player.getName());
+		LoginSecurity.log.log(Level.INFO, "[LoginSecurity] {0} logged out", player.getName());
 		
 		//Send data to messager API
 		if(plugin.messager)

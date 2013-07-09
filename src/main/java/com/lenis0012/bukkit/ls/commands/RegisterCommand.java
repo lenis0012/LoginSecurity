@@ -34,11 +34,11 @@ public class RegisterCommand implements CommandExecutor {
 		
 		String password = plugin.hasher.hash(args[0]);
 		plugin.data.register(name, password, plugin.hasher.getTypeId(), player.getAddress().getAddress().toString());
-		plugin.AuthList.remove(name);
+		plugin.authList.remove(name);
 		plugin.thread.timeout.remove(name);
 		plugin.rehabPlayer(player, name);
 		player.sendMessage(ChatColor.GREEN+"Registered with password: "+args[0]);
-		plugin.log.log(Level.INFO, "[LoginSecurity] {0} registered sucessfully", player.getName());
+		LoginSecurity.log.log(Level.INFO, "[LoginSecurity] {0} registered sucessfully", player.getName());
 		return true;
 	}
 }

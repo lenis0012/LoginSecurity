@@ -30,6 +30,12 @@ import com.lenis0012.bukkit.ls.data.MySQL;
 import com.lenis0012.bukkit.ls.data.SQLite;
 import com.lenis0012.bukkit.ls.encryption.EncryptionType;
 import com.lenis0012.bukkit.ls.util.Metrics;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.logging.Level;
 import org.bukkit.ChatColor;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -38,20 +44,19 @@ public class LoginSecurity extends JavaPlugin {
 
 	public DataManager data;
 	public static LoginSecurity instance;
-	public Map<String, Boolean> AuthList = new HashMap<String, Boolean>();
+	public Map<String, Boolean> authList = new HashMap<String, Boolean>();
 	public Map<String, Location> loginLocations = new HashMap<String, Location>();
 	public List<String> messaging = new ArrayList<String>();
 	public boolean required, blindness, sesUse, timeUse, messager, spawntp;
 	public int sesDelay, timeDelay;
-	public Logger log = Logger.getLogger("Minecraft");
+	public static final Logger log = Logger.getLogger("Minecraft");
 	public ThreadManager thread;
 	public String prefix;
 	public EncryptionType hasher;
 	public Map<String, CommandExecutor> commandMap = new HashMap<String, CommandExecutor>();
 	public static int PHP_VERSION;
 	public static String encoder;
-	
-	private Logger serverLog;
+	private static Logger serverLog;
 	private CommandFilter commandFilter = new CommandFilter();
 
 	@Override
@@ -147,7 +152,15 @@ public class LoginSecurity extends JavaPlugin {
 		serverLog = this.getServer().getLogger();
 		commandFilter.prevFilter = log.getFilter();
 		serverLog.setFilter(commandFilter);
-		
+		try {
+			// read auth list file
+			authList = loadAuthList();
+		} catch (IOException ex) {
+			log.log(Level.SEVERE, "[LoginSecurity] Could not read from auth list!");
+		} catch (ClassNotFoundException ex) {
+			log.log(Level.SEVERE, "[LoginSecurity] Could not read from auth list (bad data)!");
+		}
+
 	}
 
 	@Override
@@ -159,11 +172,38 @@ public class LoginSecurity extends JavaPlugin {
 			thread.stopMsgTask();
 			thread.stopSessionTask();
 		}
-		
+
 		serverLog.setFilter(commandFilter.prevFilter);
 		commandFilter.prevFilter = null;
 		
-		// TODO: Fix reloads for connected but un-aunthenticated players
+		try {
+			saveAuthList(authList);
+		} catch (IOException ex) {
+			log.log(Level.SEVERE, "[LoginSecurity] Could not save to auth list (check permissions?)");
+		}
+		
+		
+	}
+
+	public void saveAuthList(Map<String, Boolean> map) throws IOException {
+		File file = new File(this.getDataFolder(), "authList_youshouldntseethis");
+		FileOutputStream fout = new FileOutputStream(file);
+		ObjectOutputStream out = new ObjectOutputStream(fout);
+		out.writeObject(map);
+		out.close();
+		fout.close();
+	}
+
+	public Map<String, Boolean> loadAuthList() throws IOException, ClassNotFoundException {
+		File file = new File(this.getDataFolder(), "authList_youshouldntseethis");
+		FileInputStream fin = new FileInputStream(file);
+		ObjectInputStream in = new ObjectInputStream(fin);
+		Map d = (HashMap<String, Boolean>) in.readObject();
+		in.close();
+		
+		file.delete();
+		fin.close();
+		return d;
 	}
 
 	private DataManager getDataManager(FileConfiguration config, String fileName) {
@@ -237,12 +277,12 @@ public class LoginSecurity extends JavaPlugin {
 			player.sendMessage(ChatColor.GREEN + "Extended session from last login");
 			return;
 		} else if (data.isRegistered(name)) {
-			AuthList.put(name, false);
+			authList.put(name, false);
 			if (!messager) {
 				player.sendMessage(ChatColor.RED + "Please login using /login <password>");
 			}
 		} else if (required) {
-			AuthList.put(name, true);
+			authList.put(name, true);
 			if (!messager) {
 				player.sendMessage(ChatColor.RED + "Please register using /register <password>");
 			}
@@ -257,7 +297,7 @@ public class LoginSecurity extends JavaPlugin {
 				@Override
 				public void run() {
 					if (messaging.contains(name)) {
-						boolean register = AuthList.get(name);
+						boolean register = authList.get(name);
 						messaging.remove(name);
 						if (register) {
 							player.sendMessage(ChatColor.RED + "Please register using /register <password>");
@@ -295,7 +335,7 @@ public class LoginSecurity extends JavaPlugin {
 			}
 		}
 		// ensure that player does not drown after logging in
-		player.setRemainingAir(player.getMaximumAir()); 
+		player.setRemainingAir(player.getMaximumAir());
 	}
 
 	public void sendCustomPayload(Player player, String msg) {

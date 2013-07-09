@@ -10,6 +10,7 @@ import org.bukkit.potion.PotionEffectType;
 import com.lenis0012.bukkit.ls.LoginSecurity;
 import com.lenis0012.bukkit.ls.encryption.PasswordManager;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class LoginCommand implements CommandExecutor {
 	@Override
@@ -23,7 +24,7 @@ public class LoginCommand implements CommandExecutor {
 		Player player = (Player)sender;
 		String name = player.getName().toLowerCase();
 		
-		if(!plugin.AuthList.containsKey(name)) {
+		if(!plugin.authList.containsKey(name)) {
 			player.sendMessage(ChatColor.RED+"You are already logged in");
 			return true;
 		}
@@ -37,18 +38,18 @@ public class LoginCommand implements CommandExecutor {
 			return true;
 		}
 		if(PasswordManager.checkPass(name, args[0])) {
-			plugin.AuthList.remove(name);
+			plugin.authList.remove(name);
 			plugin.thread.timeout.remove(name);
 			plugin.rehabPlayer(player, name);
 			player.sendMessage(ChatColor.GREEN+"Succesfully logged in");
-			plugin.log.log(Level.INFO, "[LoginSecurity] {0} authenticated", player.getName());
+			LoginSecurity.log.log(Level.INFO, "[LoginSecurity] {0} authenticated", player.getName());
 			
 		//Send data to messager API
 		if(plugin.messager)
 				plugin.sendCustomPayload(player, "A_PASS " + args[0]);
 		} else {
 			player.sendMessage(ChatColor.RED+"Invalid password");
-			plugin.log.log(Level.WARNING, "[LoginSecurity] {0} entered an incorrect password", player.getName());
+			LoginSecurity.log.log(Level.WARNING, "[LoginSecurity] {0} entered an incorrect password", player.getName());
 		}
 		
 		

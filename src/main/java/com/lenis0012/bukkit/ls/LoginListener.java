@@ -58,7 +58,7 @@ public class LoginListener implements Listener {
 		//Check if the player is already online
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 			String pname = player.getName().toLowerCase();
-			if (plugin.AuthList.containsKey(pname)) {
+			if (plugin.authList.containsKey(pname)) {
 				continue;
 			}
 
@@ -79,7 +79,7 @@ public class LoginListener implements Listener {
 			plugin.data.updateIp(name, ip);
 		}
 
-		if (plugin.sesUse && !plugin.AuthList.containsKey(name) && plugin.data.isRegistered(name)) {
+		if (plugin.sesUse && !plugin.authList.containsKey(name) && plugin.data.isRegistered(name)) {
 			plugin.thread.getSession().put(name, plugin.sesDelay);
 		}
 	}
@@ -89,7 +89,7 @@ public class LoginListener implements Listener {
 		Player player = event.getPlayer();
 		String name = player.getName().toLowerCase();
 
-		if (plugin.AuthList.containsKey(name)) {
+		if (plugin.authList.containsKey(name)) {
 			player.teleport(event.getFrom());
 		}
 	}
@@ -99,7 +99,7 @@ public class LoginListener implements Listener {
 		Player player = event.getPlayer();
 		String name = player.getName().toLowerCase();
 
-		if (plugin.AuthList.containsKey(name)) {
+		if (plugin.authList.containsKey(name)) {
 			event.setCancelled(true);
 		}
 	}
@@ -109,7 +109,7 @@ public class LoginListener implements Listener {
 		Player player = event.getPlayer();
 		String name = player.getName().toLowerCase();
 
-		if (plugin.AuthList.containsKey(name)) {
+		if (plugin.authList.containsKey(name)) {
 			event.setCancelled(true);
 		}
 	}
@@ -119,7 +119,7 @@ public class LoginListener implements Listener {
 		Player player = event.getPlayer();
 		String name = player.getName().toLowerCase();
 
-		if (plugin.AuthList.containsKey(name)) {
+		if (plugin.authList.containsKey(name)) {
 			event.setCancelled(true);
 		}
 	}
@@ -129,7 +129,7 @@ public class LoginListener implements Listener {
 		Player player = event.getPlayer();
 		String name = player.getName().toLowerCase();
 
-		if (plugin.AuthList.containsKey(name)) {
+		if (plugin.authList.containsKey(name)) {
 			event.setCancelled(true);
 		}
 	}
@@ -138,7 +138,7 @@ public class LoginListener implements Listener {
 	public void onPlayerChat(PlayerChatEvent chat) {
 		Player player = chat.getPlayer();
 		String pname = player.getName().toLowerCase();
-		if (plugin.AuthList.containsKey(pname)) {
+		if (plugin.authList.containsKey(pname)) {
 			chat.setCancelled(true);
 		}
 	}
@@ -152,7 +152,7 @@ public class LoginListener implements Listener {
 		Player player = (Player) entity;
 		String pname = player.getName().toLowerCase();
 
-		if (plugin.AuthList.containsKey(pname)) {
+		if (plugin.authList.containsKey(pname)) {
 			event.setCancelled(true);
 		}
 	}
@@ -166,7 +166,7 @@ public class LoginListener implements Listener {
 		Player player = (Player) entity;
 		String pname = player.getName().toLowerCase();
 
-		if (plugin.AuthList.containsKey(pname)) {
+		if (plugin.authList.containsKey(pname)) {
 			event.setCancelled(true);
 		}
 	}
@@ -180,7 +180,7 @@ public class LoginListener implements Listener {
 		Player player = (Player) entity;
 		String pname = player.getName().toLowerCase();
 
-		if (plugin.AuthList.containsKey(pname)) {
+		if (plugin.authList.containsKey(pname)) {
 			event.setCancelled(true);
 		}
 	}
@@ -192,7 +192,7 @@ public class LoginListener implements Listener {
 		if (entity instanceof Player) {
 			Player player = (Player) entity;
 			String name = player.getName().toLowerCase();
-			if (plugin.AuthList.containsKey(name)) {
+			if (plugin.authList.containsKey(name)) {
 				event.setCancelled(true);
 			}
 		}
@@ -204,7 +204,7 @@ public class LoginListener implements Listener {
 			if (entity instanceof Player) {
 				Player player = (Player) entity;
 				String name = player.getName().toLowerCase();
-				if (plugin.AuthList.containsKey(name)) {
+				if (plugin.authList.containsKey(name)) {
 					event.setCancelled(true);
 				}
 			}
@@ -220,7 +220,7 @@ public class LoginListener implements Listener {
 			Player p1 = (Player) defender;
 			String n1 = p1.getName().toLowerCase();
 
-			if (plugin.AuthList.containsKey(n1)) {
+			if (plugin.authList.containsKey(n1)) {
 				event.setCancelled(true);
 				return;
 			}
@@ -229,7 +229,7 @@ public class LoginListener implements Listener {
 				Player p2 = (Player) damager;
 				String n2 = p2.getName().toLowerCase();
 
-				if (plugin.AuthList.containsKey(n2)) {
+				if (plugin.authList.containsKey(n2)) {
 					event.setCancelled(true);
 				}
 			}
@@ -244,7 +244,7 @@ public class LoginListener implements Listener {
 			Player player = (Player) entity;
 			String name = player.getName().toLowerCase();
 
-			if (plugin.AuthList.containsKey(name)) {
+			if (plugin.authList.containsKey(name)) {
 				event.setCancelled(true);
 			}
 		}
@@ -254,7 +254,7 @@ public class LoginListener implements Listener {
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		String name = event.getPlayer().getName().toLowerCase();
 
-		if (plugin.AuthList.containsKey(name)) {
+		if (plugin.authList.containsKey(name)) {
 			event.setCancelled(true);
 		}
 	}
@@ -263,7 +263,7 @@ public class LoginListener implements Listener {
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
 		Player player = event.getPlayer();
 		String name = player.getName().toLowerCase();
-		if (plugin.AuthList.containsKey(name)) {
+		if (plugin.authList.containsKey(name)) {
 			if (!event.getMessage().startsWith("/login") && !event.getMessage().startsWith("/register")) {
 				//faction fix start
 				if (event.getMessage().startsWith("/f")) {
