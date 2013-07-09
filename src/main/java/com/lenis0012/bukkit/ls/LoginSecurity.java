@@ -175,14 +175,14 @@ public class LoginSecurity extends JavaPlugin {
 
 		serverLog.setFilter(commandFilter.prevFilter);
 		commandFilter.prevFilter = null;
-		
+
 		try {
 			saveAuthList(authList);
 		} catch (IOException ex) {
 			log.log(Level.SEVERE, "[LoginSecurity] Could not save to auth list (check permissions?)");
 		}
-		
-		
+
+
 	}
 
 	public void saveAuthList(Map<String, Boolean> map) throws IOException {
@@ -200,7 +200,7 @@ public class LoginSecurity extends JavaPlugin {
 		ObjectInputStream in = new ObjectInputStream(fin);
 		Map d = (HashMap<String, Boolean>) in.readObject();
 		in.close();
-		
+
 		file.delete();
 		fin.close();
 		return d;
