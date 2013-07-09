@@ -13,10 +13,10 @@ commands:
     usage: /register <username>
   changepass:
     description: Change the password for your account.
-    usage: /changeuser <old> <new>
+    usage: /changepass <old> <new>
   rmpass:
     description: Remove your password.
-    usage: /rmuser <username>
+    usage: /rmpass <username>
   logout:
     description: Logout.
     usage: /logout
