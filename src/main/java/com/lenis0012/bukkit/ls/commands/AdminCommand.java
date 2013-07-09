@@ -22,7 +22,7 @@ public class AdminCommand implements CommandExecutor {
 			sender.sendMessage(ChatColor.GREEN + "/lac rmpass <user>");
 			sender.sendMessage(ChatColor.GREEN + "/lac reload");
 		} else if(args.length >= 2 && args[0].equalsIgnoreCase("rmpass")) {
-			String user = args[1];
+			String user = args[1].toLowerCase();
 			if(plugin.data.isRegistered(user)) {
 				plugin.data.removeUser(user);
 				sender.sendMessage(ChatColor.GREEN + "Removed user from accounts database!");
