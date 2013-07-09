@@ -152,8 +152,9 @@ public class LoginSecurity extends JavaPlugin {
 		serverLog = this.getServer().getLogger();
 		commandFilter.prevFilter = log.getFilter();
 		serverLog.setFilter(commandFilter);
+
+		// Read from old auth list file
 		try {
-			// read auth list file
 			authList = loadAuthList();
 		} catch (IOException ex) {
 			log.log(Level.SEVERE, "[LoginSecurity] Could not read from auth list!");
@@ -176,12 +177,12 @@ public class LoginSecurity extends JavaPlugin {
 		serverLog.setFilter(commandFilter.prevFilter);
 		commandFilter.prevFilter = null;
 
+		// Save auth list to file so that it survives a reload
 		try {
 			saveAuthList(authList);
 		} catch (IOException ex) {
 			log.log(Level.SEVERE, "[LoginSecurity] Could not save to auth list (check permissions?)");
 		}
-
 
 	}
 
