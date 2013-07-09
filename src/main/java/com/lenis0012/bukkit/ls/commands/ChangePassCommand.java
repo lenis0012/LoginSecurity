@@ -34,6 +34,7 @@ public class ChangePassCommand implements CommandExecutor {
 		}
 		if (!PasswordManager.checkPass(name, args[0])) {
 			player.sendMessage(ChatColor.RED + "Password Incorrect");
+			LoginSecurity.log.log(Level.WARNING, "[LoginSecurity] {0} failed to change password", player.getName());
 			return true;
 		}
 
