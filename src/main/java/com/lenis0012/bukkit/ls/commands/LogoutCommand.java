@@ -10,6 +10,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import com.lenis0012.bukkit.ls.LoginSecurity;
 import java.util.Iterator;
+import java.util.logging.Level;
 import org.bukkit.GameMode;
 
 public class LogoutCommand implements CommandExecutor {
@@ -40,6 +41,7 @@ public class LogoutCommand implements CommandExecutor {
 		
 			
 		player.sendMessage(ChatColor.GREEN+"Succesfully logged out");
+		plugin.log.log(Level.INFO, "[LoginSecurity] {0} logged out", player.getName());
 		
 		//Send data to messager API
 		if(plugin.messager)

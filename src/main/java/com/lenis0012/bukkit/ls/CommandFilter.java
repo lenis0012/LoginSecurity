@@ -13,7 +13,7 @@ public class CommandFilter implements Filter {
 
 		String message = record.getMessage();
 
-		if (message.contains("/login") || message.contains("/register") || message.contains("/changepass")) {
+		if (message.contains("/login") || message.contains("/register") || message.contains("/changepass") || message.contains("/logout")) {
 			return false;
 		}
 		if (this.prevFilter == null) {
