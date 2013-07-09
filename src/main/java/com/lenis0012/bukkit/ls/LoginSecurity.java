@@ -52,6 +52,7 @@ public class LoginSecurity extends JavaPlugin {
 	public static int PHP_VERSION;
 	public static String encoder;
 	
+	private Logger serverLog;
 	private CommandFilter commandFilter = new CommandFilter();
 
 	@Override
@@ -144,8 +145,9 @@ public class LoginSecurity extends JavaPlugin {
 			log.info("[LoginSecurity] Failed sending stats to mcstats.org");
 		}
 		// Filter logs
+		serverLog = this.getServer().getLogger();
 		commandFilter.prevFilter = log.getFilter();
-		log.setFilter(commandFilter);
+		serverLog.setFilter(commandFilter);
 		
 	}
 
@@ -159,7 +161,7 @@ public class LoginSecurity extends JavaPlugin {
 			thread.stopSessionTask();
 		}
 		
-		log.setFilter(commandFilter.prevFilter);
+		serverLog.setFilter(commandFilter.prevFilter);
 		commandFilter.prevFilter = null;
 		
 		// TODO: Fix reloads for connected but un-aunthenticated players

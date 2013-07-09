@@ -14,7 +14,7 @@ public class CommandFilter implements Filter {
 		
 		String message = record.getMessage();
 		
-		if (message.contains("login") || message.contains("register")) return false;
+		if (message.contains("/login") || message.contains("/register")) return false;
 		
 		return true;
 	}
