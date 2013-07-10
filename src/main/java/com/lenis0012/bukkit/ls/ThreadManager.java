@@ -59,8 +59,8 @@ public class ThreadManager {
 			public void run() {
 				for(Player player : Bukkit.getServer().getOnlinePlayers()) {
 					String name = player.getName();
-					if(plugin.AuthList.containsKey(name)) {
-						boolean register = plugin.AuthList.get(name);
+					if(plugin.authList.containsKey(name)) {
+						boolean register = plugin.authList.get(name);
 						if(register)
 							player.sendMessage(ChatColor.RED+"Please register using /register <password>");
 						else

@@ -5,8 +5,6 @@ import java.util.logging.Level;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
-import org.bukkit.potion.PotionEffectType;
-
 import com.lenis0012.bukkit.ls.encryption.PasswordManager;
 
 public class LoginMessager implements PluginMessageListener {
@@ -56,18 +54,14 @@ public class LoginMessager implements PluginMessageListener {
 			if(!plugin.data.isRegistered(name)) {
 				String pass = plugin.hasher.hash(answer);
 				plugin.data.register(name, pass, plugin.hasher.getTypeId(), player.getAddress().getAddress().toString());
-				plugin.AuthList.remove(name);
+				plugin.authList.remove(name);
 				plugin.thread.timeout.remove(name);
-				if(player.hasPotionEffect(PotionEffectType.BLINDNESS))
-					player.removePotionEffect(PotionEffectType.BLINDNESS);
 			}
 		} else if(question.equals("LOGIN")) {
-			if(plugin.AuthList.containsKey(name)) {
+			if(plugin.authList.containsKey(name)) {
 				if(PasswordManager.checkPass(name, answer)) {
-					plugin.AuthList.remove(name);
+					plugin.authList.remove(name);
 					plugin.thread.timeout.remove(name);
-					if(player.hasPotionEffect(PotionEffectType.BLINDNESS))
-						player.removePotionEffect(PotionEffectType.BLINDNESS);
 				}
 			}
 		}
