@@ -7,24 +7,24 @@ Features:
 ========
 - Login with custom passwords
 - Completely optimized code
-- No Corss-Thread acces
+- No cross-thread access
 - Optional or required passwords
 - MySQL and SQLite support
 - Fast handling
 - Custom commands
 - Max/min password length
-- MD5 Encryption
-- Automatic LockDown whem MySQL conection is lost
-- Task to reconnect with MySQL, keeps the connection fresh
-- Usefull auto updater
-- Converter from SQLite to MySQL wehn switching
+- Various hashing methods including SHA-512
+- Automatic lockdown whem MySQL conection is lost
+- Task to reconnect with MySQL, keeps the connection alive
+- Useful auto updater
+- Converter from SQLite to MySQL when switching
 - Converter from YAML to SQLite and MySQL
-- Safe data files with .db format
-- Advanced Error handling
+- Save data files with .db format
+- Advanced error handling
 - Command to change and remove password
 - Easy admin command to manage player settings
 - More than 15 events being blocked when not logged in
-- Blindness effect on jon
+- Blindness effect on join
 - Much more to come
 
 License:
