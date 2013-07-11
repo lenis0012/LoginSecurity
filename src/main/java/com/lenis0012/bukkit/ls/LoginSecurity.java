@@ -316,6 +316,9 @@ public class LoginSecurity extends JavaPlugin {
 	}
 
 	public void debilitatePlayer(Player player, String name, boolean logout) {
+		if (timeUse) {
+			thread.timeout.put(name, timeDelay);
+		}
 		if (blindness) {
 			player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 1728000, 15));
 		}
