@@ -128,6 +128,7 @@ public class ThreadManager {
 								}
 							}
 							player.kickPlayer("Login timed out");
+							LoginSecurity.log.log(Level.INFO, "{0} was kicked for login timeout", player.getName());
 						}
 					}
 				}
