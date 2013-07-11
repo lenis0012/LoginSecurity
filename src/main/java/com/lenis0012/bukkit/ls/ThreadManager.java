@@ -3,6 +3,7 @@ package com.lenis0012.bukkit.ls;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -128,6 +129,7 @@ public class ThreadManager {
 								}
 							}
 							player.kickPlayer("Login timed out");
+							LoginSecurity.log.log(Level.INFO, "{0} was kicked for login timeout", player.getName());
 						}
 					}
 				}
