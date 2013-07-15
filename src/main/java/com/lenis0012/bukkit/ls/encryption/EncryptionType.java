@@ -12,6 +12,7 @@ public enum EncryptionType {
 	SHA(4, new SHA("SHA")),
 	SHA256(5, new SHA("SHA-256")),
 	SHA512(6, new SHA("SHA-512")),
+	BCRYPT(7, new BCrypt()),
 	xAuth_Authme_SHA256(10, new Sha256()),
 	xAuth_DEFAULT(11, new SaltedWhirlpool()),
 	xAuth_MD5(12, new CryptoDigest("MD5")),
@@ -60,6 +61,8 @@ public enum EncryptionType {
 			return SHA256;
 		} else if(from.equalsIgnoreCase("sha-512")) {
 			return SHA512;
+		} else if(from.equalsIgnoreCase("bcrypt")) {
+			return BCRYPT;
 		} else
 			return MD5;
 	}
