@@ -195,16 +195,17 @@ public class LoginSecurity extends JavaPlugin {
 		fout.close();
 	}
 
+	@SuppressWarnings("unchecked")
 	public Map<String, Boolean> loadAuthList() throws IOException, ClassNotFoundException {
 		File file = new File(this.getDataFolder(), "authList");
 		FileInputStream fin = new FileInputStream(file);
 		ObjectInputStream in = new ObjectInputStream(fin);
-		Map d = (HashMap<String, Boolean>) in.readObject();
+		Map<String, Boolean> map = (HashMap<String, Boolean>) in.readObject();
 		in.close();
 
 		file.delete();
 		fin.close();
-		return d;
+		return map;
 	}
 
 	private DataManager getDataManager(FileConfiguration config, String fileName) {

@@ -14,7 +14,9 @@ import org.bukkit.scheduler.BukkitTask;
 public class ThreadManager {
 
 	private LoginSecurity plugin;
-	private int msg = -1, ses = -1, to = -1;
+	private BukkitTask msg;
+	private BukkitTask ses;
+	private BukkitTask to;
 	private BukkitTask main = null;
 	public Map<String, Integer> session = new HashMap<String, Integer>();
 	public Map<String, Integer> timeout = new HashMap<String, Integer>();
@@ -56,7 +58,7 @@ public class ThreadManager {
 	}
 
 	public void startMsgTask() {
-		msg = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
+		msg = plugin.getServer().getScheduler().runTaskTimer(plugin, new Runnable() {
 			public void run() {
 				for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 					String name = player.getName();
@@ -74,14 +76,15 @@ public class ThreadManager {
 	}
 
 	public void stopMsgTask() {
-		if (msg > 0) {
-			plugin.getServer().getScheduler().cancelTask(msg);
+		if (msg != null) {
+			msg.cancel();
 		}
-		msg = -1;
+		
+		msg = null;
 	}
 
 	public void startSessionTask() {
-		ses = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
+		ses = plugin.getServer().getScheduler().runTaskTimer(plugin, new Runnable() {
 			public void run() {
 				Iterator<String> it = getSession().keySet().iterator();
 				while (it.hasNext()) {
@@ -99,14 +102,15 @@ public class ThreadManager {
 	}
 
 	public void stopSessionTask() {
-		if (ses >= 0) {
-			plugin.getServer().getScheduler().cancelTask(ses);
+		if (ses != null) {
+			ses.cancel();
 		}
-		ses = -1;
+		
+		ses = null;
 	}
 
 	public void startTimeoutTask() {
-		ses = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
+		to = plugin.getServer().getScheduler().runTaskTimer(plugin, new Runnable() {
 			@Override
 			public void run() {
 				Iterator<String> it = timeout.keySet().iterator();
@@ -138,9 +142,10 @@ public class ThreadManager {
 	}
 
 	public void stopTimeoutTask() {
-		if (to >= 0) {
-			plugin.getServer().getScheduler().cancelTask(to);
+		if (to != null) {
+			to.cancel();
 		}
-		to = -1;
+		
+		to = null;
 	}
 }
