@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -47,7 +46,7 @@ public class LoginSecurity extends JavaPlugin {
 	public Map<String, Boolean> authList = new HashMap<String, Boolean>();
 	public Map<String, Location> loginLocations = new HashMap<String, Location>();
 	public List<String> messaging = new ArrayList<String>();
-	public boolean required, blindness, sesUse, timeUse, messager, spawntp;
+	public boolean required, blindness, sesUse, timeUse, spawntp;
 	public int sesDelay, timeDelay;
 	public static final Logger log = Logger.getLogger("Minecraft");
 	public ThreadManager thread;
@@ -89,7 +88,6 @@ public class LoginSecurity extends JavaPlugin {
 
 		//intalize fields
 		instance = (LoginSecurity) pm.getPlugin("LoginSecurity");
-		messager = config.getBoolean("settings.messager-api", false);
 		prefix = config.getString("settings.table prefix");
 		data = this.getDataManager(config, "users.db");
 		data.openConnection();
@@ -125,10 +123,6 @@ public class LoginSecurity extends JavaPlugin {
 		this.checkConverter();
 
 		//register events
-		if (messager) {
-			Bukkit.getMessenger().registerIncomingPluginChannel(this, "LoginSecurity", new LoginMessager(this));
-			Bukkit.getMessenger().registerOutgoingPluginChannel(this, "LoginSecurity");
-		}
 		pm.registerEvents(new LoginListener(this), this);
 		this.registerCommands();
 
@@ -280,37 +274,12 @@ public class LoginSecurity extends JavaPlugin {
 			return;
 		} else if (data.isRegistered(name)) {
 			authList.put(name, false);
-			if (!messager) {
-				player.sendMessage(ChatColor.RED + "Please login using /login <password>");
-			}
+			player.sendMessage(ChatColor.RED + "Please login using /login <password>");
 		} else if (required) {
 			authList.put(name, true);
-			if (!messager) {
-				player.sendMessage(ChatColor.RED + "Please register using /register <password>");
-			}
+			player.sendMessage(ChatColor.RED + "Please register using /register <password>");
 		} else {
 			return;
-		}
-
-		//Send data to messager API
-		if (messager) {
-			messaging.add(name);
-			Bukkit.getScheduler().runTaskLater(this, new Runnable() {
-				@Override
-				public void run() {
-					if (messaging.contains(name)) {
-						boolean register = authList.get(name);
-						messaging.remove(name);
-						if (register) {
-							player.sendMessage(ChatColor.RED + "Please register using /register <password>");
-						} else {
-							player.sendMessage(ChatColor.RED + "Please login using /login <password>");
-						}
-					} else {
-						sendCustomPayload(player, "Q_LOGIN");
-					}
-				}
-			}, 20);
 		}
 
 		debilitatePlayer(player, name, false);
@@ -341,13 +310,5 @@ public class LoginSecurity extends JavaPlugin {
 		}
 		// ensure that player does not drown after logging in
 		player.setRemainingAir(player.getMaximumAir());
-	}
-
-	public void sendCustomPayload(Player player, String msg) {
-		if (!player.getListeningPluginChannels().contains(this.getName())) {
-			return;
-		}
-
-		player.sendPluginMessage(this, this.getName(), msg.getBytes());
 	}
 }

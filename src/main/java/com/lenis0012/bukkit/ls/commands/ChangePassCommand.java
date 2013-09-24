@@ -43,10 +43,6 @@ public class ChangePassCommand implements CommandExecutor {
 		player.sendMessage(ChatColor.GREEN + "Succesfully changed password to: " + args[1]);
 		LoginSecurity.log.log(Level.INFO, "[LoginSecurity] {0} sucessfully changed password", player.getName());
 
-		//Send data to messager API
-		if (plugin.messager) {
-			plugin.sendCustomPayload(player, "A_PASS " + args[1]);
-		}
 		return true;
 	}
 }

@@ -37,14 +37,8 @@ public class LogoutCommand implements CommandExecutor {
 			plugin.thread.getSession().remove(name);
 		}
 
-
 		player.sendMessage(ChatColor.GREEN + "Succesfully logged out");
 		LoginSecurity.log.log(Level.INFO, "[LoginSecurity] {0} logged out", player.getName());
-
-		//Send data to messager API
-		if (plugin.messager) {
-			plugin.sendCustomPayload(player, "Q_LOGIN");
-		}
 		return true;
 	}
 }

@@ -2,6 +2,7 @@ package com.lenis0012.bukkit.ls;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -88,9 +89,12 @@ public class LoginListener implements Listener {
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Player player = event.getPlayer();
 		String name = player.getName().toLowerCase();
+		Location from = event.getFrom();
+		Location to = event.getTo();
 
 		if (plugin.authList.containsKey(name)) {
-			player.teleport(event.getFrom());
+			to.setX(from.getX());
+			to.setZ(from.getZ());
 		}
 	}
 

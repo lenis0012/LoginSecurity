@@ -41,10 +41,6 @@ public class LoginCommand implements CommandExecutor {
 			plugin.rehabPlayer(player, name);
 			player.sendMessage(ChatColor.GREEN+"Succesfully logged in");
 			LoginSecurity.log.log(Level.INFO, "[LoginSecurity] {0} authenticated", player.getName());
-			
-		//Send data to messager API
-		if(plugin.messager)
-				plugin.sendCustomPayload(player, "A_PASS " + args[0]);
 		} else {
 			player.sendMessage(ChatColor.RED+"Invalid password");
 			LoginSecurity.log.log(Level.WARNING, "[LoginSecurity] {0} entered an incorrect password", player.getName());
