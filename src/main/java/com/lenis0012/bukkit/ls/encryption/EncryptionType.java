@@ -64,6 +64,6 @@ public enum EncryptionType {
 		} else if(from.equalsIgnoreCase("bcrypt")) {
 			return BCRYPT;
 		} else
-			return MD5;
+			return BCRYPT;
 	}
 }

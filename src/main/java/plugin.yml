@@ -1,5 +1,5 @@
 name: LoginSecurity
-version: 2.0.5
+version: 2.0.6
 main: com.lenis0012.bukkit.ls.LoginSecurity
 author: lenis0012
 description: The #1 Auth plugin

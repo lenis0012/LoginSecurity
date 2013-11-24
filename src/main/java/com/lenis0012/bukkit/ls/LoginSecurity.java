@@ -66,7 +66,7 @@ public class LoginSecurity extends JavaPlugin {
 
 		//setup config
 		config.addDefault("settings.password-required", false);
-		config.addDefault("settings.encryption", "MD5");
+		config.addDefault("settings.encryption", "BCRYPT");
 		config.addDefault("settings.encoder", "UTF-8");
 		config.addDefault("settings.PHP_VERSION", 4);
 		config.addDefault("settings.messager-api", true);
