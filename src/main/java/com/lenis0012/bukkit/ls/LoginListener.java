@@ -90,11 +90,12 @@ public class LoginListener implements Listener {
 		Player player = event.getPlayer();
 		String name = player.getName().toLowerCase();
 		Location from = event.getFrom();
-		Location to = event.getTo();
+		Location to = event.getTo().clone();
 
 		if (plugin.authList.containsKey(name)) {
 			to.setX(from.getX());
 			to.setZ(from.getZ());
+			event.setTo(to);
 		}
 	}
 
