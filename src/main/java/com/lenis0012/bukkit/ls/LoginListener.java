@@ -11,13 +11,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.event.player.PlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerPreLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
 
@@ -54,7 +54,7 @@ public class LoginListener implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
-	public void onPlayerPreLogin(PlayerPreLoginEvent event) {
+	public void onPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
 		String name = event.getName();
 		//Check if the player is already online
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
@@ -140,7 +140,7 @@ public class LoginListener implements Listener {
 	}
 
 	@EventHandler
-	public void onPlayerChat(PlayerChatEvent chat) {
+	public void onPlayerChat(AsyncPlayerChatEvent chat) {
 		Player player = chat.getPlayer();
 		String pname = player.getName().toLowerCase();
 		if (plugin.authList.containsKey(pname)) {
