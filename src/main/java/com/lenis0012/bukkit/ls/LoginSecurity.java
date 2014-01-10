@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -83,6 +84,7 @@ public class LoginSecurity extends JavaPlugin {
 		config.addDefault("MySQL.database", "LoginSecurity");
 		config.addDefault("MySQL.username", "root");
 		config.addDefault("MySQL.password", "password");
+		config.addDefault("MySQL.prefix", "");
 		config.options().copyDefaults(true);
 		saveConfig();
 
@@ -204,7 +206,7 @@ public class LoginSecurity extends JavaPlugin {
 
 	private DataManager getDataManager(FileConfiguration config, String fileName) {
 		if (config.getBoolean("MySQL.use")) {
-			return new MySQL(config, "users");
+			return new MySQL(config, this.getConfig().getString("MySQL.prefix", "") + "users");
 		} else {
 			return new SQLite(new File(this.getDataFolder(), fileName));
 		}
@@ -269,6 +271,14 @@ public class LoginSecurity extends JavaPlugin {
 	}
 
 	public void playerJoinPrompt(final Player player, final String name) {
+		//Quick security check
+		for(Player p : Bukkit.getOnlinePlayers()) {
+			if(player != p && player.getName().equalsIgnoreCase(p.getName())) {
+				player.kickPlayer("You are already logged in under the name: " + p.getName());
+				return;
+			}
+		}
+		
 		if (sesUse && thread.getSession().containsKey(name) && checkLastIp(player)) {
 			player.sendMessage(ChatColor.GREEN + "Extended session from last login");
 			return;
