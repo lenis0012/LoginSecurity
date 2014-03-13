@@ -46,7 +46,7 @@ public class LoginListener implements Listener {
 		final String name = player.getName().toLowerCase();
 
 		if (!player.getName().equals(StringUtil.cleanString(player.getName()))) {
-			player.kickPlayer("Invalid username!");
+			player.kickPlayer("Invalid characters in username!");
 			return;
 		}
 
@@ -55,7 +55,7 @@ public class LoginListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
-		String name = event.getName();
+		String name = event.getName().toLowerCase();
 		//Check if the player is already online
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 			String pname = player.getName().toLowerCase();
