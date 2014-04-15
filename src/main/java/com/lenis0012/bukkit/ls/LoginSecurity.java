@@ -92,7 +92,6 @@ public class LoginSecurity extends JavaPlugin {
 		instance = (LoginSecurity) pm.getPlugin("LoginSecurity");
 		prefix = config.getString("settings.table prefix");
 		data = this.getDataManager(config, "users.db");
-		data.openConnection();
 		thread = new ThreadManager(this);
 		thread.startMsgTask();
 		required = config.getBoolean("settings.password-required");
@@ -260,9 +259,9 @@ public class LoginSecurity extends JavaPlugin {
 	}
 
 	public boolean checkLastIp(Player player) {
-		String name = player.getName().toLowerCase();
-		if (data.isRegistered(name)) {
-			String lastIp = data.getIp(name);
+		String uuid = player.getUniqueId().toString().replaceAll("-", "");
+		if (data.isRegistered(uuid)) {
+			String lastIp = data.getIp(uuid);
 			String currentIp = player.getAddress().getAddress().toString();
 			return lastIp.equalsIgnoreCase(currentIp);
 		}
@@ -270,7 +269,9 @@ public class LoginSecurity extends JavaPlugin {
 		return false;
 	}
 
-	public void playerJoinPrompt(final Player player, final String name) {
+	public void playerJoinPrompt(final Player player) {
+		String uuid = player.getUniqueId().toString().replaceAll("-", "");
+		
 		//Quick security check
 		for(Player p : Bukkit.getOnlinePlayers()) {
 			if(player != p && player.getName().equalsIgnoreCase(p.getName())) {
@@ -279,20 +280,20 @@ public class LoginSecurity extends JavaPlugin {
 			}
 		}
 		
-		if (sesUse && thread.getSession().containsKey(name) && checkLastIp(player)) {
+		if (sesUse && thread.getSession().containsKey(uuid) && checkLastIp(player)) {
 			player.sendMessage(ChatColor.GREEN + "Extended session from last login");
 			return;
-		} else if (data.isRegistered(name)) {
-			authList.put(name, false);
+		} else if (data.isRegistered(uuid)) {
+			authList.put(player.getName().toLowerCase(), false);
 			player.sendMessage(ChatColor.RED + "Please login using /login <password>");
 		} else if (required) {
-			authList.put(name, true);
+			authList.put(player.getName().toLowerCase(), true);
 			player.sendMessage(ChatColor.RED + "Please register using /register <password>");
 		} else {
 			return;
 		}
 
-		debilitatePlayer(player, name, false);
+		debilitatePlayer(player, player.getName().toLowerCase(), false);
 	}
 
 	public void debilitatePlayer(Player player, String name, boolean logout) {

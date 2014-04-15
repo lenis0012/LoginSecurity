@@ -21,6 +21,8 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerPreLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import com.lenis0012.bukkit.ls.data.MySQL;
+import com.lenis0012.bukkit.ls.data.SQLite;
 import com.lenis0012.bukkit.ls.util.StringUtil;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -43,14 +45,16 @@ public class LoginListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		final Player player = event.getPlayer();
-		final String name = player.getName().toLowerCase();
-
-		if (!player.getName().equals(StringUtil.cleanString(player.getName()))) {
+		
+		if(MySQL.IS_CONVERTING || SQLite.IS_CONVERTING) {
+			player.kickPlayer("The server is currently converting all login data, please join back later.");
+			return;
+		} if (!player.getName().equals(StringUtil.cleanString(player.getName()))) {
 			player.kickPlayer("Invalid characters in username!");
 			return;
 		}
 
-		plugin.playerJoinPrompt(player, name);
+		plugin.playerJoinPrompt(player);
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)

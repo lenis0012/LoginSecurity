@@ -19,16 +19,16 @@ public class RmPassCommand implements CommandExecutor {
 		}
 		
 		Player player = (Player)sender;
-		String name = player.getName().toLowerCase();
+		String uuid = player.getUniqueId().toString().replaceAll("-", "");
 		
-		if(!plugin.data.isRegistered(name)) {
+		if(!plugin.data.isRegistered(uuid)) {
 			player.sendMessage(ChatColor.RED+"You are not registered on the server");
 			return true;
 		}if(args.length < 1) {
 			player.sendMessage(ChatColor.RED+"Not enough arguments");
 			player.sendMessage("Usage: "+cmd.getUsage());
 			return true;
-		} if(!PasswordManager.checkPass(name, args[0])) {
+		} if(!PasswordManager.checkPass(uuid, args[0])) {
 			player.sendMessage(ChatColor.RED+"Password Incorrect");
 			return true;
 		} if(plugin.required) {
@@ -36,7 +36,7 @@ public class RmPassCommand implements CommandExecutor {
 			return true;
 		}
 		
-		plugin.data.removeUser(name);
+		plugin.data.removeUser(uuid);
 		player.sendMessage(ChatColor.GREEN+"Succesfully removed your password");
 		return true;
 	}

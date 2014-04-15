@@ -21,9 +21,9 @@ public class ChangePassCommand implements CommandExecutor {
 		}
 
 		Player player = (Player) sender;
-		String name = player.getName().toLowerCase();
+		String uuid = player.getUniqueId().toString().replaceAll("-", "");
 
-		if (!plugin.data.isRegistered(name)) {
+		if (!plugin.data.isRegistered(uuid)) {
 			player.sendMessage(ChatColor.RED + "You are not registered on the server");
 			return true;
 		}
@@ -32,14 +32,14 @@ public class ChangePassCommand implements CommandExecutor {
 			player.sendMessage("Usage: " + cmd.getUsage());
 			return true;
 		}
-		if (!PasswordManager.checkPass(name, args[0])) {
+		if (!PasswordManager.checkPass(uuid, args[0])) {
 			player.sendMessage(ChatColor.RED + "Password Incorrect");
 			LoginSecurity.log.log(Level.WARNING, "[LoginSecurity] {0} failed to change password", player.getName());
 			return true;
 		}
 
 		String newPass = plugin.hasher.hash(args[1]);
-		plugin.data.updatePassword(name, newPass, plugin.hasher.getTypeId());
+		plugin.data.updatePassword(uuid, newPass, plugin.hasher.getTypeId());
 		player.sendMessage(ChatColor.GREEN + "Succesfully changed password to: " + args[1]);
 		LoginSecurity.log.log(Level.INFO, "[LoginSecurity] {0} sucessfully changed password", player.getName());
 

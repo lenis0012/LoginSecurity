@@ -20,13 +20,14 @@ public class LoginCommand implements CommandExecutor {
 		}
 		
 		Player player = (Player)sender;
+		String uuid = player.getUniqueId().toString().replaceAll("-", "");
 		String name = player.getName().toLowerCase();
 		
 		if(!plugin.authList.containsKey(name)) {
 			player.sendMessage(ChatColor.RED+"You are already logged in");
 			return true;
 		}
-		if(!plugin.data.isRegistered(name)) {
+		if(!plugin.data.isRegistered(uuid)) {
 			player.sendMessage(ChatColor.RED+"You do not have a password set");
 			return true;
 		}
@@ -35,7 +36,7 @@ public class LoginCommand implements CommandExecutor {
 			player.sendMessage("Usage: "+cmd.getUsage());
 			return true;
 		}
-		if(PasswordManager.checkPass(name, args[0])) {
+		if(PasswordManager.checkPass(uuid, args[0])) {
 			plugin.authList.remove(name);
 			plugin.thread.timeout.remove(name);
 			plugin.rehabPlayer(player, name);

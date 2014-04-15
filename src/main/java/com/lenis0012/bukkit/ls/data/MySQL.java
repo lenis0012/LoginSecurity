@@ -7,20 +7,26 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import com.lenis0012.bukkit.ls.LoginSecurity;
 import com.lenis0012.bukkit.ls.encryption.EncryptionType;
 
-public class MySQL implements DataManager{
+public class MySQL implements DataManager {
+	public static boolean IS_CONVERTING = false;
+	
 	private Logger log = Logger.getLogger("Minecraft.LoginSecruity");
 	private FileConfiguration config;
 	private Connection con;
 	private String table;
 	
-	public MySQL(FileConfiguration config, String table) {
+	public MySQL(FileConfiguration config, final String table) {
 		this.config = config;
 		this.table = table;
 		
@@ -28,6 +34,61 @@ public class MySQL implements DataManager{
 			Class.forName("com.mysql.jdbc.Driver");
 		} catch (ClassNotFoundException e) {
 			log.log(Level.SEVERE, "Failed to load MySQL driver", e);
+		}
+		
+		this.openConnection();
+		try {
+			DatabaseMetaData md = con.getMetaData();
+			ResultSet rs = md.getColumns(null, null, table, "username");
+			if(!rs.next()) {
+				log.log(Level.INFO, "Username column was detected, conversion to UUID will begin in 10 seconds.");
+				log.log(Level.INFO, "This can not be reversed, stop the server NOW if you don't want this.");
+				IS_CONVERTING = true;
+				Bukkit.getScheduler().runTaskLaterAsynchronously(LoginSecurity.instance, new Runnable() {
+
+					@Override
+					public void run() {
+						try {
+							log.log(Level.INFO, "Conversion to UUID has started, this may take some time");
+							List<Object[]> loginData = new ArrayList<Object[]>();
+							PreparedStatement ps = con.prepareStatement("SELECT * FROM " + table);
+							ResultSet result = ps.executeQuery();
+							while(result.next()) {
+								Object[] data = new Object[] {
+									result.getString("username"),
+									result.getString("password"),
+									result.getInt("encryption"),
+									result.getString("ip")
+								};
+								
+								loginData.add(data);
+							}
+							
+							log.log(Level.INFO, "Loaded " + loginData.size() + " columns, starting to convert usernames to uuid");
+							long beginTime = System.currentTimeMillis();
+							Converter.getUUIDByUsername("lenis0012");
+							long timeTaken = System.currentTimeMillis() - beginTime;
+							long etaDuration = timeTaken * loginData.size() / 1000;
+							log.log(Level.INFO, "The total process will take at least " + etaDuration + " seconds");
+							
+							dropTable(table);
+							closeConnection();
+							openConnection();
+							for(Object[] data : loginData) {
+								String uuid = Converter.getUUIDByUsername((String) data[0]);
+								register(uuid, (String) data[1], (Integer) data[2], (String) data[3]);
+							}
+							
+							log.log(Level.INFO, "Conversion completed.");
+							IS_CONVERTING = false;
+						} catch (SQLException e) {
+							log.log(Level.SEVERE, "Failed to convert to uuid, this is bad.");
+						}
+					}
+				}, 20L * 10);
+			}
+		} catch (SQLException e) {
+			log.log(Level.SEVERE, "Failed to check if username column exists");
 		}
 	}
 
@@ -45,7 +106,7 @@ public class MySQL implements DataManager{
 			
 			Statement st = con.createStatement();
 			st.setQueryTimeout(30);
-			st.executeUpdate("CREATE TABLE IF NOT EXISTS " + table + " (username VARCHAR(130) NOT NULL UNIQUE,password VARCHAR(300) NOT NULL,encryption INT,ip VARCHAR(130) NOT NULL);");
+			st.executeUpdate("CREATE TABLE IF NOT EXISTS " + table + " (unique_user_id VARCHAR(130) NOT NULL UNIQUE,password VARCHAR(300) NOT NULL,encryption INT,ip VARCHAR(130) NOT NULL);");
 		} catch(SQLException e) {
 			log.log(Level.SEVERE, "Faield to load MySQL", e);
 		}
@@ -62,10 +123,10 @@ public class MySQL implements DataManager{
 	}
 
 	@Override
-	public boolean isRegistered(String user) {
+	public boolean isRegistered(String uuid) {
 		try {
-			PreparedStatement ps = con.prepareStatement("SELECT * FROM " + table + " WHERE username=?;");
-			ps.setString(1, user);
+			PreparedStatement ps = con.prepareStatement("SELECT * FROM " + table + " WHERE unique_user_id=?;");
+			ps.setString(1, uuid);
 			ResultSet result = ps.executeQuery();
 			return result.next();
 		} catch(SQLException e) {
@@ -75,10 +136,10 @@ public class MySQL implements DataManager{
 	}
 
 	@Override
-	public void register(String user, String password, int encryption, String ip) {
+	public void register(String uuid, String password, int encryption, String ip) {
 		try {
-			PreparedStatement ps = con.prepareStatement("INSERT INTO " + table + "(username,password,encryption,ip) VALUES(?,?,?,?);");
-			ps.setString(1, user);
+			PreparedStatement ps = con.prepareStatement("INSERT INTO " + table + "unique_user_id,password,encryption,ip) VALUES(?,?,?,?);");
+			ps.setString(1, uuid);
 			ps.setString(2, password);
 			ps.setInt(3, encryption);
 			ps.setString(4, ip);
@@ -89,12 +150,12 @@ public class MySQL implements DataManager{
 	}
 
 	@Override
-	public void updatePassword(String user, String password, int encryption) {
+	public void updatePassword(String uuid, String password, int encryption) {
 		try {
-			PreparedStatement ps = con.prepareStatement("UPDATE " + table + " SET password=?,encryption=? WHERE username=?;");
+			PreparedStatement ps = con.prepareStatement("UPDATE " + table + " SET password=?,encryption=? WHERE unique_user_id=?;");
 			ps.setString(1, password);
 			ps.setInt(2, encryption);
-			ps.setString(3, user);
+			ps.setString(3, uuid);
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			log.log(Level.SEVERE, "Failed to update user password", e);
@@ -102,11 +163,11 @@ public class MySQL implements DataManager{
 	}
 
 	@Override
-	public void updateIp(String user, String ip) {
+	public void updateIp(String uuid, String ip) {
 		try {
-			PreparedStatement ps = con.prepareStatement("UPDATE " + table + " SET ip=? WHERE username=?;");
+			PreparedStatement ps = con.prepareStatement("UPDATE " + table + " SET ip=? WHERE unique_user_id=?;");
 			ps.setString(1, ip);
-			ps.setString(2, user);
+			ps.setString(2, uuid);
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			log.log(Level.SEVERE, "Failed to update user ip", e);
@@ -114,10 +175,10 @@ public class MySQL implements DataManager{
 	}
 
 	@Override
-	public String getPassword(String user) {
+	public String getPassword(String uuid) {
 		try {
-			PreparedStatement ps = con.prepareStatement("SELECT * FROM " + table + " WHERE username=?;");
-			ps.setString(1, user);
+			PreparedStatement ps = con.prepareStatement("SELECT * FROM " + table + " WHERE unique_user_id=?;");
+			ps.setString(1, uuid);
 			ResultSet result = ps.executeQuery();
 			if(result.next())
 				return result.getString("password");
@@ -130,10 +191,10 @@ public class MySQL implements DataManager{
 	}
 
 	@Override
-	public int getEncryptionTypeId(String user) {
+	public int getEncryptionTypeId(String uuid) {
 		try {
-			PreparedStatement ps = con.prepareStatement("SELECT * FROM " + table + " WHERE username=?;");
-			ps.setString(1, user);
+			PreparedStatement ps = con.prepareStatement("SELECT * FROM " + table + " WHERE unique_user_id=?;");
+			ps.setString(1, uuid);
 			ResultSet result = ps.executeQuery();
 			if(result.next())
 				return result.getInt("encryption");
@@ -146,10 +207,10 @@ public class MySQL implements DataManager{
 	}
 
 	@Override
-	public String getIp(String user) {
+	public String getIp(String uuid) {
 		try {
-			PreparedStatement ps = con.prepareStatement("SELECT * FROM " + table + " WHERE username=?;");
-			ps.setString(1, user);
+			PreparedStatement ps = con.prepareStatement("SELECT * FROM " + table + " WHERE unique_user_id=?;");
+			ps.setString(1, uuid);
 			ResultSet result = ps.executeQuery();
 			if(result.next())
 				return result.getString("ip");
@@ -162,10 +223,10 @@ public class MySQL implements DataManager{
 	}
 
 	@Override
-	public void removeUser(String user) {
+	public void removeUser(String uuid) {
 		try {
-			PreparedStatement ps = con.prepareStatement("DELETE FROM " + table + " WHERE username=?;");
-			ps.setString(1, user);
+			PreparedStatement ps = con.prepareStatement("DELETE FROM " + table + " WHERE unique_user_id=?;");
+			ps.setString(1, uuid);
 			ps.executeUpdate();
 		} catch(SQLException e) {
 			log.log(Level.SEVERE, "Failed to remove user", e);
