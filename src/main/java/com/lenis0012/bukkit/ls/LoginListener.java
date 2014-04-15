@@ -82,14 +82,14 @@ public class LoginListener implements Listener {
 		
 		Player player = event.getPlayer();
 		String name = player.getName().toLowerCase();
+		String uuid = player.getUniqueId().toString().replaceAll("-", "");
 		String ip = player.getAddress().getAddress().toString();
 
-		if (!plugin.data.isRegistered(name)) {
-			plugin.data.updateIp(name, ip);
-		}
-
-		if (plugin.sesUse && !plugin.authList.containsKey(name) && plugin.data.isRegistered(name)) {
-			plugin.thread.getSession().put(name, plugin.sesDelay);
+		if (plugin.data.isRegistered(uuid)) {
+			plugin.data.updateIp(uuid, ip);
+			if (plugin.sesUse && !plugin.authList.containsKey(name)) {
+				plugin.thread.getSession().put(name, plugin.sesDelay);
+			}
 		}
 	}
 
