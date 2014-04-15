@@ -90,7 +90,7 @@ public class SQLite implements DataManager {
 							log.log(Level.INFO, "Conversion completed.");
 							IS_CONVERTING = false;
 						} catch (SQLException e) {
-							log.log(Level.SEVERE, "Failed to convert to uuid, this is bad.");
+							log.log(Level.SEVERE, "Failed to convert to uuid, this is bad.", e);
 						}
 					}
 				}, 20L * 10);

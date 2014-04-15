@@ -76,6 +76,10 @@ public class LoginListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void onPlayerQuit(PlayerQuitEvent event) {
+		if(MySQL.IS_CONVERTING || SQLite.IS_CONVERTING) {
+			return;
+		}
+		
 		Player player = event.getPlayer();
 		String name = player.getName().toLowerCase();
 		String ip = player.getAddress().getAddress().toString();
