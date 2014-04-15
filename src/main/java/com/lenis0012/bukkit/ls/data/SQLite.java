@@ -141,7 +141,7 @@ public class SQLite implements DataManager {
 	@Override
 	public void register(String uuid, String password, int encryption, String ip) {
 		try {
-			PreparedStatement ps = con.prepareStatement("INSERT INTO usersunique_user_id,password,encryption,ip) VALUES(?,?,?,?);");
+			PreparedStatement ps = con.prepareStatement("INSERT INTO users(usersunique_user_id,password,encryption,ip) VALUES(?,?,?,?);");
 			ps.setString(1, uuid);
 			ps.setString(2, password);
 			ps.setInt(3, encryption);
