@@ -48,7 +48,7 @@ public class SQLite implements DataManager {
 		try {
 			DatabaseMetaData md = con.getMetaData();
 			ResultSet rs = md.getColumns(null, null, "users", "username");
-			if(!rs.next()) {
+			if(rs.next()) {
 				log.log(Level.INFO, "Username column was detected, conversion to UUID will begin in 10 seconds.");
 				log.log(Level.INFO, "This can not be reversed, stop the server NOW if you don't want this.");
 				IS_CONVERTING = true;
