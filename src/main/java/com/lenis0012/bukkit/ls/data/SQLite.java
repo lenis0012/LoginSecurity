@@ -79,6 +79,8 @@ public class SQLite implements DataManager {
 							long etaDuration = timeTaken * loginData.size() / 1000;
 							log.log(Level.INFO, "The total process will take at least " + etaDuration + " seconds");
 							
+							closeConnection();
+							openConnection();
 							con.createStatement().executeUpdate("DROP TABLE users;");
 							closeConnection();
 							openConnection();
