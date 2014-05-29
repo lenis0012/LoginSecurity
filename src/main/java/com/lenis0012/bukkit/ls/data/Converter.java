@@ -1,25 +1,16 @@
 package com.lenis0012.bukkit.ls.data;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Set;
 import java.util.logging.Logger;
-
-import javax.net.ssl.HttpsURLConnection;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginManager;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import com.cypherx.xauth.xAuth;
 import com.lenis0012.bukkit.ls.LoginSecurity;
@@ -113,44 +104,5 @@ public class Converter {
 				log.warning("[LoginSecurity] Failed to unload xAuth: "+e.getMessage());
 			}
 		}
-	}
-	
-	public static void main(String[] args) {
-		long startTime = System.currentTimeMillis();
-		for(int i = 0; i < 1; i++) {
-			getUUIDByUsername("lenis0012");
-		}
-		
-		System.out.println(System.currentTimeMillis() - startTime);
-	}
-	
-	public static String getUUIDByUsername(String input) {
-		String uuid = null;
-
-		try {
-			HttpsURLConnection con = (HttpsURLConnection) new URL("https://api.mojang.com/profiles/page/1").openConnection();
-
-			con.setRequestMethod("POST");
-			con.setRequestProperty("Content-Type", "application/json");
-			con.setDoOutput(true);
-
-			String toPost = "{\"name\":\"" + input + "\",\"agent\":\"minecraft\"}";
-			DataOutputStream dos = new DataOutputStream(con.getOutputStream());
-
-			dos.writeBytes(toPost);
-			dos.close();
-
-			BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()));
-			String json = br.readLine();
-
-			br.close();
-			// Parse it
-			JSONParser parser = new JSONParser();
-			Object obj = parser.parse(json);
-			uuid = (String) ((JSONObject) ((JSONArray) ((JSONObject) obj).get("profiles")).get(0)).get("id");
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		return uuid;
 	}
 }

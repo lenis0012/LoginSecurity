@@ -8,13 +8,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import com.google.common.base.Charsets;
 import com.lenis0012.bukkit.ls.LoginSecurity;
 import com.lenis0012.bukkit.ls.encryption.EncryptionType;
 
@@ -50,6 +54,7 @@ public class MySQL implements DataManager {
 					public void run() {
 						try {
 							log.log(Level.INFO, "Conversion to UUID has started, this may take some time");
+							List<String> usernames = new ArrayList<String>();
 							List<Object[]> loginData = new ArrayList<Object[]>();
 							PreparedStatement ps = con.prepareStatement("SELECT * FROM " + table);
 							ResultSet result = ps.executeQuery();
@@ -65,17 +70,29 @@ public class MySQL implements DataManager {
 							}
 							
 							log.log(Level.INFO, "Loaded " + loginData.size() + " columns, starting to convert usernames to uuid");
-							long beginTime = System.currentTimeMillis();
-							Converter.getUUIDByUsername("lenis0012");
-							long timeTaken = System.currentTimeMillis() - beginTime;
-							long etaDuration = timeTaken * loginData.size() / 1000;
-							log.log(Level.INFO, "The total process will take at least " + etaDuration + " seconds");
+							UUIDFetcher fetcher = new UUIDFetcher(usernames);
+							Map<String, UUID> uuids;
+							
+							try {
+								if(Bukkit.getOnlineMode()) {
+									uuids = fetcher.call();
+								} else {
+									log.log(Level.INFO, "Offline-mode detected. uuids will be converted locally");
+									uuids = new HashMap<String, UUID>();
+									for(String name : usernames) {
+										uuids.put(name, UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(Charsets.UTF_8)));
+									}
+								}
+							} catch (Exception e) {
+								log.log(Level.SEVERE, "Failed to convert uuids", e);
+								return;
+							}
 							
 							dropTable(table);
 							closeConnection();
 							openConnection();
 							for(Object[] data : loginData) {
-								String uuid = Converter.getUUIDByUsername((String) data[0]);
+								String uuid = uuids.get((String) data[0]).toString().replaceAll("-", "");
 								register(uuid, (String) data[1], (Integer) data[2], (String) data[3]);
 							}
 							
