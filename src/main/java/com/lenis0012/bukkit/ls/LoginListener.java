@@ -2,6 +2,7 @@ package com.lenis0012.bukkit.ls;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -24,6 +25,9 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import com.lenis0012.bukkit.ls.data.MySQL;
 import com.lenis0012.bukkit.ls.data.SQLite;
 import com.lenis0012.bukkit.ls.util.StringUtil;
+import com.lenis0012.bukkit.ls.util.Updater;
+import com.lenis0012.bukkit.ls.util.Updater.UpdateResult;
+
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -55,6 +59,22 @@ public class LoginListener implements Listener {
 		}
 
 		plugin.playerJoinPrompt(player);
+		if(player.hasPermission("ls.admin")) {
+			Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
+
+				@Override
+				public void run() {
+					Updater updater = plugin.getUpdater();
+					if(updater.getResult() == UpdateResult.UPDATE_AVAILABLE) {
+						player.sendMessage(ChatColor.translateAlternateColorCodes('&', String.format(
+								"&aA new &7%s &7build for LoginSecurtiy was found, you can get &7%s &afor &7%s &aon BukkitDev!",
+								updater.getLatestType().toString().toLowerCase(),
+								updater.getLatestName(),
+								updater.getLatestGameVersion())));
+					}
+				}
+			}, 20L);
+		}
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -84,13 +104,17 @@ public class LoginListener implements Listener {
 		String name = player.getName().toLowerCase();
 		String uuid = player.getUniqueId().toString().replaceAll("-", "");
 		String ip = player.getAddress().getAddress().toString();
-
-		if (plugin.data.isRegistered(uuid)) {
+		
+		if(plugin.authList.containsKey(name) && plugin.spawntp && plugin.loginLocations.containsKey(name)) {
+			player.teleport(plugin.loginLocations.remove(name));
+		} if (plugin.data.isRegistered(uuid)) {
 			plugin.data.updateIp(uuid, ip);
 			if (plugin.sesUse && !plugin.authList.containsKey(name)) {
 				plugin.thread.getSession().put(name, plugin.sesDelay);
 			}
 		}
+		
+		plugin.authList.remove(name);
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)

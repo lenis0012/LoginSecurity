@@ -111,6 +111,7 @@ public class ThreadManager {
 
 	public void startTimeoutTask() {
 		to = plugin.getServer().getScheduler().runTaskTimer(plugin, new Runnable() {
+			@SuppressWarnings("deprecation")
 			@Override
 			public void run() {
 				Iterator<String> it = timeout.keySet().iterator();

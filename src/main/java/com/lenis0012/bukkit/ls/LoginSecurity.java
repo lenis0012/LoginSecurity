@@ -30,12 +30,16 @@ import com.lenis0012.bukkit.ls.data.MySQL;
 import com.lenis0012.bukkit.ls.data.SQLite;
 import com.lenis0012.bukkit.ls.encryption.EncryptionType;
 import com.lenis0012.bukkit.ls.util.Metrics;
+import com.lenis0012.bukkit.ls.util.Updater;
+import com.lenis0012.bukkit.ls.util.Updater.UpdateType;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.logging.Level;
+
 import org.bukkit.ChatColor;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -58,6 +62,7 @@ public class LoginSecurity extends JavaPlugin {
 	public static String encoder;
 	private static Logger serverLog;
 	private CommandFilter commandFilter = new CommandFilter();
+	private Updater updater;
 
 	@Override
 	public void onEnable() {
@@ -78,6 +83,7 @@ public class LoginSecurity extends JavaPlugin {
 		config.addDefault("settings.timeout.use", true);
 		config.addDefault("settings.timeout.timeout (sec)", 60);
 		config.addDefault("settings.table prefix", "ls_");
+		config.addDefault("settings.update-checker", true);
 		config.addDefault("MySQL.use", false);
 		config.addDefault("MySQL.host", "localhost");
 		config.addDefault("MySQL.port", 3306);
@@ -115,6 +121,8 @@ public class LoginSecurity extends JavaPlugin {
 		}
 		if (timeUse) {
 			thread.startTimeoutTask();
+		} if(config.getBoolean("settings.update-checker")) {
+			this.updater = new Updater(this, 41702, getFile(), UpdateType.NO_DOWNLOAD, true);
 		}
 
 		thread.startMainTask();
@@ -137,12 +145,10 @@ public class LoginSecurity extends JavaPlugin {
 		try {
 			Metrics metrics = new Metrics(this);
 			metrics.start();
-			if (config.getBoolean("settings.update-checker")) {
-				//TODO: Recode update checker
-			}
 		} catch (Exception e) {
 			log.info("[LoginSecurity] Failed sending stats to mcstats.org");
 		}
+		
 		// Filter logs
 		serverLog = this.getServer().getLogger();
 		commandFilter.prevFilter = log.getFilter();
@@ -179,6 +185,10 @@ public class LoginSecurity extends JavaPlugin {
 			log.log(Level.SEVERE, "[LoginSecurity] Could not save to auth list (check permissions?)");
 		}
 
+	}
+	
+	public Updater getUpdater() {
+		return updater;
 	}
 
 	public void saveAuthList(Map<String, Boolean> map) throws IOException {
