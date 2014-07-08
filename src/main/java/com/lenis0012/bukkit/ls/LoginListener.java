@@ -21,6 +21,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerPreLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 import com.lenis0012.bukkit.ls.data.MySQL;
 import com.lenis0012.bukkit.ls.data.SQLite;
@@ -116,6 +117,15 @@ public class LoginListener implements Listener {
 		
 		plugin.authList.remove(name);
 	}
+	
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onPlayerRespawn(PlayerRespawnEvent event) {
+		Player player = event.getPlayer();
+		String name = player.getName().toLowerCase();
+		if(plugin.loginLocations.containsKey(name)) {
+			plugin.loginLocations.put(name, event.getRespawnLocation());
+		}
+	}
 
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void onPlayerMove(PlayerMoveEvent event) {
@@ -181,7 +191,7 @@ public class LoginListener implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-	public void OnHealthRegain(EntityRegainHealthEvent event) {
+	public void onHealthRegain(EntityRegainHealthEvent event) {
 		Entity entity = event.getEntity();
 		if (!(entity instanceof Player)) {
 			return;
@@ -195,7 +205,7 @@ public class LoginListener implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-	public void OnFoodLevelChange(FoodLevelChangeEvent event) {
+	public void onFoodLevelChange(FoodLevelChangeEvent event) {
 		Entity entity = event.getEntity();
 		if (!(entity instanceof Player)) {
 			return;
