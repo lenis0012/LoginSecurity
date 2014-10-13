@@ -50,7 +50,7 @@ public class LoginListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		final Player player = event.getPlayer();
-		
+
 		if(MySQL.IS_CONVERTING || SQLite.IS_CONVERTING) {
 			player.kickPlayer("The server is currently converting all login data, please join back later.");
 			return;
@@ -66,12 +66,14 @@ public class LoginListener implements Listener {
 				@Override
 				public void run() {
 					Updater updater = plugin.getUpdater();
-					if(updater.getResult() == UpdateResult.UPDATE_AVAILABLE) {
-						player.sendMessage(ChatColor.translateAlternateColorCodes('&', String.format(
+					if (updater != null) {
+						if(updater.getResult() == UpdateResult.UPDATE_AVAILABLE) {
+							player.sendMessage(ChatColor.translateAlternateColorCodes('&', String.format(
 								"&aA new &7%s &7build for LoginSecurtiy was found, you can get &7%s &afor &7%s &aon BukkitDev!",
 								updater.getLatestType().toString().toLowerCase(),
 								updater.getLatestName(),
 								updater.getLatestGameVersion())));
+						}
 					}
 				}
 			}, 20L);
@@ -100,12 +102,12 @@ public class LoginListener implements Listener {
 		if(MySQL.IS_CONVERTING || SQLite.IS_CONVERTING) {
 			return;
 		}
-		
+
 		Player player = event.getPlayer();
 		String name = player.getName().toLowerCase();
 		String uuid = player.getUniqueId().toString().replaceAll("-", "");
 		String ip = player.getAddress().getAddress().toString();
-		
+
 		if(plugin.authList.containsKey(name) && plugin.spawntp && plugin.loginLocations.containsKey(name)) {
 			player.teleport(plugin.loginLocations.remove(name));
 		} if (plugin.data.isRegistered(uuid)) {
@@ -114,10 +116,10 @@ public class LoginListener implements Listener {
 				plugin.thread.getSession().put(name, plugin.sesDelay);
 			}
 		}
-		
+
 		plugin.authList.remove(name);
 	}
-	
+
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
 		Player player = event.getPlayer();
