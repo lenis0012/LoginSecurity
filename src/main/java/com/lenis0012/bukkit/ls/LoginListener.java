@@ -23,8 +23,7 @@ import org.bukkit.event.player.PlayerPreLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
-import com.lenis0012.bukkit.ls.data.MySQL;
-import com.lenis0012.bukkit.ls.data.SQLite;
+import com.lenis0012.bukkit.ls.data.UUIDConverter;
 import com.lenis0012.bukkit.ls.util.StringUtil;
 import com.lenis0012.bukkit.ls.util.Updater;
 import com.lenis0012.bukkit.ls.util.Updater.UpdateResult;
@@ -51,7 +50,7 @@ public class LoginListener implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		final Player player = event.getPlayer();
 		
-		if(MySQL.IS_CONVERTING || SQLite.IS_CONVERTING) {
+		if(UUIDConverter.IS_CONVERTING) {
 			player.kickPlayer("The server is currently converting all login data, please join back later.");
 			return;
 		} if (!player.getName().equals(StringUtil.cleanString(player.getName()))) {
@@ -97,7 +96,7 @@ public class LoginListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void onPlayerQuit(PlayerQuitEvent event) {
-		if(MySQL.IS_CONVERTING || SQLite.IS_CONVERTING) {
+		if(UUIDConverter.IS_CONVERTING) {
 			return;
 		}
 		

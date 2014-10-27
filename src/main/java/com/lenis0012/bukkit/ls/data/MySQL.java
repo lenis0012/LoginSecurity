@@ -7,24 +7,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import com.google.common.base.Charsets;
-import com.lenis0012.bukkit.ls.LoginSecurity;
 import com.lenis0012.bukkit.ls.encryption.EncryptionType;
 
 public class MySQL implements DataManager {
-	public static boolean IS_CONVERTING = false;
-	
 	private Logger log = Logger.getLogger("Minecraft.LoginSecruity");
 	private FileConfiguration config;
 	private Connection con;
@@ -41,72 +31,8 @@ public class MySQL implements DataManager {
 		}
 		
 		this.openConnection();
-		try {
-			DatabaseMetaData md = con.getMetaData();
-			ResultSet rs = md.getColumns(null, null, table, "username");
-			if(rs.next()) {
-				log.log(Level.INFO, "Username column was detected, conversion to UUID will begin in 10 seconds.");
-				log.log(Level.INFO, "This can not be reversed, stop the server NOW if you don't want this.");
-				IS_CONVERTING = true;
-				Bukkit.getScheduler().runTaskLaterAsynchronously(LoginSecurity.instance, new Runnable() {
-
-					@Override
-					public void run() {
-						try {
-							log.log(Level.INFO, "Conversion to UUID has started, this may take some time");
-							List<String> usernames = new ArrayList<String>();
-							List<Object[]> loginData = new ArrayList<Object[]>();
-							PreparedStatement ps = con.prepareStatement("SELECT * FROM " + table);
-							ResultSet result = ps.executeQuery();
-							while(result.next()) {
-								Object[] data = new Object[] {
-									result.getString("username"),
-									result.getString("password"),
-									result.getInt("encryption"),
-									result.getString("ip")
-								};
-								
-								loginData.add(data);
-							}
-							
-							log.log(Level.INFO, "Loaded " + loginData.size() + " columns, starting to convert usernames to uuid");
-							UUIDFetcher fetcher = new UUIDFetcher(usernames);
-							Map<String, UUID> uuids;
-							
-							try {
-								if(Bukkit.getOnlineMode()) {
-									uuids = fetcher.call();
-								} else {
-									log.log(Level.INFO, "Offline-mode detected. uuids will be converted locally");
-									uuids = new HashMap<String, UUID>();
-									for(String name : usernames) {
-										uuids.put(name, UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(Charsets.UTF_8)));
-									}
-								}
-							} catch (Exception e) {
-								log.log(Level.SEVERE, "Failed to convert uuids", e);
-								return;
-							}
-							
-							dropTable(table);
-							closeConnection();
-							openConnection();
-							for(Object[] data : loginData) {
-								String uuid = uuids.get((String) data[0]).toString().replaceAll("-", "");
-								register(uuid, (String) data[1], (Integer) data[2], (String) data[3]);
-							}
-							
-							log.log(Level.INFO, "Conversion completed.");
-							IS_CONVERTING = false;
-						} catch (SQLException e) {
-							log.log(Level.SEVERE, "Failed to convert to uuid, this is bad.");
-						}
-					}
-				}, 20L * 10);
-			}
-		} catch (SQLException e) {
-			log.log(Level.SEVERE, "Failed to check if username column exists");
-		}
+		UUIDConverter uuidConverter = new UUIDConverter(this, log, table);
+		uuidConverter.convert();
 	}
 
 	@Override

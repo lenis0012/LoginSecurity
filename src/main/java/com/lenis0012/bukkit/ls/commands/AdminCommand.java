@@ -10,7 +10,7 @@ import org.bukkit.command.CommandSender;
 
 import com.google.common.base.Charsets;
 import com.lenis0012.bukkit.ls.LoginSecurity;
-import com.lenis0012.bukkit.ls.data.UUIDFetcher;
+import com.lenis0012.bukkit.ls.util.UUIDFetcher;
 
 public class AdminCommand implements CommandExecutor {
 	
