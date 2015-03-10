@@ -19,7 +19,6 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.event.player.PlayerPreLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
@@ -37,7 +36,6 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-@SuppressWarnings("deprecation")
 public class LoginListener implements Listener {
 
 	private LoginSecurity plugin;
@@ -89,7 +87,7 @@ public class LoginListener implements Listener {
 			}
 
 			if (pname.equalsIgnoreCase(name)) {
-				event.setResult(Result.KICK_OTHER);
+				event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
 				event.setKickMessage("A player with this name is already online!");
 			}
 		}
