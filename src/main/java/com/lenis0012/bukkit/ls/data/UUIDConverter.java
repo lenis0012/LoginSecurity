@@ -71,15 +71,7 @@ public class UUIDConverter {
 								if(Bukkit.getOnlineMode()) {
 									uuids = fetcher.call();
 								} else {
-									boolean bungee = false;
-									try {
-										Class.forName("org.spigotmc.SpigotConfig");
-										bungee = SpigotUtil.isBungee();
-									} catch(Exception e) {
-										;
-									}
-									
-									if(bungee) {
+									if(SpigotUtil.isBungee()) {
 										logger.log(Level.INFO, "Bungeecord-mode detected. uuids will be converted with online-mode");
 										uuids = fetcher.call();
 									} else {
