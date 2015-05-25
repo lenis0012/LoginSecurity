@@ -1,78 +1,79 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-  <groupId>me.lenis0012.ls</groupId>
-  <artifactId>LoginSecurity</artifactId>
-  <version>2.0.10</version>
-  <packaging>jar</packaging>
+    <groupId>me.lenis0012.ls</groupId>
+    <artifactId>LoginSecurity</artifactId>
+    <version>2.0.10</version>
+    <packaging>jar</packaging>
 
-  <name>LoginSecurity</name>
-  <url>http://dev.bukkit.org/server-mods/loginsecurity/</url>
+    <name>LoginSecurity</name>
+    <url>http://dev.bukkit.org/server-mods/loginsecurity/</url>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
-  <repositories>
-    <!-- Repo for access to CraftBukkit -->
-    <repository>
-      <id>bukkit-repo</id>
-      <url>http://repo.bukkit.org/content/groups/public</url>
-    </repository>
-  </repositories>
+    <repositories>
+        <!-- Repo for access to CraftBukkit -->
+        <repository>
+            <id>md5-repo</id>
+            <url>http://repo.md-5.net/content/groups/public/</url>
+        </repository>
+    </repositories>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.bukkit</groupId>
-      <artifactId>craftbukkit</artifactId>
-      <version>1.7.2-R0.2</version>
-    </dependency>
-    <dependency>
-      <groupId>com.cypherx</groupId>
-      <artifactId>xAuth</artifactId>
-      <version>2.0.26</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/lib/xAuth.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>org.bukkit</groupId>
+            <artifactId>bukkit</artifactId>
+            <version>1.7.9-R0.3-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.cypherx</groupId>
+            <artifactId>xAuth</artifactId>
+            <version>2.0.26</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/xAuth.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
-  <!-- Build -->
-  <build>
-    <!-- Resources -->
-    <resources>
-	  <resource>
-	    <directory>src/main/java/</directory>
-		<includes>
-          <include>**</include>
-		</includes>
-        <!-- Don't add source files to target jar -->
-	    <excludes>
-		  <exclude>com/lenis0012/bukkit/**/*.java</exclude>
-		</excludes>
-	  </resource>
-	</resources>
-	<defaultGoal>clean install</defaultGoal>
-	<!-- Plugins -->
-	<plugins>
-	  <!-- Compiler plugin -->
-	  <plugin>
-	    <groupId>org.apache.maven.plugins</groupId>
-		<artifactId>maven-compiler-plugin</artifactId>
-		<version>2.4</version>
-		<configuration>
-		  <source>1.6</source>
-		  <target>1.6</target>
-		  <showWarnings>true</showWarnings>
-		  <showDeprecation>false</showDeprecation>
-		</configuration>
-      </plugin>
-    </plugins>
-  </build>
+    <!-- Build -->
+    <build>
+        <!-- Resources -->
+        <resources>
+            <resource>
+                <directory>src/main/java/</directory>
+                <includes>
+                    <include>**</include>
+                </includes>
+                <!-- Don't add source files to target jar -->
+                <excludes>
+                    <exclude>com/lenis0012/bukkit/**/*.java</exclude>
+                </excludes>
+            </resource>
+        </resources>
+        <defaultGoal>clean install</defaultGoal>
+        <!-- Plugins -->
+        <plugins>
+            <!-- Compiler plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                    <showWarnings>true</showWarnings>
+                    <showDeprecation>false</showDeprecation>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
