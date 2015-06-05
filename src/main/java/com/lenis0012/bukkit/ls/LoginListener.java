@@ -36,6 +36,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+@SuppressWarnings("deprecation")
 public class LoginListener implements Listener {
 
 	private LoginSecurity plugin;
