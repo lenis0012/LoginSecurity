@@ -12,6 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -43,6 +44,7 @@ import java.util.logging.Level;
 import org.bukkit.ChatColor;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import sun.rmi.runtime.Log;
 
 public class LoginSecurity extends JavaPlugin {
 
@@ -63,12 +65,15 @@ public class LoginSecurity extends JavaPlugin {
 	private static Logger serverLog;
 	private CommandFilter commandFilter = new CommandFilter();
 	private Updater updater;
+	public static YamlConfiguration LANG;
+	public static File LANG_FILE;
 
 	@Override
 	public void onEnable() {
 		//setup quickcalls
 		FileConfiguration config = this.getConfig();
 		PluginManager pm = this.getServer().getPluginManager();
+		loadLang();
 
 		//setup config
 		config.addDefault("settings.password-required", false);
@@ -295,10 +300,10 @@ public class LoginSecurity extends JavaPlugin {
 			return;
 		} else if (data.isRegistered(uuid)) {
 			authList.put(player.getName().toLowerCase(), false);
-			player.sendMessage(ChatColor.RED + "Please login using /login <password>");
+			player.sendMessage(Lang.LOG_MSG.toString());
 		} else if (required) {
 			authList.put(player.getName().toLowerCase(), true);
-			player.sendMessage(ChatColor.RED + "Please register using /register <password>");
+			player.sendMessage(Lang.REG_MSG.toString());
 		} else {
 			return;
 		}
@@ -331,5 +336,32 @@ public class LoginSecurity extends JavaPlugin {
 		}
 		// ensure that player does not drown after logging in
 		player.setRemainingAir(player.getMaximumAir());
+	}
+
+	public void loadLang() {
+		File lang = new File(getDataFolder(), "lang.yml");
+		YamlConfiguration conf = YamlConfiguration.loadConfiguration(lang);
+		for(Lang item:Lang.values()) {
+			if (conf.getString(item.getPath()) == null) {
+				conf.set(item.getPath(), item.getDefault());
+			}
+		}
+		Lang.setFile(conf);
+		LoginSecurity.LANG = conf;
+		LoginSecurity.LANG_FILE = lang;
+		try {
+			conf.save(getLangFile());
+		} catch(IOException e) {
+			log.log(Level.WARNING, "Failed to save lang.yml.");
+			e.printStackTrace();
+		}
+	}
+
+	public YamlConfiguration getLang() {
+		return LANG;
+	}
+
+	public File getLangFile() {
+		return LANG_FILE;
 	}
 }
