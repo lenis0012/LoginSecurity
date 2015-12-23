@@ -2,6 +2,7 @@ package com.lenis0012.bukkit.ls.commands;
 
 import java.util.UUID;
 
+import com.lenis0012.bukkit.ls.Lang;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -18,7 +19,7 @@ public class AdminCommand implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		LoginSecurity plugin = LoginSecurity.instance;
 		if(!sender.hasPermission("ls.admin")) {
-			sender.sendMessage(ChatColor.RED + "You do not have permission!");
+			sender.sendMessage(Lang.NO_PERM.toString());
 			return true;
 		}
 		
@@ -32,12 +33,12 @@ public class AdminCommand implements CommandExecutor {
 				String uuid = Bukkit.getOnlineMode() ? UUID.nameUUIDFromBytes(("OfflinePlayer:" + user).getBytes(Charsets.UTF_8)).toString().replaceAll("-", "") : UUIDFetcher.getUUIDOf(user).toString().replaceAll("-", "");
 				if(uuid != null && !uuid.isEmpty() && plugin.data.isRegistered(uuid)) {
 					plugin.data.removeUser(uuid);
-					sender.sendMessage(ChatColor.GREEN + "Removed user from accounts database!");
+					sender.sendMessage(Lang.REM_USER_FROM_DB.toString());
 				} else
-					sender.sendMessage(ChatColor.RED + "Invalid username");
+					sender.sendMessage(Lang.INVALID_USERNAME.toString());
 			} else if(args.length >= 1 && args[0].equalsIgnoreCase("reload")) {
 				plugin.reloadConfig();
-				sender.sendMessage(ChatColor.GREEN + "Plugin config reloaded!");
+				sender.sendMessage(Lang.RELOADED.toString());
 			}
 			
 			return true;

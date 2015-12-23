@@ -1,5 +1,6 @@
 package com.lenis0012.bukkit.ls.commands;
 
+import com.lenis0012.bukkit.ls.Lang;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -14,7 +15,7 @@ public class RmPassCommand implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		LoginSecurity plugin = LoginSecurity.instance;
 		if(!(sender instanceof Player)) {
-			sender.sendMessage("You must be a player");
+			sender.sendMessage(Lang.MUST_BE_PLAYER.toString());
 			return true;
 		}
 		
@@ -22,22 +23,22 @@ public class RmPassCommand implements CommandExecutor {
 		String uuid = player.getUniqueId().toString().replaceAll("-", "");
 		
 		if(!plugin.data.isRegistered(uuid)) {
-			player.sendMessage(ChatColor.RED+"You are not registered on the server");
+			player.sendMessage(Lang.NOT_REG.toString());
 			return true;
 		}if(args.length < 1) {
-			player.sendMessage(ChatColor.RED+"Not enough arguments");
-			player.sendMessage("Usage: "+cmd.getUsage());
+			player.sendMessage(Lang.INVALID_ARGS.toString());
+			player.sendMessage(Lang.USAGE + cmd.getUsage());
 			return true;
 		} if(!PasswordManager.checkPass(uuid, args[0])) {
-			player.sendMessage(ChatColor.RED+"Password Incorrect");
+			player.sendMessage(Lang.INVALID_PSW.toString());
 			return true;
 		} if(plugin.required) {
-			player.sendMessage(ChatColor.RED+"Passwords are required on this server!");
+			player.sendMessage(Lang.REQUIRED_PSW.toString());
 			return true;
 		}
 		
 		plugin.data.removeUser(uuid);
-		player.sendMessage(ChatColor.GREEN+"Succesfully removed your password");
+		player.sendMessage(Lang.REMOVED_PSW.toString());
 		return true;
 	}
 }
