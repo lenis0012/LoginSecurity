@@ -79,15 +79,15 @@ public class LoginListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
-		String name = event.getName().toLowerCase();
+		String uuid = event.getUniqueId().toString();
 		//Check if the player is already online
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-			String pname = player.getName().toLowerCase();
-			if (plugin.authList.containsKey(pname)) {
+			String puuid = player.getUniqueId().toString();
+			if (plugin.authList.containsKey(puuid)) {
 				continue;
 			}
 
-			if (pname.equalsIgnoreCase(name)) {
+			if (puuid.equalsIgnoreCase(uuid)) {
 				event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
 				event.setKickMessage("A player with this name is already online!");
 			}
@@ -101,39 +101,38 @@ public class LoginListener implements Listener {
 		}
 
 		Player player = event.getPlayer();
-		String name = player.getName().toLowerCase();
-		String uuid = player.getUniqueId().toString().replaceAll("-", "");
+		String uuid = player.getUniqueId().toString();
 		String ip = player.getAddress().getAddress().toString();
 
-		if(plugin.authList.containsKey(name) && plugin.spawntp && plugin.loginLocations.containsKey(name)) {
-			player.teleport(plugin.loginLocations.remove(name));
+		if(plugin.authList.containsKey(uuid) && plugin.spawntp && plugin.loginLocations.containsKey(uuid)) {
+			player.teleport(plugin.loginLocations.remove(uuid));
 		} if (plugin.data.isRegistered(uuid)) {
 			plugin.data.updateIp(uuid, ip);
-			if (plugin.sesUse && !plugin.authList.containsKey(name)) {
-				plugin.thread.getSession().put(name, plugin.sesDelay);
+			if (plugin.sesUse && !plugin.authList.containsKey(uuid)) {
+				plugin.thread.getSession().put(uuid, plugin.sesDelay);
 			}
 		}
 
-		plugin.authList.remove(name);
+		plugin.authList.remove(uuid);
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
 		Player player = event.getPlayer();
-		String name = player.getName().toLowerCase();
-		if(plugin.loginLocations.containsKey(name)) {
-			plugin.loginLocations.put(name, event.getRespawnLocation());
+		String uuid = player.getUniqueId().toString();
+		if(plugin.loginLocations.containsKey(uuid)) {
+			plugin.loginLocations.put(uuid, event.getRespawnLocation());
 		}
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Player player = event.getPlayer();
-		String name = player.getName().toLowerCase();
+		String uuid = player.getUniqueId().toString();
 		Location from = event.getFrom();
 		Location to = event.getTo().clone();
 
-		if (plugin.authList.containsKey(name)) {
+		if (plugin.authList.containsKey(uuid)) {
 			to.setX(from.getX());
 			to.setZ(from.getZ());
 			event.setTo(to);
@@ -143,9 +142,9 @@ public class LoginListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void onBlockPlace(BlockPlaceEvent event) {
 		Player player = event.getPlayer();
-		String name = player.getName().toLowerCase();
+		String uuid = player.getUniqueId().toString();
 
-		if (plugin.authList.containsKey(name)) {
+		if (plugin.authList.containsKey(uuid)) {
 			event.setCancelled(true);
 		}
 	}
@@ -153,9 +152,9 @@ public class LoginListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void onBlockBreak(BlockBreakEvent event) {
 		Player player = event.getPlayer();
-		String name = player.getName().toLowerCase();
+		String uuid = player.getUniqueId().toString();
 
-		if (plugin.authList.containsKey(name)) {
+		if (plugin.authList.containsKey(uuid)) {
 			event.setCancelled(true);
 		}
 	}
@@ -163,9 +162,9 @@ public class LoginListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void onPlayerDropItem(PlayerDropItemEvent event) {
 		Player player = event.getPlayer();
-		String name = player.getName().toLowerCase();
+		String uuid = player.getUniqueId().toString();
 
-		if (plugin.authList.containsKey(name)) {
+		if (plugin.authList.containsKey(uuid)) {
 			event.setCancelled(true);
 		}
 	}
@@ -173,9 +172,9 @@ public class LoginListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void onPlayerPickupItem(PlayerPickupItemEvent event) {
 		Player player = event.getPlayer();
-		String name = player.getName().toLowerCase();
+		String uuid = player.getUniqueId().toString();
 
-		if (plugin.authList.containsKey(name)) {
+		if (plugin.authList.containsKey(uuid)) {
 			event.setCancelled(true);
 		}
 	}
@@ -183,8 +182,8 @@ public class LoginListener implements Listener {
 	@EventHandler
 	public void onPlayerChat(AsyncPlayerChatEvent chat) {
 		Player player = chat.getPlayer();
-		String pname = player.getName().toLowerCase();
-		if (plugin.authList.containsKey(pname)) {
+		String uuid = player.getUniqueId().toString();
+		if (plugin.authList.containsKey(uuid)) {
 			chat.setCancelled(true);
 		}
 	}
@@ -196,9 +195,9 @@ public class LoginListener implements Listener {
 			return;
 		}
 		Player player = (Player) entity;
-		String pname = player.getName().toLowerCase();
+		String uuid = player.getUniqueId().toString();
 
-		if (plugin.authList.containsKey(pname)) {
+		if (plugin.authList.containsKey(uuid)) {
 			event.setCancelled(true);
 		}
 	}
@@ -210,9 +209,9 @@ public class LoginListener implements Listener {
 			return;
 		}
 		Player player = (Player) entity;
-		String pname = player.getName().toLowerCase();
+		String uuid = player.getUniqueId().toString();
 
-		if (plugin.authList.containsKey(pname)) {
+		if (plugin.authList.containsKey(uuid)) {
 			event.setCancelled(true);
 		}
 	}
@@ -224,9 +223,9 @@ public class LoginListener implements Listener {
 			return;
 		}
 		Player player = (Player) entity;
-		String pname = player.getName().toLowerCase();
+		String uuid = player.getUniqueId().toString();
 
-		if (plugin.authList.containsKey(pname)) {
+		if (plugin.authList.containsKey(uuid)) {
 			event.setCancelled(true);
 		}
 	}
@@ -237,8 +236,8 @@ public class LoginListener implements Listener {
 
 		if (entity instanceof Player) {
 			Player player = (Player) entity;
-			String name = player.getName().toLowerCase();
-			if (plugin.authList.containsKey(name)) {
+			String uuid = player.getUniqueId().toString();
+			if (plugin.authList.containsKey(uuid)) {
 				event.setCancelled(true);
 			}
 		}
@@ -249,8 +248,8 @@ public class LoginListener implements Listener {
 		for (LivingEntity entity : event.getAffectedEntities()) {
 			if (entity instanceof Player) {
 				Player player = (Player) entity;
-				String name = player.getName().toLowerCase();
-				if (plugin.authList.containsKey(name)) {
+				String uuid = player.getUniqueId().toString();
+				if (plugin.authList.containsKey(uuid)) {
 					event.setCancelled(true);
 				}
 			}
@@ -264,18 +263,18 @@ public class LoginListener implements Listener {
 
 		if (defender instanceof Player) {
 			Player p1 = (Player) defender;
-			String n1 = p1.getName().toLowerCase();
+			String u1 = p1.getUniqueId().toString();
 
-			if (plugin.authList.containsKey(n1)) {
+			if (plugin.authList.containsKey(u1)) {
 				event.setCancelled(true);
 				return;
 			}
 
 			if (damager instanceof Player) {
 				Player p2 = (Player) damager;
-				String n2 = p2.getName().toLowerCase();
+				String u2 = p2.getUniqueId().toString();
 
-				if (plugin.authList.containsKey(n2)) {
+				if (plugin.authList.containsKey(u2)) {
 					event.setCancelled(true);
 				}
 			}
@@ -288,9 +287,9 @@ public class LoginListener implements Listener {
 
 		if (entity instanceof Player) {
 			Player player = (Player) entity;
-			String name = player.getName().toLowerCase();
+			String uuid = player.getUniqueId().toString();
 
-			if (plugin.authList.containsKey(name)) {
+			if (plugin.authList.containsKey(uuid)) {
 				event.setCancelled(true);
 			}
 		}
@@ -298,9 +297,10 @@ public class LoginListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void onPlayerInteract(PlayerInteractEvent event) {
-		String name = event.getPlayer().getName().toLowerCase();
+                Player player = event.getPlayer();
+		String uuid = player.getUniqueId().toString();
 
-		if (plugin.authList.containsKey(name)) {
+		if (plugin.authList.containsKey(uuid)) {
 			event.setCancelled(true);
 		}
 	}
@@ -308,12 +308,12 @@ public class LoginListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
 		Player player = event.getPlayer();
-		String name = player.getName().toLowerCase();
-		if (plugin.authList.containsKey(name)) {
+		String uuid = player.getUniqueId().toString();
+		if (plugin.authList.containsKey(uuid)) {
 			if (!event.getMessage().startsWith("/login") && !event.getMessage().startsWith("/register")) {
 				//faction fix start
 				if (event.getMessage().startsWith("/f")) {
-					event.setMessage("/" + RandomStringUtils.randomAscii(name.length())); //this command does not exist :P
+					event.setMessage("/" + RandomStringUtils.randomAscii(uuid.length())); //this command does not exist :P
 				}		    	//faction fix end
 				event.setCancelled(true);
 			}
