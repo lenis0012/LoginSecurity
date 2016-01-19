@@ -98,7 +98,7 @@ public class UUIDConverter {
 							database.closeConnection();
 							database.openConnection();
 							for(Object[] data : loginData) {
-								String uuid = uuids.get((String) data[0]).toString().replaceAll("-", "");
+								String uuid = uuids.get((String) data[0]).toString();
 								database.register(uuid, (String) data[1], (Integer) data[2], (String) data[3]);
 							}
 							
