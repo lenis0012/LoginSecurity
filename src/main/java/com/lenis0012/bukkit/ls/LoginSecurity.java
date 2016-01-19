@@ -269,7 +269,7 @@ public class LoginSecurity extends JavaPlugin {
 	}
 
 	public boolean checkLastIp(Player player) {
-		String uuid = player.getUniqueId().toString().replaceAll("-", "");
+		String uuid = player.getUniqueId().toString();
 		if (data.isRegistered(uuid)) {
 			String lastIp = data.getIp(uuid);
 			String currentIp = player.getAddress().getAddress().toString();
@@ -280,11 +280,11 @@ public class LoginSecurity extends JavaPlugin {
 	}
 
 	public void playerJoinPrompt(final Player player) {
-		String uuid = player.getUniqueId().toString().replaceAll("-", "");
+		String uuid = player.getUniqueId().toString();
 		
 		//Quick security check
 		for(Player p : Bukkit.getOnlinePlayers()) {
-			if(player != p && player.getName().equalsIgnoreCase(p.getName())) {
+			if(player != p && uuid.equalsIgnoreCase(p.getUniqueId().toString())) {
 				player.kickPlayer("You are already logged in under the name: " + p.getName());
 				return;
 			}
@@ -294,16 +294,16 @@ public class LoginSecurity extends JavaPlugin {
 			player.sendMessage(ChatColor.GREEN + "Extended session from last login");
 			return;
 		} else if (data.isRegistered(uuid)) {
-			authList.put(player.getName().toLowerCase(), false);
+			authList.put(uuid, false);
 			player.sendMessage(ChatColor.RED + "Please login using /login <password>");
 		} else if (required) {
-			authList.put(player.getName().toLowerCase(), true);
+			authList.put(uuid, true);
 			player.sendMessage(ChatColor.RED + "Please register using /register <password>");
 		} else {
 			return;
 		}
 
-		debilitatePlayer(player, player.getName().toLowerCase(), false);
+		debilitatePlayer(player, uuid, false);
 	}
 
 	public void debilitatePlayer(Player player, String name, boolean logout) {
