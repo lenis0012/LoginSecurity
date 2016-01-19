@@ -19,7 +19,7 @@ public class RmPassCommand implements CommandExecutor {
 		}
 		
 		Player player = (Player)sender;
-		String uuid = player.getUniqueId().toString().replaceAll("-", "");
+		String uuid = player.getUniqueId().toString();
 		
 		if(!plugin.data.isRegistered(uuid)) {
 			player.sendMessage(ChatColor.RED+"You are not registered on the server");
