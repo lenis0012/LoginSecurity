@@ -20,7 +20,6 @@ public class ReflectionUtil {
 	 * All credits of this method go to
 	 * PlugMan, by ryanclancy000
 	 */
-	@SuppressWarnings("rawtypes")
 	public static void unloadPlugin(String plugin) throws NoSuchFieldException, IllegalAccessException {
 		PluginManager pm = Bukkit.getServer().getPluginManager();
 		SimplePluginManager spm = (SimplePluginManager)pm;
