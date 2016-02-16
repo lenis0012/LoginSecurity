@@ -50,9 +50,6 @@ public class LoginListener implements Listener {
 		if(UUIDConverter.IS_CONVERTING) {
 			player.kickPlayer("The server is currently converting all login data, please join back later.");
 			return;
-		} if (!player.getName().equals(StringUtil.cleanString(player.getName()))) {
-			player.kickPlayer("Invalid characters in username!");
-			return;
 		}
 
 		plugin.playerJoinPrompt(player);
@@ -78,6 +75,13 @@ public class LoginListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
+		String pname = event.getName();
+		//Check for valid user name
+		if (!pname.equals(StringUtil.cleanString(pname))) {
+			event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+			event.setKickMessage("Invalid characters in username!");	
+		}
+		
 		String uuid = event.getUniqueId().toString();
 		//Check if the player is already online
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
