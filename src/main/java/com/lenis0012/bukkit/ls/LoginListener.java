@@ -47,10 +47,6 @@ public class LoginListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		final Player player = event.getPlayer();
-		if(UUIDConverter.IS_CONVERTING) {
-			player.kickPlayer("The server is currently converting all login data, please join back later.");
-			return;
-		}
 
 		plugin.playerJoinPrompt(player);
 		if(player.hasPermission("ls.admin")) {
@@ -75,13 +71,19 @@ public class LoginListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
+		//Check conversion in progress
+		if(UUIDConverter.IS_CONVERTING) {
+			event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "Currently converting all login data, please check later.");
+			return;
+		}
+
 		String pname = event.getName();
 		//Check for valid user name
 		if (!pname.equals(StringUtil.cleanString(pname))) {
-			event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-			event.setKickMessage("Invalid characters in username!");	
+			event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "Invalid characters in username!");
+			return;
 		}
-		
+
 		String uuid = event.getUniqueId().toString();
 		//Check if the player is already online
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
@@ -91,8 +93,8 @@ public class LoginListener implements Listener {
 			}
 
 			if (puuid.equalsIgnoreCase(uuid)) {
-				event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-				event.setKickMessage("A player with this name is already online!");
+				event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "A player with this name is already online!");
+				return;
 			}
 		}
 	}
