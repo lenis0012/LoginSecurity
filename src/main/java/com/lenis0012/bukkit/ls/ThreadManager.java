@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -61,9 +62,9 @@ public class ThreadManager {
 		msg = plugin.getServer().getScheduler().runTaskTimer(plugin, new Runnable() {
 			public void run() {
 				for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-					String name = player.getName();
-					if (plugin.authList.containsKey(name)) {
-						boolean register = plugin.authList.get(name);
+					String uuid = player.getUniqueId().toString();
+					if (plugin.authList.containsKey(uuid)) {
+						boolean register = plugin.authList.get(uuid);
 						if (register) {
 							player.sendMessage(ChatColor.RED + "Please register using /register <password>");
 						} else {
@@ -111,7 +112,6 @@ public class ThreadManager {
 
 	public void startTimeoutTask() {
 		to = plugin.getServer().getScheduler().runTaskTimer(plugin, new Runnable() {
-			@SuppressWarnings("deprecation")
 			@Override
 			public void run() {
 				Iterator<String> it = timeout.keySet().iterator();
@@ -123,7 +123,7 @@ public class ThreadManager {
 						timeout.put(user, current);
 					} else {
 						it.remove();
-						Player player = Bukkit.getPlayer(user);
+						Player player = Bukkit.getPlayer(UUID.fromString(user));
 						if (player != null && player.isOnline()) {
 							// teleport the player before kicking so that his location is not lost
 							if (plugin.spawntp) {

@@ -20,21 +20,21 @@ public class LogoutCommand implements CommandExecutor {
 		}
 
 		Player player = (Player) sender;
-		String name = player.getName().toLowerCase();
+		String uuid = player.getUniqueId().toString();
 
-		if (plugin.authList.containsKey(name)) {
+		if (plugin.authList.containsKey(uuid)) {
 			player.sendMessage(ChatColor.RED + "You must login first");
 			return true;
 		}
-		if (!plugin.data.isRegistered(name)) {
+		if (!plugin.data.isRegistered(uuid)) {
 			player.sendMessage(ChatColor.RED + "You are not registered!");
 		}
 
-		plugin.authList.put(name, false);
-		plugin.debilitatePlayer(player, name, true);
+		plugin.authList.put(uuid, false);
+		plugin.debilitatePlayer(player, uuid, true);
 		// terminate user's current session
 		if (plugin.sesUse) {
-			plugin.thread.getSession().remove(name);
+			plugin.thread.getSession().remove(uuid);
 		}
 
 		player.sendMessage(ChatColor.GREEN + "Succesfully logged out");

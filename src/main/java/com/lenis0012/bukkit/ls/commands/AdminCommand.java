@@ -29,7 +29,7 @@ public class AdminCommand implements CommandExecutor {
 				sender.sendMessage(ChatColor.GREEN + "/lac reload");
 			} else if(args.length >= 2 && args[0].equalsIgnoreCase("rmpass")) {
 				String user = args[1].toLowerCase();
-				String uuid = Bukkit.getOnlineMode() ? UUID.nameUUIDFromBytes(("OfflinePlayer:" + user).getBytes(Charsets.UTF_8)).toString().replaceAll("-", "") : UUIDFetcher.getUUIDOf(user).toString().replaceAll("-", "");
+				String uuid = Bukkit.getOnlineMode() ? UUID.nameUUIDFromBytes(("OfflinePlayer:" + user).getBytes(Charsets.UTF_8)).toString() : UUIDFetcher.getUUIDOf(user).toString();
 				if(uuid != null && !uuid.isEmpty() && plugin.data.isRegistered(uuid)) {
 					plugin.data.removeUser(uuid);
 					sender.sendMessage(ChatColor.GREEN + "Removed user from accounts database!");

@@ -20,8 +20,7 @@ public class RegisterCommand implements CommandExecutor {
 		}
 
 		Player player = (Player) sender;
-		String uuid = player.getUniqueId().toString().replaceAll("-", "");
-		String name = player.getName().toLowerCase();
+		String uuid = player.getUniqueId().toString();
 
 		if (plugin.data.isRegistered(uuid)) {
 			player.sendMessage(ChatColor.RED + "You are already registered");
@@ -35,9 +34,9 @@ public class RegisterCommand implements CommandExecutor {
 
 		String password = plugin.hasher.hash(args[0]);
 		plugin.data.register(uuid, password, plugin.hasher.getTypeId(), player.getAddress().getAddress().toString());
-		plugin.authList.remove(name);
-		plugin.thread.timeout.remove(name);
-		plugin.rehabPlayer(player, name);
+		plugin.authList.remove(uuid);
+		plugin.thread.timeout.remove(uuid);
+		plugin.rehabPlayer(player, uuid);
 		player.sendMessage(ChatColor.GREEN + "Registered with password: " + args[0]);
 		LoginSecurity.log.log(Level.INFO, "[LoginSecurity] {0} registered sucessfully", player.getName());
 		return true;

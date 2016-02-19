@@ -51,7 +51,7 @@ public class MySQL implements DataManager {
 			st.setQueryTimeout(30);
 			st.executeUpdate("CREATE TABLE IF NOT EXISTS " + table + " (unique_user_id VARCHAR(130) NOT NULL UNIQUE,password VARCHAR(300) NOT NULL,encryption INT,ip VARCHAR(130) NOT NULL);");
 		} catch(SQLException e) {
-			log.log(Level.SEVERE, "Faield to load MySQL", e);
+			log.log(Level.SEVERE, "Failed to load MySQL", e);
 		}
 	}
 
@@ -61,7 +61,7 @@ public class MySQL implements DataManager {
 			if(con != null)
 				con.close();
 		} catch(SQLException e) {
-			log.log(Level.SEVERE, "Failed to close SQLite connection", e);
+			log.log(Level.SEVERE, "Failed to close MySQL connection", e);
 		}
 	}
 
@@ -69,11 +69,11 @@ public class MySQL implements DataManager {
 	public boolean isRegistered(String uuid) {
 		try {
 			PreparedStatement ps = con.prepareStatement("SELECT * FROM " + table + " WHERE unique_user_id=?;");
-			ps.setString(1, uuid);
+			ps.setString(1, uuid.replaceAll("-", ""));
 			ResultSet result = ps.executeQuery();
 			return result.next();
 		} catch(SQLException e) {
-			log.log(Level.SEVERE, "Failed to get data from SQLite db", e);
+			log.log(Level.SEVERE, "Failed to get data from MySQL db", e);
 			return false;
 		}
 	}
@@ -82,7 +82,7 @@ public class MySQL implements DataManager {
 	public void register(String uuid, String password, int encryption, String ip) {
 		try {
 			PreparedStatement ps = con.prepareStatement("INSERT INTO " + table + "(unique_user_id,password,encryption,ip) VALUES(?,?,?,?);");
-			ps.setString(1, uuid);
+			ps.setString(1, uuid.replaceAll("-", ""));
 			ps.setString(2, password);
 			ps.setInt(3, encryption);
 			ps.setString(4, ip);
@@ -98,7 +98,7 @@ public class MySQL implements DataManager {
 			PreparedStatement ps = con.prepareStatement("UPDATE " + table + " SET password=?,encryption=? WHERE unique_user_id=?;");
 			ps.setString(1, password);
 			ps.setInt(2, encryption);
-			ps.setString(3, uuid);
+			ps.setString(3, uuid.replaceAll("-", ""));
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			log.log(Level.SEVERE, "Failed to update user password", e);
@@ -110,7 +110,7 @@ public class MySQL implements DataManager {
 		try {
 			PreparedStatement ps = con.prepareStatement("UPDATE " + table + " SET ip=? WHERE unique_user_id=?;");
 			ps.setString(1, ip);
-			ps.setString(2, uuid);
+			ps.setString(2, uuid.replaceAll("-", ""));
 			ps.executeUpdate();
 		} catch (SQLException e) {
 			log.log(Level.SEVERE, "Failed to update user ip", e);
@@ -121,7 +121,7 @@ public class MySQL implements DataManager {
 	public String getPassword(String uuid) {
 		try {
 			PreparedStatement ps = con.prepareStatement("SELECT * FROM " + table + " WHERE unique_user_id=?;");
-			ps.setString(1, uuid);
+			ps.setString(1, uuid.replaceAll("-", ""));
 			ResultSet result = ps.executeQuery();
 			if(result.next())
 				return result.getString("password");
@@ -137,7 +137,7 @@ public class MySQL implements DataManager {
 	public int getEncryptionTypeId(String uuid) {
 		try {
 			PreparedStatement ps = con.prepareStatement("SELECT * FROM " + table + " WHERE unique_user_id=?;");
-			ps.setString(1, uuid);
+			ps.setString(1, uuid.replaceAll("-", ""));
 			ResultSet result = ps.executeQuery();
 			if(result.next())
 				return result.getInt("encryption");
@@ -153,7 +153,7 @@ public class MySQL implements DataManager {
 	public String getIp(String uuid) {
 		try {
 			PreparedStatement ps = con.prepareStatement("SELECT * FROM " + table + " WHERE unique_user_id=?;");
-			ps.setString(1, uuid);
+			ps.setString(1, uuid.replaceAll("-", ""));
 			ResultSet result = ps.executeQuery();
 			if(result.next())
 				return result.getString("ip");
@@ -169,7 +169,7 @@ public class MySQL implements DataManager {
 	public void removeUser(String uuid) {
 		try {
 			PreparedStatement ps = con.prepareStatement("DELETE FROM " + table + " WHERE unique_user_id=?;");
-			ps.setString(1, uuid);
+			ps.setString(1, uuid.replaceAll("-", ""));
 			ps.executeUpdate();
 		} catch(SQLException e) {
 			log.log(Level.SEVERE, "Failed to remove user", e);
