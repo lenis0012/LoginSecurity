@@ -6,7 +6,6 @@
     <artifactId>LoginSecurity</artifactId>
     <version>2.0.11</version>
     <packaging>jar</packaging>
-
     <name>LoginSecurity</name>
     <url>http://dev.bukkit.org/server-mods/loginsecurity/</url>
 
@@ -150,6 +149,7 @@
                 </includes>
             </resource>
         </resources>
+        <finalName>${project.name}</finalName>
         <defaultGoal>clean install</defaultGoal>
         <!-- Plugins -->
         <plugins>
