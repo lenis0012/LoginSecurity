@@ -71,7 +71,7 @@ public class LoginSecurity extends JavaPlugin {
 		PluginManager pm = this.getServer().getPluginManager();
 
 		//setup config
-		config.addDefault("settings.password-required", false);
+		config.addDefault("settings.password-required", true);
 		config.addDefault("settings.encryption", "BCRYPT");
 		config.addDefault("settings.encoder", "UTF-8");
 		config.addDefault("settings.PHP_VERSION", 4);
