@@ -1,0 +1,25 @@
+name: ${project.name}
+version: ${project.version}
+main: com.lenis0012.bukkit.ls.LoginSecurity
+author: lenis0012
+description: The #1 Auth plugin
+softdepend: [xAuth]
+commands:
+  login:
+    description: Login with your account.
+    usage: /login <password>
+  register:
+    description: Set a password for your account.
+    usage: /register <password>
+  changepass:
+    description: Change the password for your account.
+    usage: /changepass <old> <new>
+  rmpass:
+    description: Remove your password.
+    usage: /rmpass <password>
+  logout:
+    description: Logout and end your session.
+    usage: /logout
+  lac:
+    description: LoginSecurity Admin command.
+    usage: /lac

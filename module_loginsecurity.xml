@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_loginsecurity" default="compile.module.loginsecurity">
+  <dirname property="module.loginsecurity.basedir" file="${ant.file.module_loginsecurity}"/>
+  
+  <property name="module.jdk.home.loginsecurity" value="${jdk.home.1.8}"/>
+  <property name="module.jdk.bin.loginsecurity" value="${jdk.bin.1.8}"/>
+  <property name="module.jdk.classpath.loginsecurity" value="jdk.classpath.1.8"/>
+  
+  <property name="compiler.args.loginsecurity" value="-encoding UTF-8 -source 1.6 -target 1.6 ${compiler.args}"/>
+  
+  <property name="loginsecurity.output.dir" value="${module.loginsecurity.basedir}/target/classes"/>
+  <property name="loginsecurity.testoutput.dir" value="${module.loginsecurity.basedir}/target/test-classes"/>
+  
+  <path id="loginsecurity.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="loginsecurity.module.production.classpath">
+    <path refid="${module.jdk.classpath.loginsecurity}"/>
+    <path refid="library.maven:_org.spigotmc:spigot-api:1.7.9-r0.3-snapshot.classpath"/>
+    <pathelement location="${basedir}/LoginSecurity-2/lib/xAuth.jar"/>
+  </path>
+  
+  <path id="loginsecurity.runtime.production.module.classpath">
+    <pathelement location="${loginsecurity.output.dir}"/>
+    <pathelement location="${basedir}/LoginSecurity-2/lib/xAuth.jar"/>
+  </path>
+  
+  <path id="loginsecurity.module.classpath">
+    <path refid="${module.jdk.classpath.loginsecurity}"/>
+    <pathelement location="${loginsecurity.output.dir}"/>
+    <path refid="library.maven:_org.spigotmc:spigot-api:1.7.9-r0.3-snapshot.classpath"/>
+    <pathelement location="${basedir}/LoginSecurity-2/lib/xAuth.jar"/>
+    <path refid="library.maven:_junit:junit:3.8.1.classpath"/>
+  </path>
+  
+  <path id="loginsecurity.runtime.module.classpath">
+    <pathelement location="${loginsecurity.testoutput.dir}"/>
+    <pathelement location="${loginsecurity.output.dir}"/>
+    <path refid="library.maven:_org.spigotmc:spigot-api:1.7.9-r0.3-snapshot.classpath"/>
+    <pathelement location="${basedir}/LoginSecurity-2/lib/xAuth.jar"/>
+    <path refid="library.maven:_junit:junit:3.8.1.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.loginsecurity">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.loginsecurity">
+    <patternset refid="excluded.from.module.loginsecurity"/>
+  </patternset>
+  
+  <path id="loginsecurity.module.sourcepath">
+    <dirset dir="${module.loginsecurity.basedir}">
+      <include name="src/main/java"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.loginsecurity" depends="compile.module.loginsecurity.production,compile.module.loginsecurity.tests" description="Compile module LoginSecurity"/>
+  
+  <target name="compile.module.loginsecurity.production" depends="register.custom.compilers" description="Compile module LoginSecurity; production classes">
+    <mkdir dir="${loginsecurity.output.dir}"/>
+    <javac2 destdir="${loginsecurity.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.loginsecurity}/javac">
+      <compilerarg line="${compiler.args.loginsecurity}"/>
+      <bootclasspath refid="loginsecurity.module.bootclasspath"/>
+      <classpath refid="loginsecurity.module.production.classpath"/>
+      <src refid="loginsecurity.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.loginsecurity"/>
+    </javac2>
+    
+    <copy todir="${loginsecurity.output.dir}">
+      <fileset dir="${module.loginsecurity.basedir}/src/main/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.loginsecurity.tests" depends="register.custom.compilers,compile.module.loginsecurity.production" description="compile module LoginSecurity; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.loginsecurity" description="cleanup module">
+    <delete dir="${loginsecurity.output.dir}"/>
+    <delete dir="${loginsecurity.testoutput.dir}"/>
+  </target>
+</project>

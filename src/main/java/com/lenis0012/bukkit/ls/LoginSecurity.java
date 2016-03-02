@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
+import com.lenis0012.updater.api.Updater;
+import com.lenis0012.updater.api.UpdaterFactory;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandExecutor;
@@ -30,8 +32,6 @@ import com.lenis0012.bukkit.ls.data.MySQL;
 import com.lenis0012.bukkit.ls.data.SQLite;
 import com.lenis0012.bukkit.ls.encryption.EncryptionType;
 import com.lenis0012.bukkit.ls.util.Metrics;
-import com.lenis0012.bukkit.ls.util.Updater;
-import com.lenis0012.bukkit.ls.util.Updater.UpdateType;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -121,10 +121,13 @@ public class LoginSecurity extends JavaPlugin {
 		}
 		if (timeUse) {
 			thread.startTimeoutTask();
-		} if(config.getBoolean("settings.update-checker")) {
-			this.updater = new Updater(this, 41702, getFile(), UpdateType.NO_DOWNLOAD, true);
 		}
 
+		// Updater
+		UpdaterFactory factory = new UpdaterFactory(this);
+		this.updater = factory.newUpdater(getFile(), config.getBoolean("settings.update-checker"));
+
+		// Threads
 		thread.startMainTask();
 		thread.startMsgTask();
 
