@@ -2,6 +2,8 @@ package com.lenis0012.bukkit.ls.commands;
 
 import java.util.UUID;
 
+import com.lenis0012.updater.api.Updater;
+import com.lenis0012.updater.api.Version;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -11,12 +13,14 @@ import org.bukkit.command.CommandSender;
 import com.google.common.base.Charsets;
 import com.lenis0012.bukkit.ls.LoginSecurity;
 import com.lenis0012.bukkit.ls.util.UUIDFetcher;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 public class AdminCommand implements CommandExecutor {
 	
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		LoginSecurity plugin = LoginSecurity.instance;
+	public boolean onCommand(final CommandSender sender, Command cmd, String label, String[] args) {
+		final LoginSecurity plugin = LoginSecurity.instance;
 		if(!sender.hasPermission("ls.admin")) {
 			sender.sendMessage(ChatColor.RED + "You do not have permission!");
 			return true;
@@ -38,6 +42,47 @@ public class AdminCommand implements CommandExecutor {
 			} else if(args.length >= 1 && args[0].equalsIgnoreCase("reload")) {
 				plugin.reloadConfig();
 				sender.sendMessage(ChatColor.GREEN + "Plugin config reloaded!");
+			} else if(args.length >= 1 && args[0].equalsIgnoreCase("update")) {
+				final Updater updater = plugin.getUpdater();
+				final Version version = updater.getNewVersion();
+				if(version == null) {
+					sender.sendMessage(ChatColor.RED + "Updater is disabled!");
+					return true;
+				}
+
+				reply(sender, "&aDownloading " + version.getName() + "...");
+				Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+					@Override
+					public void run() {
+						String message = updater.downloadVersion();
+						final String response = message == null ? "&aUpdate successful, will be active on reboot." : "&c&lError: &c" + message;
+						Bukkit.getScheduler().runTask(plugin, new Runnable() {
+							@Override
+							public void run() {
+								reply(sender, response);
+								if(!(sender instanceof Player)) {
+									return;
+								}
+
+								Player player = (Player) sender;
+								ItemStack changelog = updater.getChangelog();
+								if(changelog == null) {
+//									reply(sender, "&cChangelog isn't available for this version.");
+									return;
+								}
+
+								ItemStack inHand = player.getInventory().getItemInMainHand();
+								player.getInventory().setItemInMainHand(changelog);
+								if(inHand != null) {
+									player.getInventory().addItem(inHand);
+								}
+
+								reply(player, "&llenis> &bCheck my changelog out! (I put it in your hand)");
+								player.updateInventory();
+							}
+						});
+					}
+				});
 			}
 			
 			return true;
@@ -45,5 +90,9 @@ public class AdminCommand implements CommandExecutor {
 			e.printStackTrace();
 			return true;
 		}
+	}
+
+	private void reply(CommandSender sender, String message) {
+		sender.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
 	}
 }
