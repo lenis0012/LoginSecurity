@@ -1,5 +1,7 @@
 package com.lenis0012.bukkit.ls;
 
+import com.lenis0012.updater.api.Updater;
+import com.lenis0012.updater.api.Version;
 import org.apache.commons.lang.RandomStringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -14,6 +16,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -24,8 +27,6 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 
 import com.lenis0012.bukkit.ls.data.UUIDConverter;
 import com.lenis0012.bukkit.ls.util.StringUtil;
-import com.lenis0012.bukkit.ls.util.Updater;
-import com.lenis0012.bukkit.ls.util.Updater.UpdateResult;
 
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -37,6 +38,8 @@ import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 public class LoginListener implements Listener {
+	private static final String UPDATE_MESSAGE = "&f&l[LoginSecurity] &eThere is a new update available! %s for %s\n" +
+			"Type &6/lac update &eto update now.";
 
 	private LoginSecurity plugin;
 
@@ -50,22 +53,24 @@ public class LoginListener implements Listener {
 
 		plugin.playerJoinPrompt(player);
 		if(player.hasPermission("ls.admin")) {
-			Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-
+			final Updater updater = plugin.getUpdater();
+			Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
 				@Override
 				public void run() {
-					Updater updater = plugin.getUpdater();
-					if (updater != null) {
-						if(updater.getResult() == UpdateResult.UPDATE_AVAILABLE) {
-							player.sendMessage(ChatColor.translateAlternateColorCodes('&', String.format(
-								"&aA new &7%s &7build for LoginSecurtiy was found, you can get &7%s &afor &7%s &aon BukkitDev!",
-								updater.getLatestType().toString().toLowerCase(),
-								updater.getLatestName(),
-								updater.getLatestGameVersion())));
+					boolean update = updater.hasUpdate();
+					if(update) {
+						Bukkit.getScheduler().runTask(plugin, new Runnable() {
+				@Override
+				public void run() {
+								Version version = updater.getNewVersion();
+								String message = ChatColor.translateAlternateColorCodes('&',
+										String.format(UPDATE_MESSAGE, version.getName(), version.getServerVersion()));
+								player.sendMessage(message);
 						}
+						});
 					}
 				}
-			}, 20L);
+			}, 41L);
 		}
 	}
 
@@ -73,14 +78,14 @@ public class LoginListener implements Listener {
 	public void onPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
 		//Check conversion in progress
 		if(UUIDConverter.IS_CONVERTING) {
-			event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "Currently converting all login data, please check later.");
+			event.disallow(Result.KICK_OTHER, "Currently converting all login data, please check later.");
 			return;
 		}
 
 		String pname = event.getName();
 		//Check for valid user name
 		if (!pname.equals(StringUtil.cleanString(pname))) {
-			event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "Invalid characters in username!");
+			event.disallow(Result.KICK_OTHER, "Invalid characters in username!");
 			return;
 		}
 
@@ -93,7 +98,7 @@ public class LoginListener implements Listener {
 			}
 
 			if (puuid.equalsIgnoreCase(uuid)) {
-				event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "A player with this name is already online!");
+				event.disallow(Result.KICK_OTHER, "A player with this name is already online!");
 				return;
 			}
 		}
