@@ -1,0 +1,29 @@
+{
+  "version": "LoginSecurity 2.0.12",
+  "data":
+  [
+    [
+      "---[ Changelog ]---",
+      "",
+      "- Fixed admin command /lac",
+      "",
+      "- Fixed console filter",
+      "",
+      "- Fixed duplicate login reminder"
+    ],
+    [
+      "====[ DONATE ]====",
+      "",
+      "Donate please :)",
+      "$1 = 1 HUG",
+      "",
+      "paypal.me/lenis0012",
+      "=====[ SOCIAL ]=====",
+      "IGN: lenis",
+      "Twitter: @lenis0012",
+      "",
+      "Report bugs!",
+      "-lenis"
+    ]
+  ]
+}

@@ -1,15 +1,15 @@
 package com.lenis0012.bukkit.ls;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
+import com.lenis0012.bukkit.ls.util.LoggingFilter;
 import com.lenis0012.updater.api.Updater;
 import com.lenis0012.updater.api.UpdaterFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.Filter;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandExecutor;
@@ -50,7 +50,6 @@ public class LoginSecurity extends JavaPlugin {
 	public static LoginSecurity instance;
 	public Map<String, Boolean> authList = new HashMap<String, Boolean>();
 	public Map<String, Location> loginLocations = new HashMap<String, Location>();
-	public List<String> messaging = new ArrayList<String>();
 	public boolean required, blindness, sesUse, timeUse, spawntp;
 	public int sesDelay, timeDelay;
 	public static final Logger log = Logger.getLogger("Minecraft");
@@ -60,8 +59,6 @@ public class LoginSecurity extends JavaPlugin {
 	public Map<String, CommandExecutor> commandMap = new HashMap<String, CommandExecutor>();
 	public static int PHP_VERSION;
 	public static String encoder;
-	private static Logger serverLog;
-	private CommandFilter commandFilter = new CommandFilter();
 	private Updater updater;
 
 	@Override
@@ -99,7 +96,6 @@ public class LoginSecurity extends JavaPlugin {
 		prefix = config.getString("settings.table prefix");
 		data = this.getDataManager(config, "users.db");
 		thread = new ThreadManager(this);
-		thread.startMsgTask();
 		required = config.getBoolean("settings.password-required");
 		blindness = config.getBoolean("settings.blindness");
 		spawntp = config.getBoolean("settings.fake-location");
@@ -153,9 +149,8 @@ public class LoginSecurity extends JavaPlugin {
 		}
 		
 		// Filter logs
-		serverLog = this.getServer().getLogger();
-		commandFilter.prevFilter = log.getFilter();
-		serverLog.setFilter(commandFilter);
+		org.apache.logging.log4j.core.Logger consoleLogger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
+		consoleLogger.addFilter(new LoggingFilter());
 
 		// Read from old auth list file
 		try {
@@ -177,9 +172,6 @@ public class LoginSecurity extends JavaPlugin {
 			thread.stopMsgTask();
 			thread.stopSessionTask();
 		}
-
-		serverLog.setFilter(commandFilter.prevFilter);
-		commandFilter.prevFilter = null;
 
 		// Save auth list to file so that it survives a reload
 		try {
