@@ -1,15 +1,13 @@
 {
-  "version": "LoginSecurity v2.0.12",
+  "version": "LoginSecurity v2.0.13",
   "data":
   [
     [
       "---[ Changelog ]---",
       "",
-      "- Fixed admin command /lac",
+      "- Fixed security flaw",
       "",
-      "- Fixed console filter",
-      "",
-      "- Fixed duplicate login reminder"
+      "Rebooting asap is advised."
     ],
     [
       "====[ DONATE ]====",

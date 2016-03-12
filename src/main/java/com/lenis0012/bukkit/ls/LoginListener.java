@@ -315,7 +315,7 @@ public class LoginListener implements Listener {
 		Player player = event.getPlayer();
 		String name = player.getName().toLowerCase();
 		if (plugin.authList.containsKey(name)) {
-			if (!event.getMessage().startsWith("/login") && !event.getMessage().startsWith("/register")) {
+			if (!event.getMessage().startsWith("/login ") && !event.getMessage().startsWith("/register ")) {
 				//faction fix start
 				if (event.getMessage().startsWith("/f")) {
 					event.setMessage("/" + RandomStringUtils.randomAscii(name.length())); //this command does not exist :P

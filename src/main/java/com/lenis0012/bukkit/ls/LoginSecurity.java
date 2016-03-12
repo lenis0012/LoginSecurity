@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
+import com.google.common.collect.Maps;
 import com.lenis0012.bukkit.ls.util.LoggingFilter;
 import com.lenis0012.updater.api.Updater;
 import com.lenis0012.updater.api.UpdaterFactory;
@@ -48,15 +49,15 @@ public class LoginSecurity extends JavaPlugin {
 
 	public DataManager data;
 	public static LoginSecurity instance;
-	public Map<String, Boolean> authList = new HashMap<String, Boolean>();
-	public Map<String, Location> loginLocations = new HashMap<String, Location>();
+	public Map<String, Boolean> authList = Maps.newConcurrentMap();
+    public Map<String, Location> loginLocations = Maps.newConcurrentMap();
 	public boolean required, blindness, sesUse, timeUse, spawntp;
 	public int sesDelay, timeDelay;
 	public static final Logger log = Logger.getLogger("Minecraft");
 	public ThreadManager thread;
 	public String prefix;
 	public EncryptionType hasher;
-	public Map<String, CommandExecutor> commandMap = new HashMap<String, CommandExecutor>();
+	public Map<String, CommandExecutor> commandMap = Maps.newHashMap();
 	public static int PHP_VERSION;
 	public static String encoder;
 	private Updater updater;

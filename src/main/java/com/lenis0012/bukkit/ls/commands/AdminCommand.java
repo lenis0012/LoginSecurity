@@ -1,7 +1,5 @@
 package com.lenis0012.bukkit.ls.commands;
 
-import java.util.UUID;
-
 import com.lenis0012.updater.api.Updater;
 import com.lenis0012.updater.api.Version;
 import org.bukkit.Bukkit;
@@ -10,9 +8,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-import com.google.common.base.Charsets;
 import com.lenis0012.bukkit.ls.LoginSecurity;
-import com.lenis0012.bukkit.ls.util.UUIDFetcher;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -24,6 +20,14 @@ public class AdminCommand implements CommandExecutor {
 		if(!sender.hasPermission("ls.admin")) {
 			sender.sendMessage(ChatColor.RED + "You do not have permission!");
 			return true;
+		}
+
+		if(sender instanceof Player) {
+			Player player = (Player) sender;
+			String name = player.getName().toLowerCase();
+			if(plugin.authList.containsKey(name)) {
+				sender.sendMessage(ChatColor.RED + "You have to log in before you can use this command!");
+			}
 		}
 		
 		try {
