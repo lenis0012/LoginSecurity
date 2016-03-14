@@ -56,6 +56,12 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.6</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
             <version>2.5</version>
@@ -73,12 +79,6 @@
             <artifactId>updater-api</artifactId>
             <version>1</version>
             <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -120,13 +120,17 @@
                                     <finalName>${project.name}-Bukkit-${project.version}</finalName>
                                     <artifactSet>
                                         <includes>
-                                            <include>com.lenis0012.bukkit:lenisutils</include>
                                             <include>com.lenis0012.updater:updater-api</include>
                                             <include>com.lenis0012.updater:updater-bukkit</include>
-                                            <include>org.bouncycastle:bcprov-jdk15on</include>
-                                            <include>de.mkammerer:argon2-jvm</include>
                                         </includes>
                                     </artifactSet>
+                                    <relocations>
+                                        <!-- Relocate updater -->
+                                        <relocation>
+                                            <pattern>com.lenis0012.updater</pattern>
+                                            <shadedPattern>com.lenis0012.bukkit.loginsecurity.libs.updater</shadedPattern>
+                                        </relocation>
+                                    </relocations>
                                 </configuration>
                             </execution>
                         </executions>
@@ -165,21 +169,15 @@
                                     <finalName>${project.name}-Spigot-${project.version}</finalName>
                                     <artifactSet>
                                         <includes>
-                                            <include>com.lenis0012.bukkit:pluginutils</include>
                                             <include>com.lenis0012.updater:updater-api</include>
                                             <include>com.lenis0012.updater:updater-spigot</include>
                                         </includes>
                                     </artifactSet>
                                     <relocations>
-                                        <!-- Relocate utils -->
-                                        <relocation>
-                                            <pattern>com.lenis0012.pluginutils</pattern>
-                                            <shadedPattern>com.lenis0012.bukkit.loginsecurity.libs.pluginutils</shadedPattern>
-                                        </relocation>
                                         <!-- Relocate updater -->
                                         <relocation>
                                             <pattern>com.lenis0012.updater</pattern>
-                                            <pattern>com.lenis0012.bukkit.loginsecurity.libs.updater</pattern>
+                                            <shadedPattern>com.lenis0012.bukkit.loginsecurity.libs.updater</shadedPattern>
                                         </relocation>
                                     </relocations>
                                 </configuration>
@@ -219,6 +217,69 @@
                     <showWarnings>true</showWarnings>
                     <showDeprecation>false</showDeprecation>
                 </configuration>
+            </plugin>
+            <!-- Shading plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.4</version>
+                <executions>
+                    <execution>
+                        <id>general</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <transformers>
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>com.x.y.Main</mainClass>
+                                </transformer>
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/spring.handlers</resource>
+                                </transformer>
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/spring.schemas</resource>
+                                </transformer>
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                                    <resource>META-INF/spring.tooling</resource>
+                                </transformer>
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+                            </transformers>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                            <artifactSet>
+                                <includes>
+                                    <include>com.lenis0012.bukkit:lenisutils</include>
+                                    <include>org.bouncycastle:bcprov-jdk15on</include>
+                                    <include>de.mkammerer:argon2-jvm</include>
+                                    <include>org.projectlombok:lombok</include>
+                                </includes>
+                            </artifactSet>
+                            <relocations>
+                                <!-- Relocate utils -->
+                                <relocation>
+                                    <pattern>com.lenis0012.pluginutils</pattern>
+                                    <shadedPattern>com.lenis0012.bukkit.loginsecurity.libs.pluginutils</shadedPattern>
+                                </relocation>
+                            </relocations>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
