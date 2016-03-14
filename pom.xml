@@ -53,7 +53,7 @@
             <groupId>de.mkammerer</groupId>
             <artifactId>argon2-jvm</artifactId>
             <version>1.1</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -203,7 +203,7 @@
             </resource>
         </resources>
         <finalName>${project.name}</finalName>
-        <defaultGoal>clean install</defaultGoal>
+        <defaultGoal>clean install javadoc:javadoc</defaultGoal>
         <!-- Plugins -->
         <plugins>
             <!-- Compiler plugin -->
@@ -266,7 +266,7 @@
                                 <includes>
                                     <include>com.lenis0012.bukkit:lenisutils</include>
                                     <include>org.bouncycastle:bcprov-jdk15on</include>
-                                    <include>de.mkammerer:argon2-jvm</include>
+                                    <!--<include>de.mkammerer:argon2-jvm</include>-->
                                     <include>org.projectlombok:lombok</include>
                                 </includes>
                             </artifactSet>
@@ -280,6 +280,29 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <!-- Jar plugin (add argon2 to class-path) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Built-By>lenis0012</Built-By>
+                            <Class-Path>./LoginSecurity/argon2-jvm-1.1.jar</Class-Path>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+            <!-- Javadocs (run width javadoc:javadoc) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <reportOutputDirectory>${project.build.directory}</reportOutputDirectory>
+                    <destDir>javadocs</destDir>
+                    <additionalparam>-Xdoclint:none</additionalparam>
+                </configuration>
             </plugin>
         </plugins>
     </build>

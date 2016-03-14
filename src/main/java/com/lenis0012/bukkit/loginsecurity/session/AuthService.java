@@ -62,4 +62,27 @@ public class AuthService<T> {
     public T getProvider(AuthAction action) {
         return type.cast(action.getServiceProvider());
     }
+
+    /**
+     * Format provider in to string.
+     * Use for ex. storage.
+     *
+     * @param provider Provider
+     * @return Formatted provider name
+     */
+    public String format(T provider) {
+        if(this == PLAYER) {
+            return ((Player) provider).getName();
+        } else if(this == ADMIN) {
+            return ((CommandSender) provider).getName();
+        } else if(this == SESSION) {
+            return "LoginSecurity";
+        } else if(this == CHANNEL_API) {
+            return (String) provider;
+        } else if(this == PLUGIN) {
+            return ((Plugin) provider).getName();
+        } else {
+            return provider.toString();
+        }
+    }
 }
