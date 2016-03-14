@@ -18,26 +18,32 @@ public class LoginSecurityConfig extends AbstractConfig {
     @ConfigKey(path="password-required")
     private boolean passwordRequired = true;
 
-    @ConfigHeader({"Available algorithms: BCRYPT, SCRYPT, PBKDF2, SHA3_256, WHIRLPOOL, ARGON2", "Check wiki for additional parameters."})
+    @ConfigHeader({
+            "Available algorithms: BCRYPT, SCRYPT, PBKDF2, SHA3_256, WHIRLPOOL, ARGON2",
+            "Check wiki for additional parameters."
+    })
     @ConfigKey(path="hashing.algorithm")
     private String hashingAlgorithm = "BCRYPT";
 
     @ConfigKey
     private boolean blindness = true;
 
-    @ConfigHeader({"Temporarily login location", "Available options: DEFAULT, SPAWN, RANDOM"})
+    @ConfigHeader({
+            "Temporarily login location until player has logged in.",
+            "Available options: DEFAULT, SPAWN, RANDOM"
+    })
     @ConfigKey
     private String location = "DEFAULT";
 
-    @ConfigHeader("Session timeout, set to -1 to disable")
-    @ConfigKey
+    @ConfigHeader("Session timeout, set to -1 to disable.")
+    @ConfigKey(path="session-timeout")
     private int sessionTimeout = 60;
 
-    @ConfigHeader("Login timeout, set to -1 to disable")
-    @ConfigKey
+    @ConfigHeader("Login timeout, set to -1 to disable.")
+    @ConfigKey(path="login-timeout")
     private int loginTimeout = 60;
 
-    @ConfigKey
+    @ConfigKey(path="max-login-tries")
     private int maxLoginTries = 5;
 
     public LoginSecurityConfig(ConfigurationModule module) {
