@@ -4,6 +4,7 @@ import com.lenis0012.bukkit.loginsecurity.hashing.active.*;
 import com.lenis0012.bukkit.loginsecurity.hashing.deprecated.MD5;
 import com.lenis0012.bukkit.loginsecurity.hashing.deprecated.PHPBB3;
 import com.lenis0012.bukkit.loginsecurity.hashing.deprecated.SHA2;
+import com.lenis0012.bukkit.loginsecurity.hashing.xauth.xAuthAlgorithm;
 
 /**
  * All algorithms supported by LoginSecurity.
@@ -36,13 +37,11 @@ public enum Algorithm {
 
     /**
      * xAuth.
+     * MD5(12), SHA1(13) and SHA256(14) are no longer supported.
      */
     xAuth_Authme_SHA256(true, 10, null),
-    xAuth_DEFAULT(true, 11, null),
-    xAuth_MD5(true, 12, null),
-    xAuth_SHA1(true, 13, null),
-    xAuth_SHA256(true, 14, null),
-    xAuth_WHIRLPOOL(true, 15, null);
+    xAuth_DEFAULT(true, 11, new xAuthAlgorithm(true)),
+    xAuth_WHIRLPOOL(true, 15, new xAuthAlgorithm(false));
 
     private final boolean deprecated;
     private final BasicAlgorithm algorithm;
