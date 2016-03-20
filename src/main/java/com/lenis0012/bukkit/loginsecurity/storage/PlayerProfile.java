@@ -3,6 +3,8 @@ package com.lenis0012.bukkit.loginsecurity.storage;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.sql.Date;
+import java.sql.Timestamp;
 
 @Data
 @Entity
@@ -20,10 +22,19 @@ public class PlayerProfile {
     private String lastName;
 
     @Column
+    private String ipAddress;
+
+    @Column
     private String password;
 
     @Column
     private int hashingAlgorithm;
+
+    @Column
+    private Timestamp lastLogin;
+
+    @Column
+    private Date registrationDate;
 
     @Version
     @Column(name = "optlock", nullable = false)
