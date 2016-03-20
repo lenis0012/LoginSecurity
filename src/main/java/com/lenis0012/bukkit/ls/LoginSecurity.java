@@ -201,7 +201,7 @@ public class LoginSecurity extends JavaPlugin {
 		File file = new File(this.getDataFolder(), "authList");
 		FileInputStream fin = new FileInputStream(file);
 		ObjectInputStream in = new ObjectInputStream(fin);
-		Map<String, Boolean> map = (HashMap<String, Boolean>) in.readObject();
+		Map<String, Boolean> map = (Map<String, Boolean>) in.readObject();
 		in.close();
 
 		file.delete();
