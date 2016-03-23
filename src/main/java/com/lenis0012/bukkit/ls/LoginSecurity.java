@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import com.google.common.collect.Maps;
 import com.lenis0012.bukkit.ls.util.LoggingFilter;
+import com.lenis0012.updater.api.ReleaseType;
 import com.lenis0012.updater.api.Updater;
 import com.lenis0012.updater.api.UpdaterFactory;
 import org.apache.logging.log4j.LogManager;
@@ -69,6 +70,7 @@ public class LoginSecurity extends JavaPlugin {
 		PluginManager pm = this.getServer().getPluginManager();
 
 		//setup config
+        config.options().header("Available update channels: ALPHA, BETA, RELEASE");
 		config.addDefault("settings.password-required", true);
 		config.addDefault("settings.encryption", "BCRYPT");
 		config.addDefault("settings.encoder", "UTF-8");
@@ -82,6 +84,7 @@ public class LoginSecurity extends JavaPlugin {
 		config.addDefault("settings.timeout.timeout (sec)", 60);
 		config.addDefault("settings.table prefix", "ls_");
 		config.addDefault("settings.update-checker", true);
+        config.addDefault("settings.update-channel", "BETA");
 		config.addDefault("MySQL.use", false);
 		config.addDefault("MySQL.host", "localhost");
 		config.addDefault("MySQL.port", 3306);
@@ -123,6 +126,7 @@ public class LoginSecurity extends JavaPlugin {
 		// Updater
 		UpdaterFactory factory = new UpdaterFactory(this);
 		this.updater = factory.newUpdater(getFile(), config.getBoolean("settings.update-checker"));
+        updater.setChannel(ReleaseType.valueOf(config.getString("settings.update-channel", "BETA")));
 
 		// Threads
 		thread.startMainTask();
