@@ -1,13 +1,13 @@
 {
-  "version": "LoginSecurity v2.0.13",
+  "version": "LoginSecurity v2.0.14",
   "data":
   [
     [
       "---[ Changelog ]---",
       "",
-      "- Fixed security flaw",
+      "- Fixed startup error",
       "",
-      "Rebooting asap is advised."
+      "- Added update channel config option"
     ],
     [
       "====[ DONATE ]====",
