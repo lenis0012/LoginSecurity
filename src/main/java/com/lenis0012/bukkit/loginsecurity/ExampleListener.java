@@ -34,10 +34,10 @@ public class ExampleListener implements Listener {
             PlayerSession session = event.getSession();
 
             // Create action to remove password authentication by your plugin
-            AuthAction deletePassword = new AuthAction(AuthActionType.REMOVE_PASSWORD, AuthService.PLUGIN, LoginSecurity.getInstance());
+//            AuthAction deletePassword = new AuthAction(AuthActionType.REMOVE_PASSWORD, AuthService.PLUGIN, LoginSecurity.getInstance());
 
             // Run the action
-            session.performAction(event.getPlayer(), deletePassword);
+//            session.performAction(event.getPlayer(), deletePassword);
         }
     }
 }

@@ -1,6 +1,8 @@
 package com.lenis0012.bukkit.loginsecurity.session;
 
-public class AuthAction {
+import org.bukkit.entity.Player;
+
+public abstract class AuthAction {
     private final AuthActionType type;
     private final AuthService service;
     private final Object serviceProvider;
@@ -23,7 +25,5 @@ public class AuthAction {
         return serviceProvider;
     }
 
-    public AuthMode run() {
-        return AuthMode.AUTHENTICATED;
-    }
+    public abstract AuthMode run(PlayerSession session);
 }

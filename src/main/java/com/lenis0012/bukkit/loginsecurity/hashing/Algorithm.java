@@ -68,4 +68,14 @@ public enum Algorithm {
     public boolean check(String password, String hashed) {
         return algorithm.check(password, hashed);
     }
+
+    public static Algorithm getById(int id) {
+        for(Algorithm algorithm : values()) {
+            if(algorithm.id == id) {
+                return algorithm;
+            }
+        }
+
+        return null;
+    }
 }
