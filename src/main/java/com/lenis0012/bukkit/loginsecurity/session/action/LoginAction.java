@@ -1,9 +1,7 @@
 package com.lenis0012.bukkit.loginsecurity.session.action;
 
-import com.lenis0012.bukkit.loginsecurity.session.AuthAction;
-import com.lenis0012.bukkit.loginsecurity.session.AuthActionType;
-import com.lenis0012.bukkit.loginsecurity.session.AuthMode;
-import com.lenis0012.bukkit.loginsecurity.session.AuthService;
+import com.lenis0012.bukkit.loginsecurity.session.*;
+import org.bukkit.entity.Player;
 
 public class LoginAction extends AuthAction {
 
@@ -12,7 +10,7 @@ public class LoginAction extends AuthAction {
     }
 
     @Override
-    public AuthMode run() {
+    public AuthMode run(final PlayerSession session, ActionResponse response) {
         return AuthMode.AUTHENTICATED;
     }
 }

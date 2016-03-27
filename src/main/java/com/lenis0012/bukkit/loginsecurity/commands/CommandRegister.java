@@ -1,5 +1,6 @@
 package com.lenis0012.bukkit.loginsecurity.commands;
 
+import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.session.AuthAction;
 import com.lenis0012.bukkit.loginsecurity.session.AuthMode;
 import com.lenis0012.bukkit.loginsecurity.session.AuthService;
@@ -12,9 +13,14 @@ import org.bukkit.entity.Player;
 
 public class CommandRegister extends Command {
 
+    public CommandRegister() {
+        setMinArgs(1);
+        setAllowConsole(false);
+    }
+
     @Override
     public void execute() {
-        final PlayerSession session = null; // TODO: Get session
+        final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
         final String password = getArg(0);
 
         // TODO: Validate password length

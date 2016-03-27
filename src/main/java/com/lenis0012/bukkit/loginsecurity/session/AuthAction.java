@@ -1,5 +1,6 @@
 package com.lenis0012.bukkit.loginsecurity.session;
 
+import com.lenis0012.bukkit.loginsecurity.session.action.ActionResponse;
 import org.bukkit.entity.Player;
 
 public abstract class AuthAction {
@@ -25,5 +26,5 @@ public abstract class AuthAction {
         return serviceProvider;
     }
 
-    public abstract AuthMode run(PlayerSession session);
+    public abstract AuthMode run(PlayerSession session, ActionResponse response);
 }

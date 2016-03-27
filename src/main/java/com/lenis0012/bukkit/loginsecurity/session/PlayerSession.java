@@ -1,9 +1,12 @@
 package com.lenis0012.bukkit.loginsecurity.session;
 
+import com.avaje.ebean.EbeanServer;
+import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.events.AuthActionEvent;
 import com.lenis0012.bukkit.loginsecurity.events.AuthModeChangedEvent;
 import com.lenis0012.bukkit.loginsecurity.session.action.ActionCallback;
 import com.lenis0012.bukkit.loginsecurity.session.action.ActionResponse;
+import com.lenis0012.bukkit.loginsecurity.session.exceptions.ProfileRefreshException;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -12,7 +15,7 @@ import org.bukkit.entity.Player;
  * Player session
  */
 public class PlayerSession {
-    private final PlayerProfile profile;
+    private PlayerProfile profile;
     private AuthMode mode;
 
     protected PlayerSession(PlayerProfile profile, AuthMode mode) {
@@ -27,6 +30,29 @@ public class PlayerSession {
      */
     public PlayerProfile getProfile() {
         return profile;
+    }
+
+    /**
+     * Refreshes player's profile.
+     */
+    public void refreshProfile() throws ProfileRefreshException {
+        final EbeanServer database = LoginSecurity.getInstance().getDatabase();
+        PlayerProfile newProfile = database.find(PlayerProfile.class).where().ieq("unique_user_id", profile.getUniqueUserId()).findUnique();
+
+        if(newProfile != null && mode == AuthMode.UNREGISTERED) {
+            throw new ProfileRefreshException("Profile was registered while in cache!");
+        }
+
+        if(newProfile == null && mode != AuthMode.UNREGISTERED) {
+            throw new ProfileRefreshException("Profile was not found, even though it should be there!");
+        }
+
+        if(newProfile == null && mode == AuthMode.UNREGISTERED) {
+            // Player isn't registered, nothing to update.
+            return;
+        }
+
+        this.profile = newProfile;
     }
 
     /**
@@ -71,12 +97,15 @@ public class PlayerSession {
         AuthActionEvent event = new AuthActionEvent(this, action);
         Bukkit.getPluginManager().callEvent(event);
         if(event.isCancelled()) {
-            return new ActionResponse(false, "Cancelled");
+            return new ActionResponse(false, event.getCancelledMessage());
         }
 
         // Run
+        final ActionResponse response = new ActionResponse();
         AuthMode previous = mode;
-        this.mode = action.run(this);
+        AuthMode current = action.run(this, response);
+        if(current == null || !response.isSuccess()) return response; // Something went wrong
+        this.mode = current;
 
         // If auth mode changed, run event
         if(previous != mode) {
@@ -85,6 +114,6 @@ public class PlayerSession {
         }
 
         // Complete
-        return new ActionResponse(true, event.getCancelledMessage());
+        return response;
     }
 }

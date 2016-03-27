@@ -11,19 +11,14 @@ import com.lenis0012.pluginutils.modules.command.Command;
 import org.bukkit.entity.Player;
 
 public class CommandLogin extends Command {
-    private final LoginSecurity plugin;
-
     public CommandLogin(LoginSecurity plugin) {
-        this.plugin = plugin;
-
-        // Parameters
         setMinArgs(1);
         setAllowConsole(false);
     }
 
     @Override
     public void execute() {
-        final PlayerSession session = null; // TODO: Get session
+        final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
         final String password = getArg(0);
 
         // TODO: Rate limiting.

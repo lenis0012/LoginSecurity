@@ -1,8 +1,12 @@
 package com.lenis0012.bukkit.loginsecurity.session.action;
 
 public class ActionResponse {
-    private final boolean success;
-    private final String errorMessage;
+    private boolean success;
+    private String errorMessage;
+
+    public ActionResponse() {
+        this.success = true;
+    }
 
     public ActionResponse(boolean success, String errorMessage) {
         this.success = success;
@@ -15,5 +19,13 @@ public class ActionResponse {
 
     public String getErrorMessage() {
         return errorMessage;
+    }
+
+    protected void setSuccess(boolean success) {
+        this.success = success;
+    }
+
+    protected void setErrorMessage(String message) {
+        this.errorMessage = message;
     }
 }
