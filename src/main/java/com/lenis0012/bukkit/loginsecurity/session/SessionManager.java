@@ -3,6 +3,8 @@ package com.lenis0012.bukkit.loginsecurity.session;
 import com.avaje.ebean.EbeanServer;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Maps;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
@@ -16,12 +18,14 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-public class SessionManager {
+public class SessionManager extends CacheLoader<UUID, PlayerSession> {
     private final Map<UUID, PlayerSession> activeSessions = Maps.newConcurrentMap();
+    private final LoadingCache<UUID, PlayerSession> preloadCache;
     private final Cache<UUID, Long> sessionCache;
 
     public SessionManager(LoginSecurity plugin) {
         int sessionTimeout = plugin.config().getSessionTimeout();
+        this.preloadCache = CacheBuilder.newBuilder().expireAfterWrite(30L, TimeUnit.SECONDS).build(this);
         if(sessionTimeout > 0) {
             this.sessionCache = CacheBuilder.newBuilder()
                     .expireAfterWrite(sessionTimeout, TimeUnit.SECONDS)
@@ -29,6 +33,11 @@ public class SessionManager {
         } else {
             this.sessionCache = null;
         }
+    }
+
+    public void preloadSession(final String playerName, final UUID playerUUID) {
+        final UUID profileId = ProfileUtil.getUUID(playerName, playerUUID);
+        preloadCache.getUnchecked(profileId);
     }
 
     public final PlayerSession getPlayerSession(final Player player) {
@@ -41,15 +50,16 @@ public class SessionManager {
         if(activeSessions.containsKey(userId)) {
             session = activeSessions.get(userId);
         } else {
-            session = newSession(userId);
+            session = preloadCache.getUnchecked(userId);
+            activeSessions.put(userId, session);
+            preloadCache.invalidate(userId);
         }
 
         return session;
     }
 
     public final PlayerSession getOfflineSession(final UUID profileId) {
-        // TODO: Return offline session.
-        return null;
+        return newSession(profileId);
     }
 
     public final PlayerSession getOfflineSession(final String playerName) {
@@ -74,9 +84,14 @@ public class SessionManager {
             // New user...
             profile = new PlayerProfile();
             profile.setUniqueUserId(playerId.toString());
-            authMode = AuthMode.UNREGISTERED;
+            authMode = LoginSecurity.getConfiguration().isPasswordRequired() ? AuthMode.UNREGISTERED : AuthMode.AUTHENTICATED;
         }
 
         return new PlayerSession(profile, authMode);
+    }
+
+    @Override
+    public PlayerSession load(UUID uuid) throws Exception {
+        return newSession(uuid);
     }
 }

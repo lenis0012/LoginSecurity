@@ -1,10 +1,19 @@
 package com.lenis0012.bukkit.loginsecurity;
 
+import com.avaje.ebean.EbeanServer;
+import com.google.common.collect.Lists;
+import com.lenis0012.bukkit.loginsecurity.modules.general.GeneralModule;
 import com.lenis0012.bukkit.loginsecurity.modules.migration.MigrationModule;
 import com.lenis0012.bukkit.loginsecurity.modules.storage.StorageModule;
 import com.lenis0012.bukkit.loginsecurity.session.SessionManager;
+import com.lenis0012.bukkit.loginsecurity.storage.ActionEntry;
+import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 import com.lenis0012.pluginutils.PluginHolder;
 import com.lenis0012.pluginutils.modules.configuration.ConfigurationModule;
+
+import javax.persistence.PersistenceException;
+import java.util.List;
+import java.util.logging.Level;
 
 public class LoginSecurity extends PluginHolder {
 
@@ -40,8 +49,16 @@ public class LoginSecurity extends PluginHolder {
         config.reload();
         config.save();
 
+        // Load database
+        try {
+            getDatabase().find(PlayerProfile.class).findRowCount();
+        } catch(PersistenceException e) {
+            getLogger().log(Level.INFO, "Installing database due to first time use...");
+            installDDL();
+        }
+
         // Register modules
-        registry.registerModules(StorageModule.class, MigrationModule.class);
+        registry.registerModules(StorageModule.class, MigrationModule.class, GeneralModule.class);
     }
 
     @Override
@@ -50,5 +67,13 @@ public class LoginSecurity extends PluginHolder {
 
     public LoginSecurityConfig config() {
         return config;
+    }
+
+    @Override
+    public List<Class<?>> getDatabaseClasses() {
+        List<Class<?>> list = Lists.newArrayList();
+        list.add(PlayerProfile.class);
+        list.add(ActionEntry.class);
+        return list;
     }
 }
