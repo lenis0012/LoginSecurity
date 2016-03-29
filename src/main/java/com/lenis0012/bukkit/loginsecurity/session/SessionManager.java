@@ -21,18 +21,9 @@ import java.util.concurrent.TimeUnit;
 public class SessionManager extends CacheLoader<UUID, PlayerSession> {
     private final Map<UUID, PlayerSession> activeSessions = Maps.newConcurrentMap();
     private final LoadingCache<UUID, PlayerSession> preloadCache;
-    private final Cache<UUID, Long> sessionCache;
 
     public SessionManager(LoginSecurity plugin) {
-        int sessionTimeout = plugin.config().getSessionTimeout();
         this.preloadCache = CacheBuilder.newBuilder().expireAfterWrite(30L, TimeUnit.SECONDS).build(this);
-        if(sessionTimeout > 0) {
-            this.sessionCache = CacheBuilder.newBuilder()
-                    .expireAfterWrite(sessionTimeout, TimeUnit.SECONDS)
-                    .build();
-        } else {
-            this.sessionCache = null;
-        }
     }
 
     public void preloadSession(final String playerName, final UUID playerUUID) {
@@ -70,10 +61,7 @@ public class SessionManager extends CacheLoader<UUID, PlayerSession> {
 
     public void onPlayerLogout(final Player player) {
         final UUID userId = ProfileUtil.getUUID(player);
-        activeSessions.remove(player.getUniqueId());
-        if(sessionCache != null) {
-            sessionCache.put(userId, System.currentTimeMillis());
-        }
+        activeSessions.remove(userId);
     }
 
     private final PlayerSession newSession(final UUID playerId) {
