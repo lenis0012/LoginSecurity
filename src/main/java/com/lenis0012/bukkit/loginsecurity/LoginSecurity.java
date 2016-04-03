@@ -1,10 +1,10 @@
 package com.lenis0012.bukkit.loginsecurity;
 
-import com.avaje.ebean.EbeanServer;
 import com.google.common.collect.Lists;
 import com.lenis0012.bukkit.loginsecurity.modules.general.GeneralModule;
 import com.lenis0012.bukkit.loginsecurity.modules.migration.MigrationModule;
 import com.lenis0012.bukkit.loginsecurity.modules.storage.StorageModule;
+import com.lenis0012.bukkit.loginsecurity.modules.threading.ThreadingModule;
 import com.lenis0012.bukkit.loginsecurity.session.SessionManager;
 import com.lenis0012.bukkit.loginsecurity.storage.ActionEntry;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
@@ -58,7 +58,11 @@ public class LoginSecurity extends PluginHolder {
         }
 
         // Register modules
-        registry.registerModules(StorageModule.class, MigrationModule.class, GeneralModule.class);
+        registry.registerModules(
+                StorageModule.class,
+                MigrationModule.class,
+                GeneralModule.class,
+                ThreadingModule.class);
     }
 
     @Override

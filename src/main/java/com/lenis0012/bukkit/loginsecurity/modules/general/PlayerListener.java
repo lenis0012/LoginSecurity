@@ -49,9 +49,11 @@ public class PlayerListener implements Listener {
         if(authMode.hasAuthMessage()) {
             player.sendMessage(ChatColor.RED + authMode.getAuthMessage());
         }
-        
+
         // TODO: Either make person fly or teleport them to a safe place... :)
     }
+
+    // TODO: Filter block events
 
     /**
      * Player action filtering.

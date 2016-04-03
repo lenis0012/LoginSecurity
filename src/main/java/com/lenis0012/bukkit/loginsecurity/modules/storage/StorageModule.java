@@ -13,7 +13,7 @@ public class StorageModule extends Module<LoginSecurity> {
 
     @Override
     public void enable() {
-        this.sessionManager = new SessionManager(plugin);
+        this.sessionManager = new SessionManager();
     }
 
     @Override

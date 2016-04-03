@@ -18,12 +18,17 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-public class SessionManager extends CacheLoader<UUID, PlayerSession> {
+public class SessionManager {
     private final Map<UUID, PlayerSession> activeSessions = Maps.newConcurrentMap();
     private final LoadingCache<UUID, PlayerSession> preloadCache;
 
-    public SessionManager(LoginSecurity plugin) {
-        this.preloadCache = CacheBuilder.newBuilder().expireAfterWrite(30L, TimeUnit.SECONDS).build(this);
+    public SessionManager() {
+        this.preloadCache = CacheBuilder.newBuilder().expireAfterWrite(30L, TimeUnit.SECONDS).build(new CacheLoader<UUID, PlayerSession>() {
+            @Override
+            public PlayerSession load(UUID uuid) throws Exception {
+                return newSession(uuid);
+            }
+        });
     }
 
     public void preloadSession(final String playerName, final UUID playerUUID) {
@@ -76,10 +81,5 @@ public class SessionManager extends CacheLoader<UUID, PlayerSession> {
         }
 
         return new PlayerSession(profile, authMode);
-    }
-
-    @Override
-    public PlayerSession load(UUID uuid) throws Exception {
-        return newSession(uuid);
     }
 }

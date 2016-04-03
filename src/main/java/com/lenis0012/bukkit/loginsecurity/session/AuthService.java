@@ -1,5 +1,6 @@
 package com.lenis0012.bukkit.loginsecurity.session;
 
+import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -31,7 +32,7 @@ public class AuthService<T> {
      *
      * Provider: null
      */
-    public static AuthService<?> SESSION = new AuthService<>(Object.class);
+    public static AuthService<LoginSecurity> SESSION = new AuthService<>(LoginSecurity.class);
     /**
      * Channel API performed actions.
      * Anything that uses plugin messaging

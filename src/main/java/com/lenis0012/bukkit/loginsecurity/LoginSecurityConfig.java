@@ -19,7 +19,7 @@ public class LoginSecurityConfig extends AbstractConfig {
     private boolean passwordRequired = true;
 
     @ConfigHeader({
-            "Available algorithms: BCRYPT, SCRYPT, PBKDF2, SHA3_256, WHIRLPOOL, ARGON2",
+            "Available algorithms: BCRYPT, SCRYPT, PBKDF2, SHA3_256, WHIRLPOOL",
             "Check wiki for additional parameters."
     })
     @ConfigKey(path="hashing.algorithm")
@@ -42,6 +42,10 @@ public class LoginSecurityConfig extends AbstractConfig {
     @ConfigHeader("Login timeout, set to -1 to disable.")
     @ConfigKey(path="login-timeout")
     private int loginTimeout = 60;
+
+    @ConfigHeader("Login/register message delay")
+    @ConfigKey
+    private int loginMessageDelay = 10;
 
     @ConfigKey(path="max-login-tries")
     private int maxLoginTries = 5;
