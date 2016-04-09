@@ -1,6 +1,7 @@
 package com.lenis0012.bukkit.loginsecurity.hashing;
 
 import com.lenis0012.bukkit.loginsecurity.hashing.active.*;
+import com.lenis0012.bukkit.loginsecurity.hashing.authme.AuthmeSHA;
 import com.lenis0012.bukkit.loginsecurity.hashing.deprecated.MD5;
 import com.lenis0012.bukkit.loginsecurity.hashing.deprecated.PHPBB3;
 import com.lenis0012.bukkit.loginsecurity.hashing.deprecated.SHA2;
@@ -11,8 +12,9 @@ import com.lenis0012.bukkit.loginsecurity.hashing.xauth.xAuthAlgorithm;
  *
  * IDs:
  * 0-10  = Legacy LoginSecurity
- * 10-20 = xAuth
- * 20-30 = Modern LoginSecurity
+ * 10-19 = xAuth
+ * 20-29 = Modern LoginSecurity
+ * 30-39 = AuthMe
  */
 public enum Algorithm {
     /**
@@ -41,7 +43,13 @@ public enum Algorithm {
      */
     xAuth_Authme_SHA256(true, 10, null),
     xAuth_DEFAULT(true, 11, new xAuthAlgorithm(true)),
-    xAuth_WHIRLPOOL(true, 15, new xAuthAlgorithm(false));
+    xAuth_WHIRLPOOL(true, 15, new xAuthAlgorithm(false)),
+
+    /**
+     * AuthMe (Reloaded).
+     * SHA256 is the only supported algorithm.
+     */
+    AuthMe_SHA256(true, 30, new AuthmeSHA("SHA256"));
 
     private final boolean deprecated;
     private final BasicAlgorithm algorithm;

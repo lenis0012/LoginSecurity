@@ -55,7 +55,7 @@ public class xAuthMigration extends Migration {
         // Execute
         Connection connection = null;
         Transaction transaction = null;
-        this.entriedCompleted = 0;
+        this.entriesCompleted = 0;
         try {
             connection = DriverManager.getConnection(url, user, password);
             Statement statement = connection.createStatement();
@@ -79,7 +79,7 @@ public class xAuthMigration extends Migration {
                 }
 
                 // Progress update
-                entriedCompleted++;
+                entriesCompleted++;
                 progressUpdate("Loading accounts from xAuth");
             }
             result.close();
@@ -93,7 +93,7 @@ public class xAuthMigration extends Migration {
 
             // Obtain UUIDs
             log("Loaded accounts from database, now doing UUID lookup...");
-            this.entriedCompleted = 0;
+            this.entriesCompleted = 0;
             boolean useOnlineUUID = ProfileUtil.useOnlineUUID();
             Iterator<PlayerProfile> it = profiles.iterator();
             while(it.hasNext()) {
@@ -125,13 +125,13 @@ public class xAuthMigration extends Migration {
 
             // Save data
             log("All entries were loaded, now saving in to new database...");
-            entriedCompleted = 0;
+            entriesCompleted = 0;
             transaction = database.beginTransaction();
             transaction.setBatchMode(true);
             transaction.setBatchSize(ACCOUNTS_BATCH_SIZE);
             for(PlayerProfile profile : profiles) {
                 database.save(profile);
-                if(entriedCompleted++ >= ACCOUNTS_BATCH_SIZE) {
+                if(entriesCompleted++ >= ACCOUNTS_BATCH_SIZE) {
                     database.commitTransaction();
                     transaction = database.beginTransaction();
                     transaction.setBatchMode(true);

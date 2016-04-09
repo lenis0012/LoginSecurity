@@ -1,5 +1,7 @@
 package com.lenis0012.bukkit.loginsecurity;
 
+import com.avaje.ebeaninternal.api.SpiEbeanServer;
+import com.avaje.ebeaninternal.server.ddl.DdlGenerator;
 import com.google.common.collect.Lists;
 import com.lenis0012.bukkit.loginsecurity.modules.general.GeneralModule;
 import com.lenis0012.bukkit.loginsecurity.modules.migration.MigrationModule;
@@ -63,6 +65,11 @@ public class LoginSecurity extends PluginHolder {
                 MigrationModule.class,
                 GeneralModule.class,
                 ThreadingModule.class);
+
+        // Generate create script
+        SpiEbeanServer serv = (SpiEbeanServer)this.getDatabase();
+        DdlGenerator gen = serv.getDdlGenerator();
+        System.out.println(gen.generateCreateDdl());
     }
 
     @Override

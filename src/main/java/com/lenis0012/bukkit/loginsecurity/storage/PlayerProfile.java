@@ -15,16 +15,16 @@ public class PlayerProfile {
     @Column
     private int id;
 
-    @Column(unique = true, updatable = false)
+    @Column(unique = true, updatable = false, length = 128)
     private String uniqueUserId;
 
-    @Column
+    @Column(length = 16)
     private String lastName;
 
     @Column
     private String ipAddress;
 
-    @Column
+    @Column(length = 512)
     private String password;
 
     @Column
