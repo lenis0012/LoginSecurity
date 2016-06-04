@@ -1,0 +1,14 @@
+#> Database settings.
+#> If you don't know what that means, don't touch this section.
+#> Make sure to read the wiki if you a migrating from SQLite for MySQL or vica versa.
+
+
+# Don't change this if you don't know what it means
+isolation: SERIALIZABLE
+mysql:
+  enabled: false
+  host: 'localhost:3306'
+  username: 'root'
+  password: ''
+  # Table names are prefixed with ls_
+  database: 'minecraft'

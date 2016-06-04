@@ -41,7 +41,7 @@ public enum Algorithm {
      * xAuth.
      * MD5(12), SHA1(13) and SHA256(14) are no longer supported.
      */
-    xAuth_Authme_SHA256(true, 10, null),
+    xAuth_Authme_SHA256(true, 10, new AuthmeSHA("SHA256")),
     xAuth_DEFAULT(true, 11, new xAuthAlgorithm(true)),
     xAuth_WHIRLPOOL(true, 15, new xAuthAlgorithm(false)),
 

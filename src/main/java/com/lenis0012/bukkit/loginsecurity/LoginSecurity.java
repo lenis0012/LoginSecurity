@@ -9,6 +9,7 @@ import com.lenis0012.bukkit.loginsecurity.modules.storage.StorageModule;
 import com.lenis0012.bukkit.loginsecurity.modules.threading.ThreadingModule;
 import com.lenis0012.bukkit.loginsecurity.session.SessionManager;
 import com.lenis0012.bukkit.loginsecurity.storage.ActionEntry;
+import com.lenis0012.bukkit.loginsecurity.storage.Migration;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 import com.lenis0012.pluginutils.PluginHolder;
 import com.lenis0012.pluginutils.modules.configuration.ConfigurationModule;
@@ -83,6 +84,7 @@ public class LoginSecurity extends PluginHolder {
     @Override
     public List<Class<?>> getDatabaseClasses() {
         List<Class<?>> list = Lists.newArrayList();
+        list.add(Migration.class);
         list.add(PlayerProfile.class);
         list.add(ActionEntry.class);
         return list;

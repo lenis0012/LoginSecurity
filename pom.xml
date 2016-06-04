@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>me.lenis0012.ls</groupId>
+    <groupId>com.lenis0012.bukkit</groupId>
     <artifactId>LoginSecurity</artifactId>
     <version>2.1-alpha1-SNAPSHOT</version>
     <packaging>jar</packaging>
@@ -85,6 +85,17 @@
             <artifactId>junit</artifactId>
             <version>4.12</version>
             <scope>test</scope>
+        </dependency>
+        <!-- Ebean 7, This is only used for SQL Migrations and is not added to the jar -->
+        <dependency>
+            <groupId>org.avaje.ebeanorm</groupId>
+            <artifactId>avaje-ebeanorm</artifactId>
+            <version>7.12.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.avaje</groupId>
+            <artifactId>avaje-datasource</artifactId>
+            <version>1.1.4</version>
         </dependency>
     </dependencies>
 

@@ -9,6 +9,9 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
 
+/**
+ * When any loginsecurity action on a player's profile is performed.
+ */
 public class AuthActionEvent extends Event implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
     protected final PlayerSession session;

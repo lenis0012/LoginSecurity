@@ -5,6 +5,9 @@ import com.lenis0012.bukkit.loginsecurity.session.PlayerSession;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+/**
+ * When a session's Authentication mode was changed.
+ */
 public class AuthModeChangedEvent extends Event {
     private static final HandlerList handlers = new HandlerList();
     private final PlayerSession session;
