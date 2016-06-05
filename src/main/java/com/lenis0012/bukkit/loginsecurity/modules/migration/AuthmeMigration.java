@@ -15,11 +15,10 @@ import java.io.File;
 import java.sql.*;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class xAuthMigration extends Migration {
+public class AuthmeMigration extends Migration {
     private static final int ACCOUNTS_BATCH_SIZE = 100;
 
     @Override
@@ -29,11 +28,11 @@ public class xAuthMigration extends Migration {
 
     @Override
     public boolean canExecute(String[] params) {
-        String platform = params.length > 0 ? params[0].toLowerCase() : "h2";
+        String platform = params.length > 0 ? params[0].toLowerCase() : "sqlite";
         if(platform.equals("mysql")) {
             return params.length > 4;
         } else {
-            File file = new File(LoginSecurity.getInstance().getDataFolder(), "xAuth.h2.db");
+            File file = new File(LoginSecurity.getInstance().getDataFolder(), "authme.db");
             return file.exists();
         }
     }
@@ -43,17 +42,13 @@ public class xAuthMigration extends Migration {
         PluginHolder plugin = LoginSecurity.getInstance();
         final EbeanServer database = plugin.getDatabase();
         final Logger logger = plugin.getLogger();
-        final String dbFile = plugin.getDataFolder().getPath() + File.separator + "xAuth.h2.db";
-        final String platform = params.length > 0 ? params[0].toLowerCase() : "h2";
-        String driver = "org.h2.Driver";
-        String url = "jdbc:h2:" + dbFile + ";MODE=MySQL;IGNORECASE=TRUE";
-        String user = "sa";
-        String password = "";
+        final String dbFile = plugin.getDataFolder().getPath() + File.separator + "authme.db";
+        final String platform = params.length > 0 ? params[0].toLowerCase() : "sqlite";
+        String driver = "org.sqlite.JDBC";
+        String url = "jdbc:sqlite:" + dbFile;
         if(platform.equals("mysql")) {
             driver = "com.mysql.jdbc.Driver";
-            url = "jdbc:mysql://" + params[1] + "/" + params[4];
-            user = params[2];
-            password = params[3];
+            url = "jdbc:mysql://" + params[1] + "/" + params[4] + "?user=" + params[2] + "&password=" + params[3];
         }
 
         // Verify & initiate driver
@@ -69,7 +64,7 @@ public class xAuthMigration extends Migration {
         Transaction transaction = null;
         this.entriesCompleted = 0;
         try {
-            connection = DriverManager.getConnection(url, user, password);
+            connection = DriverManager.getConnection(url);
             Statement statement = connection.createStatement();
 
             // Obtain column count
@@ -91,7 +86,7 @@ public class xAuthMigration extends Migration {
                 }
 
                 // Progress update
-                entriesCompleted++;
+                entriesCompleted += 1;
                 progressUpdate("Loading accounts from xAuth");
             }
             result.close();
@@ -112,17 +107,12 @@ public class xAuthMigration extends Migration {
                 PlayerProfile profile = it.next();
                 if(useOnlineUUID) {
                     OfflinePlayer offline = Bukkit.getOfflinePlayer(profile.getLastName());
-                    if(offline == null) {
-                        it.remove(); continue;
-                    }
-
-                    UUID id = offline.getUniqueId();
-                    if(id == null) {
+                    if(offline == null || offline.getUniqueId() == null) {
                         it.remove();
                         continue;
                     }
 
-                    profile.setUniqueUserId(id.toString());
+                    profile.setUniqueUserId(offline.getUniqueId().toString());
                 } else {
                     profile.setUniqueUserId(ProfileUtil.getUUID(profile.getLastName(), null).toString());
                 }
@@ -145,19 +135,15 @@ public class xAuthMigration extends Migration {
                 database.save(profile);
                 if(++entriesCompleted % ACCOUNTS_BATCH_SIZE == 0) {
                     database.commitTransaction();
-                    if(entriesCompleted != entriesTotal) {
-                        transaction = database.beginTransaction();
-                        transaction.setBatchMode(true);
-                        transaction.setBatchSize(ACCOUNTS_BATCH_SIZE);
-                    }
+                    transaction = database.beginTransaction();
+                    transaction.setBatchMode(true);
+                    transaction.setBatchSize(ACCOUNTS_BATCH_SIZE);
                 }
 
-                // status update
+                // status update authme
                 progressUpdate("Inserting accounts in to database");
             }
-            if(entriesCompleted != entriesTotal) {
-                database.commitTransaction();
-            }
+            database.commitTransaction();
             log("Completed!");
             return true;
         } catch(SQLException e) {
@@ -176,24 +162,13 @@ public class xAuthMigration extends Migration {
         }
     }
 
-    @Override
-    public String getName() {
-        return "xAuth";
-    }
-
-    @Override
-    public int minParams() {
-        return 0;
-    }
-
     private PlayerProfile getProfile(ResultSet result) throws SQLException {
-        final String name = result.getString("playername");
+        final String name = result.getString("username");
         final String hash = result.getString("password");
-        final byte type = result.getByte("pwtype");
-        final String ipAddress = result.getString("lastloginip");
-        final Timestamp lastLogin = result.getTimestamp("lastlogindate");
-        final Timestamp registration = result.getTimestamp("registerdate");
-        int algorithm = convertAlgorithm(type);
+        final String ipAddress = result.getString("ip");
+        final Timestamp lastLogin = new Timestamp(result.getLong("lastlogin"));
+        final Timestamp registration = new Timestamp(System.currentTimeMillis());
+        int algorithm = hash.startsWith("$SHA$") ? Algorithm.AuthMe_SHA256.getId() : -1;
         if(algorithm == -1) {
             return null;
         }
@@ -208,16 +183,13 @@ public class xAuthMigration extends Migration {
         return profile;
     }
 
-    private int convertAlgorithm(byte xauthType) {
-        switch(xauthType) {
-            case 0:
-                return Algorithm.xAuth_DEFAULT.getId();
-            case 1:
-                return Algorithm.xAuth_WHIRLPOOL.getId();
-            case 5:
-                return Algorithm.xAuth_Authme_SHA256.getId();
-            default:
-                return -1;
-        }
+    @Override
+    public String getName() {
+        return "AuthMe";
+    }
+
+    @Override
+    public int minParams() {
+        return 0;
     }
 }
