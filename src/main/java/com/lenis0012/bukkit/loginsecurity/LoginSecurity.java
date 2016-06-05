@@ -1,7 +1,5 @@
 package com.lenis0012.bukkit.loginsecurity;
 
-import com.avaje.ebeaninternal.api.SpiEbeanServer;
-import com.avaje.ebeaninternal.server.ddl.DdlGenerator;
 import com.google.common.collect.Lists;
 import com.lenis0012.bukkit.loginsecurity.modules.general.GeneralModule;
 import com.lenis0012.bukkit.loginsecurity.modules.migration.MigrationModule;
@@ -14,9 +12,7 @@ import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 import com.lenis0012.pluginutils.PluginHolder;
 import com.lenis0012.pluginutils.modules.configuration.ConfigurationModule;
 
-import javax.persistence.PersistenceException;
 import java.util.List;
-import java.util.logging.Level;
 
 public class LoginSecurity extends PluginHolder {
 
@@ -26,8 +22,7 @@ public class LoginSecurity extends PluginHolder {
      * @return SessionManager
      */
     public static SessionManager getSessionManager() {
-        return null;
-//        return getInstance().getModule(StorageModule.class).getSessionManager();
+        return ((LoginSecurity) getInstance()).sessionManager;
     }
 
     /**
@@ -40,6 +35,7 @@ public class LoginSecurity extends PluginHolder {
     }
 
     private LoginSecurityConfig config;
+    private SessionManager sessionManager;
 
     public LoginSecurity() {
         super(ConfigurationModule.class);
@@ -53,13 +49,8 @@ public class LoginSecurity extends PluginHolder {
         config.reload();
         config.save();
 
-        // Load database
-        try {
-            getDatabase().find(PlayerProfile.class).findRowCount();
-        } catch(PersistenceException e) {
-            getLogger().log(Level.INFO, "Installing database due to first time use...");
-            installDDL();
-        }
+        // Load session manager
+        this.sessionManager = new SessionManager();
 
         // Register modules
         registry.registerModules(

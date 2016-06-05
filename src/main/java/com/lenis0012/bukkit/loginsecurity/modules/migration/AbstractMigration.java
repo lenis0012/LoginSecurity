@@ -6,7 +6,7 @@ import java.io.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public abstract class Migration {
+public abstract class AbstractMigration {
     private static final String PROGRESS_FORMAT = "Migrating %s: %s [%s]";
     private long progressUpdateFrequency = 2000L;
     private long nextProgressUpdate = 0L;

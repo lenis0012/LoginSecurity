@@ -14,7 +14,7 @@ import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class LegacyMigration extends Migration {
+public class LegacyMigration extends AbstractMigration {
 
     @Override
     public boolean executeAutomatically() {

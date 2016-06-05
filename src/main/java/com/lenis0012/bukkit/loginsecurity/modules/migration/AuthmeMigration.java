@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class AuthmeMigration extends Migration {
+public class AuthmeMigration extends AbstractMigration {
     private static final int ACCOUNTS_BATCH_SIZE = 100;
 
     @Override
@@ -55,7 +55,7 @@ public class AuthmeMigration extends Migration {
         try {
             Class.forName(driver);
         } catch(Exception e) {
-            logger.log(Level.SEVERE, "Couldn't load H2 driver, is it in your lib folder?");
+            logger.log(Level.SEVERE, "Couldn't load SQL driver", e);
             return false;
         }
 

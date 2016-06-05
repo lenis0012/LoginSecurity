@@ -19,7 +19,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class xAuthMigration extends Migration {
+public class xAuthMigration extends AbstractMigration {
     private static final int ACCOUNTS_BATCH_SIZE = 100;
 
     @Override
