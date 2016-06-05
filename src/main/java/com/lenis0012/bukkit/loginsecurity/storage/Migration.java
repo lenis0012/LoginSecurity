@@ -14,7 +14,7 @@ public class Migration {
     @Column(unique = true, updatable = false)
     private String version;
 
-    @Column
+    @Column(name = "description")
     private String name;
 
     @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
@@ -49,6 +49,14 @@ public class Migration {
     }
 
     public void setAppliedAt(Timestamp appliedAt) {
+        this.appliedAt = appliedAt;
+    }
+
+    public Migration() {}
+
+    public Migration(String version, String name, Timestamp appliedAt) {
+        this.version = version;
+        this.name = name;
         this.appliedAt = appliedAt;
     }
 }

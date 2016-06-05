@@ -26,7 +26,8 @@ public class LoginSecurity extends PluginHolder {
      * @return SessionManager
      */
     public static SessionManager getSessionManager() {
-        return getInstance().getModule(StorageModule.class).getSessionManager();
+        return null;
+//        return getInstance().getModule(StorageModule.class).getSessionManager();
     }
 
     /**
@@ -66,11 +67,6 @@ public class LoginSecurity extends PluginHolder {
                 MigrationModule.class,
                 GeneralModule.class,
                 ThreadingModule.class);
-
-        // Generate create script
-        SpiEbeanServer serv = (SpiEbeanServer)this.getDatabase();
-        DdlGenerator gen = serv.getDdlGenerator();
-        System.out.println(gen.generateCreateDdl());
     }
 
     @Override

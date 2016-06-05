@@ -28,21 +28,33 @@ public class xAuthMigration extends Migration {
     }
 
     @Override
-    public boolean canExecute() {
-        File file = new File(LoginSecurity.getInstance().getDataFolder(), "xAuth.h2.db");
-        return file.exists();
+    public boolean canExecute(String[] params) {
+        String platform = params.length > 0 ? params[0].toLowerCase() : "h2";
+        if(platform.equals("mysql")) {
+            return params.length > 4;
+        } else {
+            File file = new File(LoginSecurity.getInstance().getDataFolder(), "xAuth.h2.db");
+            return file.exists();
+        }
     }
 
     @Override
-    public boolean execute() {
+    public boolean execute(String[] params) {
         PluginHolder plugin = LoginSecurity.getInstance();
         final EbeanServer database = plugin.getDatabase();
         final Logger logger = plugin.getLogger();
         final String dbFile = plugin.getDataFolder().getPath() + File.separator + "xAuth";
-        final String driver = "org.h2.Driver";
-        final String url = "jdbc:h2:" + dbFile + ";MODE=MySQL;IGNORECASE=TRUE";
-        final String user = "sa";
-        final String password = "";
+        final String platform = params.length > 0 ? params[0].toLowerCase() : "h2";
+        String driver = "org.h2.Driver";
+        String url = "jdbc:h2:" + dbFile + ";MODE=MySQL;IGNORECASE=TRUE";
+        String user = "sa";
+        String password = "";
+        if(platform.equals("mysql")) {
+            driver = "com.mysql.jdbc.Driver";
+            url = "jdbc:mysql://" + params[1] + "/" + params[2];
+            user = params[3];
+            password = params[4];
+        }
 
         // Verify & initiate driver
         try {
@@ -163,6 +175,11 @@ public class xAuthMigration extends Migration {
     @Override
     public String getName() {
         return "xAuth";
+    }
+
+    @Override
+    public int minParams() {
+        return 0;
     }
 
     private PlayerProfile getProfile(ResultSet result) throws SQLException {

@@ -10,7 +10,6 @@ import com.avaje.ebeaninternal.server.ddl.DdlGenerator;
 import com.avaje.ebeaninternal.server.lib.sql.TransactionIsolation;
 import com.google.common.collect.Lists;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
-import com.lenis0012.bukkit.loginsecurity.session.SessionManager;
 import com.lenis0012.bukkit.loginsecurity.storage.Migration;
 import com.lenis0012.pluginutils.Module;
 import com.lenis0012.pluginutils.modules.configuration.Configuration;
@@ -19,7 +18,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import javax.persistence.PersistenceException;
 import java.io.*;
 import java.lang.reflect.Method;
+import java.sql.Timestamp;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
@@ -27,9 +28,10 @@ import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
-public class StorageModule extends Module<LoginSecurity> {
-    private SessionManager sessionManager;
+public class StorageModule extends Module<LoginSecurity> implements Comparator<String> {
     private EbeanServer database;
+    private boolean mysql;
+    private List<String> migrations;
 
     public StorageModule(LoginSecurity plugin) {
         super(plugin);
@@ -37,8 +39,6 @@ public class StorageModule extends Module<LoginSecurity> {
 
     @Override
     public void enable() {
-        this.sessionManager = new SessionManager();
-
         // Load config
         File file = new File(plugin.getDataFolder(), "database.yml");
         if(!file.exists()) {
@@ -80,7 +80,7 @@ public class StorageModule extends Module<LoginSecurity> {
         Thread.currentThread().setContextClassLoader(previous);
 
         // List migrations
-        List<String> migrations = Lists.newArrayList();
+        this.migrations = Lists.newArrayList();
         try {
             JarFile jarFile = new JarFile(getPluginFile());
             Enumeration<JarEntry> entries = jarFile.entries();
@@ -93,14 +93,26 @@ public class StorageModule extends Module<LoginSecurity> {
         } catch(IOException e) {
             plugin.getLogger().log(Level.SEVERE, "Failed to scan migration scripts!");
         }
+        Collections.sort(migrations, this);
 
         // Apply missing migrations
+        applyMissingUpgrades();
+    }
+
+    /**
+     * Apply any missing database upgrades.
+     * This normally runs on startup.
+     *
+     * It is also recommended to run when the database is modified and might be on an earlier version.
+     * Ex. Legacy migrations upgrade database to v1.
+     */
+    public void applyMissingUpgrades() {
         plugin.getLogger().log(Level.INFO, "Checking database version...");
-        Collections.sort(migrations);
         boolean installed = isInstalled();
         String platform = mysql ? "mysql" : "sqlite";
         SpiEbeanServer ebean = (SpiEbeanServer) database;
         DdlGenerator generator = ebean.getDdlGenerator();
+        int updatesRan = 0;
         for(String migration : migrations) {
             String[] parts = migration.split(Pattern.quote("__"));
             String version = parts[0];
@@ -110,9 +122,15 @@ public class StorageModule extends Module<LoginSecurity> {
                 plugin.getLogger().log(Level.INFO, "Applying database upgrade " + version + ": " + name);
                 String content = getContent("/" + platform + "/" + migration);
                 generator.runScript(false, content);
+                plugin.getDatabase().save(new Migration(version, name, new Timestamp(System.currentTimeMillis())));
+                updatesRan++;
             }
         }
-        plugin.getLogger().log(Level.INFO, "Database loaded successfully!");
+        plugin.getLogger().log(Level.INFO, "Applied " + updatesRan + " missing database upgrades.");
+    }
+
+    public boolean isRunningMySQL() {
+        return mysql;
     }
 
     @Override
@@ -179,7 +197,10 @@ public class StorageModule extends Module<LoginSecurity> {
         }
     }
 
-    public SessionManager getSessionManager() {
-        return sessionManager;
+    @Override
+    public int compare(String o1, String o2) {
+        int i0 = Integer.valueOf(o1.split(Pattern.quote("__"))[0]);
+        int i1 = Integer.valueOf(o2.split(Pattern.quote("__"))[0]);
+        return Integer.compare(i0, i1);
     }
 }

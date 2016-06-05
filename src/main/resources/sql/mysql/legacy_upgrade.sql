@@ -1,4 +1,7 @@
 BEGIN TRANSACTION
+DROP TABLE ls_actions;
+DROP TABLE ls_players;
+
 create table ls_actions (
   id                            integer auto_increment not null,
   timestamp                     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -25,5 +28,8 @@ create table ls_players (
 
 INSERT INTO ls_players (unique_user_id, ip_address, password, hashing_algorithm)
 SELECT unique_user_id, ip, password, encryption FROM users;
+
+INSERT INTO ls_upgrades (version, description, applied_at) VALUES('1', 'Initial', CURRENT_TIMESTAMP);
+
 DROP TABLE users;
 COMMIT;

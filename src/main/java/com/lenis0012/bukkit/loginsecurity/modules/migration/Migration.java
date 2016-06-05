@@ -16,11 +16,13 @@ public abstract class Migration {
 
     public abstract boolean executeAutomatically();
 
-    public abstract boolean canExecute();
+    public abstract boolean canExecute(String[] params);
 
-    public abstract boolean execute();
+    public abstract boolean execute(String[] params);
 
     public abstract String getName();
+
+    public abstract int minParams();
 
     protected void progressUpdate(String status) {
         Logger logger = LoginSecurity.getInstance().getLogger();
