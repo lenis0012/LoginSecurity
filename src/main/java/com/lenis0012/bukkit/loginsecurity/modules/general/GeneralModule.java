@@ -1,6 +1,7 @@
 package com.lenis0012.bukkit.loginsecurity.modules.general;
 
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
+import com.lenis0012.bukkit.loginsecurity.commands.CommandAdmin;
 import com.lenis0012.bukkit.loginsecurity.commands.CommandLogin;
 import com.lenis0012.bukkit.loginsecurity.commands.CommandRegister;
 import com.lenis0012.pluginutils.Module;
@@ -26,6 +27,7 @@ public class GeneralModule extends Module<LoginSecurity> {
         logger().log(Level.INFO, "Registering commands...");
         register(new CommandLogin(plugin), "login");
         register(new CommandRegister(), "register");
+        register(new CommandAdmin(plugin), "lac");
     }
 
     private void registerListeners() {
