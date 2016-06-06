@@ -9,6 +9,15 @@ create table ls_actions (
   constraint pk_ls_actions primary key (id)
 );
 
+create table ls_upgrades (
+  id                            integer not null,
+  version                       varchar(255),
+  description                   varchar(255),
+  applied_at                    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  constraint uq_ls_upgrades_version unique (version),
+  constraint pk_ls_upgrades primary key (id)
+);
+
 create table ls_players (
   id                            integer not null,
   unique_user_id                varchar(128),

@@ -1,4 +1,3 @@
--- apply changes
 create table ls_actions (
   id                            integer not null,
   timestamp                     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -7,6 +6,15 @@ create table ls_actions (
   service                       varchar(255),
   provider                      varchar(255),
   constraint pk_ls_actions primary key (id)
+);
+
+create table ls_upgrades (
+  id                            integer not null,
+  version                       varchar(255),
+  description                   varchar(255),
+  applied_at                    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  constraint uq_ls_upgrades_version unique (version),
+  constraint pk_ls_upgrades primary key (id)
 );
 
 create table ls_players (

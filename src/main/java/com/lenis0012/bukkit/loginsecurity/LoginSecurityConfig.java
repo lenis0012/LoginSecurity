@@ -15,40 +15,59 @@ import lombok.Getter;
         "For more info visit https://github.com/lenis0012/LoginSecurity-2/wiki/Configuration"
 })
 public class LoginSecurityConfig extends AbstractConfig {
-    @ConfigKey(path="password-required")
+    /**
+     * Registration settings
+     */
+    @ConfigKey(path="register.required")
     private boolean passwordRequired = true;
+    @ConfigHeader("When enabled, users need to enter a captcha on registration.")
+    @ConfigKey(path = "register.captcha")
+    private boolean registerCaptcha = false;
 
+    /**
+     * Login settings
+     */
+    @ConfigKey(path="login.max-tries")
+    private int maxLoginTries = 5;
+
+    /**
+     * Password settings.
+     */
+    @ConfigKey(path="password.min-length")
+    private int passwordMinLength = 6;
+    @ConfigKey(path="password-max-length")
+    private int passwordMaxLength = 32;
     @ConfigHeader({
             "Available algorithms: BCRYPT, SCRYPT, PBKDF2, SHA3_256, WHIRLPOOL",
             "Check wiki for additional parameters."
     })
-    @ConfigKey(path="hashing.algorithm")
+    @ConfigKey(path="password.hashing.algorithm")
     private String hashingAlgorithm = "BCRYPT";
 
-    @ConfigKey
+    /**
+     * Join settings.
+     */
+    @ConfigHeader("When enabled, player gets a blindness effect when not logged in.")
+    @ConfigKey(path = "join.blindness")
     private boolean blindness = true;
-
     @ConfigHeader({
             "Temporarily login location until player has logged in.",
             "Available options: DEFAULT, SPAWN, RANDOM"
     })
-    @ConfigKey
+    @ConfigKey(path = "join.location")
     private String location = "DEFAULT";
 
     @ConfigHeader("Session timeout, set to -1 to disable.")
-    @ConfigKey(path="session-timeout")
+    @ConfigKey
     private int sessionTimeout = 60;
 
     @ConfigHeader("Login timeout, set to -1 to disable.")
-    @ConfigKey(path="login-timeout")
+    @ConfigKey
     private int loginTimeout = 60;
 
     @ConfigHeader("Login/register message delay")
     @ConfigKey
     private int loginMessageDelay = 10;
-
-    @ConfigKey(path="max-login-tries")
-    private int maxLoginTries = 5;
 
     public LoginSecurityConfig(ConfigurationModule module) {
         super(module);

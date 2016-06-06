@@ -5,17 +5,21 @@ import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.events.AuthModeChangedEvent;
 import com.lenis0012.bukkit.loginsecurity.session.AuthMode;
 import com.lenis0012.bukkit.loginsecurity.session.PlayerSession;
+import com.lenis0012.bukkit.loginsecurity.util.MetaData;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.*;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -37,6 +41,7 @@ public class PlayerListener implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         // Unload player
         LoginSecurity.getSessionManager().onPlayerLogout(event.getPlayer());
+        MetaData.unset(event.getPlayer(), "ls_login_tries");
     }
 
     @EventHandler
@@ -44,6 +49,7 @@ public class PlayerListener implements Listener {
         final Player player = event.getPlayer();
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
         final AuthMode authMode = session.getAuthMode();
+        session.getProfile().setLastLogin(new Timestamp(System.currentTimeMillis()));
 
         // Message
         if(authMode.hasAuthMessage()) {
@@ -53,7 +59,25 @@ public class PlayerListener implements Listener {
         // TODO: Either make person fly or teleport them to a safe place... :)
     }
 
-    // TODO: Filter block events
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent event) {
+        final Player player = event.getPlayer();
+        final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
+        if(session.isLoggedIn()) return;
+
+        // Prevent moving
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onBlockPlace(BlockPlaceEvent event) {
+        final Player player = event.getPlayer();
+        final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
+        if(session.isLoggedIn()) return;
+
+        // Prevent moving
+        event.setCancelled(true);
+    }
 
     /**
      * Player action filtering.

@@ -2,6 +2,7 @@ package com.lenis0012.bukkit.loginsecurity.modules.storage;
 
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.EbeanServerFactory;
+import com.avaje.ebean.LogLevel;
 import com.avaje.ebean.config.DataSourceConfig;
 import com.avaje.ebean.config.ServerConfig;
 import com.avaje.ebean.config.dbplatform.SQLitePlatform;
@@ -42,7 +43,7 @@ public class StorageModule extends Module<LoginSecurity> implements Comparator<S
         // Load config
         File file = new File(plugin.getDataFolder(), "database.yml");
         if(!file.exists()) {
-            copyFile(plugin.getResource("/database.yml"), file);
+            copyFile(plugin.getResource("database.yml"), file);
         }
         Configuration config = new Configuration(file);
         config.reload(false);
@@ -53,6 +54,7 @@ public class StorageModule extends Module<LoginSecurity> implements Comparator<S
         server.setRegister(false);
         server.setClasses(plugin.getDatabaseClasses());
         server.setName("LoginSecurity");
+        server.setLoggingLevel(LogLevel.SUMMARY);
 
         // Datasource settings
         DataSourceConfig source = new DataSourceConfig();
@@ -60,6 +62,7 @@ public class StorageModule extends Module<LoginSecurity> implements Comparator<S
         final boolean mysql = config.getBoolean("mysql.enabled");
         source.setDriver(mysql ? "com.mysql.jdbc.Driver" : "org.sqlite.JDBC");
         source.setIsolationLevel(isolation);
+        source.setHeartbeatSql("select 1");
         if(mysql) {
             source.setUrl(String.format("jdbc:mysql://%s/%s", config.getString("mysql.host"), config.getString("mysql.database")));
             source.setUsername(config.getString("username"));
@@ -86,14 +89,15 @@ public class StorageModule extends Module<LoginSecurity> implements Comparator<S
             Enumeration<JarEntry> entries = jarFile.entries();
             while(entries.hasMoreElements()) {
                 JarEntry entry = entries.nextElement();
-                if(entry.getName().startsWith("sqlite/") && entry.getName().contains("__")) {
-                    migrations.add(entry.getName());
+                if(entry.getName().startsWith("sql/sqlite/") && entry.getName().contains("__")) {
+                    migrations.add(entry.getName().substring("sql/sqlite/".length()));
                 }
             }
         } catch(IOException e) {
             plugin.getLogger().log(Level.SEVERE, "Failed to scan migration scripts!");
         }
         Collections.sort(migrations, this);
+        System.out.println("mig: " + migrations.toString());
 
         // Apply missing migrations
         applyMissingUpgrades();
@@ -120,7 +124,7 @@ public class StorageModule extends Module<LoginSecurity> implements Comparator<S
             name = name.substring(0, name.length() - ".sql".length()); // Remove extension
             if(!installed || database.find(Migration.class).where().ieq("version", version).findRowCount() == 0) {
                 plugin.getLogger().log(Level.INFO, "Applying database upgrade " + version + ": " + name);
-                String content = getContent("/" + platform + "/" + migration);
+                String content = getContent("sql/" + platform + "/" + migration);
                 generator.runScript(false, content);
                 plugin.getDatabase().save(new Migration(version, name, new Timestamp(System.currentTimeMillis())));
                 updatesRan++;

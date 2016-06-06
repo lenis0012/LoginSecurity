@@ -1,6 +1,7 @@
 package com.lenis0012.bukkit.loginsecurity;
 
 import com.google.common.collect.Lists;
+import com.lenis0012.bukkit.loginsecurity.modules.captcha.CaptchaManager;
 import com.lenis0012.bukkit.loginsecurity.modules.general.GeneralModule;
 import com.lenis0012.bukkit.loginsecurity.modules.migration.MigrationModule;
 import com.lenis0012.bukkit.loginsecurity.modules.storage.StorageModule;
@@ -9,8 +10,10 @@ import com.lenis0012.bukkit.loginsecurity.session.SessionManager;
 import com.lenis0012.bukkit.loginsecurity.storage.ActionEntry;
 import com.lenis0012.bukkit.loginsecurity.storage.Migration;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
+import com.lenis0012.bukkit.loginsecurity.util.LoggingFilter;
 import com.lenis0012.pluginutils.PluginHolder;
 import com.lenis0012.pluginutils.modules.configuration.ConfigurationModule;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.List;
 
@@ -52,12 +55,17 @@ public class LoginSecurity extends PluginHolder {
         // Load session manager
         this.sessionManager = new SessionManager();
 
+        // Filter log
+        org.apache.logging.log4j.core.Logger consoleLogger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
+        consoleLogger.addFilter(new LoggingFilter());
+
         // Register modules
         registry.registerModules(
                 StorageModule.class,
                 MigrationModule.class,
                 GeneralModule.class,
-                ThreadingModule.class);
+                ThreadingModule.class,
+                CaptchaManager.class);
     }
 
     @Override

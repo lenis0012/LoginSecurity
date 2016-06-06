@@ -1,12 +1,14 @@
 package com.lenis0012.bukkit.loginsecurity.commands;
 
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
+import com.lenis0012.bukkit.loginsecurity.LoginSecurityConfig;
 import com.lenis0012.bukkit.loginsecurity.hashing.Algorithm;
 import com.lenis0012.bukkit.loginsecurity.session.*;
 import com.lenis0012.bukkit.loginsecurity.session.action.ActionCallback;
 import com.lenis0012.bukkit.loginsecurity.session.action.ActionResponse;
 import com.lenis0012.bukkit.loginsecurity.session.action.LoginAction;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
+import com.lenis0012.bukkit.loginsecurity.util.MetaData;
 import com.lenis0012.pluginutils.modules.command.Command;
 import org.bukkit.entity.Player;
 
@@ -21,7 +23,12 @@ public class CommandLogin extends Command {
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
         final String password = getArg(0);
 
-        // TODO: Rate limiting.
+        LoginSecurityConfig config = LoginSecurity.getConfiguration();
+        int tries = MetaData.get(player, "ls_login_tries", 0) + 1;
+        if(tries > config.getMaxLoginTries()) {
+            player.kickPlayer("[LoginSecurity] Exceeded max login tries: " + config.getMaxLoginTries());
+            return;
+        }
 
         // Verify auth mode
         if(session.getAuthMode() != AuthMode.UNAUTHENTICATED) {

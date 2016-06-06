@@ -40,7 +40,7 @@ public class PlayerSession {
         PlayerProfile newProfile = database.find(PlayerProfile.class).where().ieq("unique_user_id", profile.getUniqueUserId()).findUnique();
 
         if(newProfile != null && mode == AuthMode.UNREGISTERED) {
-            throw new ProfileRefreshException("Profile was registered while in cache!");
+            throw new ProfileRefreshException("Profile was registered while in database!");
         }
 
         if(newProfile == null && mode != AuthMode.UNREGISTERED) {

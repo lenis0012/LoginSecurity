@@ -49,7 +49,9 @@ public class ThreadingModule extends Module<LoginSecurity> implements Listener {
         final LoginSecurityConfig config = plugin.config();
         final int sessionTimeout = config.getSessionTimeout();
 
-        sessionCache.cleanUp(); // Clean old cache up.
+//        if(sessionCache != null) {
+//            sessionCache.cleanUp(); // Clean old cache up.
+//        }
         this.sessionCache = CacheBuilder.newBuilder().expireAfterWrite(sessionTimeout, TimeUnit.SECONDS).build();
     }
 

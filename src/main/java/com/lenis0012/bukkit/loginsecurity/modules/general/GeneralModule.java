@@ -26,7 +26,7 @@ public class GeneralModule extends Module<LoginSecurity> {
     private void registerCommands() {
         logger().log(Level.INFO, "Registering commands...");
         register(new CommandLogin(plugin), "login");
-        register(new CommandRegister(), "register");
+        register(new CommandRegister(plugin), "register");
         register(new CommandAdmin(plugin), "lac");
     }
 

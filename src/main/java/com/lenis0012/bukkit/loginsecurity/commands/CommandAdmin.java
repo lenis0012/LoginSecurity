@@ -51,7 +51,7 @@ public class CommandAdmin extends Command {
         }
     }
 
-    @SubCommand(description = "Display command help")
+    @SubCommand(description = "Display command help", minArgs = -1)
     public void help() {
         reply("&3&lL&b&loginSecurity &3&lA&b&ldmin &3&lC&b&lommand:");
         for(Entry<String, Method> entry : methods.entrySet()) {
