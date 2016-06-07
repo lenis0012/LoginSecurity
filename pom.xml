@@ -75,6 +75,13 @@
             <systemPath>${project.basedir}/lib/xAuth.jar</systemPath>
         </dependency>
         <dependency>
+            <groupId>com.gotoginal</groupId>
+            <artifactId>AutoIn</artifactId>
+            <version>3.0-alpha.7</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/AutoIn.jar</systemPath>
+        </dependency>
+        <dependency>
             <groupId>com.lenis0012.updater</groupId>
             <artifactId>updater-api</artifactId>
             <version>1</version>
