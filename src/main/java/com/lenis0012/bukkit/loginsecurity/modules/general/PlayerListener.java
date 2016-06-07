@@ -2,11 +2,14 @@ package com.lenis0012.bukkit.loginsecurity.modules.general;
 
 import com.google.common.collect.Lists;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
-import com.lenis0012.bukkit.loginsecurity.events.AuthModeChangedEvent;
+import com.lenis0012.bukkit.loginsecurity.LoginSecurityConfig;
 import com.lenis0012.bukkit.loginsecurity.session.AuthMode;
 import com.lenis0012.bukkit.loginsecurity.session.PlayerSession;
+import com.lenis0012.bukkit.loginsecurity.storage.PlayerLocation;
 import com.lenis0012.bukkit.loginsecurity.util.MetaData;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -30,6 +33,11 @@ import java.util.List;
  */
 public class PlayerListener implements Listener {
     private final List<String> ALLOWED_COMMANDS = Lists.newArrayList("/login ", "/register ");
+    private final GeneralModule general;
+
+    public PlayerListener(GeneralModule general) {
+        this.general = general;
+    }
 
     @EventHandler
     public void onPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
@@ -56,7 +64,21 @@ public class PlayerListener implements Listener {
             player.sendMessage(ChatColor.RED + authMode.getAuthMessage());
         }
 
-        // TODO: Either make person fly or teleport them to a safe place... :)
+        if(session.isAuthorized()) {
+            return;
+        }
+
+        final Location origin = player.getLocation().clone();
+        switch(general.getLocationMode()) {
+            case SPAWN:
+                player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
+                session.getProfile().setLoginLocation(new PlayerLocation(origin));
+                session.saveProfileAsync();
+                break;
+            case RANDOM:
+            case DEFAULT:
+                return; // Do nothing (for now)
+        }
     }
 
     @EventHandler

@@ -33,6 +33,17 @@ public class PlayerSession {
     }
 
     /**
+     * Save the profile on a seperate thread.
+     */
+    public void saveProfileAsync() {
+        try {
+            refreshProfile();
+            LoginSecurity.getInstance().getDatabase().save(profile);
+        } catch(ProfileRefreshException e) {
+        }
+    }
+
+    /**
      * Refreshes player's profile.
      */
     public void refreshProfile() throws ProfileRefreshException {
@@ -62,6 +73,15 @@ public class PlayerSession {
      */
     public boolean isLoggedIn() {
         return mode == AuthMode.AUTHENTICATED;
+    }
+
+    /**
+     * Check whether or not the player is authorized to move etc.
+     *
+     * @return Authorized
+     */
+    public boolean isAuthorized() {
+        return isLoggedIn();
     }
 
     /**

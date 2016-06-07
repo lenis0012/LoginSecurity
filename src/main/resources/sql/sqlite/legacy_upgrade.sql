@@ -18,6 +18,17 @@ create table ls_upgrades (
   constraint pk_ls_upgrades primary key (id)
 );
 
+create table ls_locations (
+  id                            integer not null,
+  world                         varchar(255),
+  x                             double,
+  y                             double,
+  z                             double,
+  yaw                           integer,
+  pitch                         integer,
+  constraint pk_ls_locations primary key (id)
+);
+
 create table ls_players (
   id                            integer not null,
   unique_user_id                varchar(128),
@@ -26,10 +37,13 @@ create table ls_players (
   password                      varchar(512),
   hashing_algorithm             integer,
   last_login                    timestamp,
+  location_id                   integer,
   registration_date             date,
   optlock                       integer not null,
   constraint uq_ls_players_unique_user_id unique (unique_user_id),
-  constraint pk_ls_players primary key (id)
+  constraint uq_ls_players_location_id unique (location_id),
+  constraint pk_ls_players primary key (id),
+  foreign key (location_id) references ls_locations (id) on delete restrict on update restrict
 );
 
 INSERT INTO ls_players (unique_user_id, ip_address, password, hashing_algorithm)

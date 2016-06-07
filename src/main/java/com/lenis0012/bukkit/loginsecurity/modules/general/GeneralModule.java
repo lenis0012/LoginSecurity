@@ -9,6 +9,8 @@ import com.lenis0012.pluginutils.Module;
 import java.util.logging.Level;
 
 public class GeneralModule extends Module<LoginSecurity> {
+    private LocationMode locationMode;
+
     public GeneralModule(LoginSecurity plugin) {
         super(plugin);
     }
@@ -17,10 +19,15 @@ public class GeneralModule extends Module<LoginSecurity> {
     public void enable() {
         registerCommands();
         registerListeners();
+        this.locationMode = LocationMode.valueOf(LoginSecurity.getConfiguration().getLocation().toUpperCase());
     }
 
     @Override
     public void disable() {
+    }
+
+    public LocationMode getLocationMode() {
+        return locationMode;
     }
 
     private void registerCommands() {
@@ -32,6 +39,6 @@ public class GeneralModule extends Module<LoginSecurity> {
 
     private void registerListeners() {
         logger().log(Level.INFO, "Registering listeners...");
-        register(new PlayerListener());
+        register(new PlayerListener(this));
     }
 }
