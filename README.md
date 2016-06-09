@@ -1,6 +1,6 @@
 LoginSecurity 2.1
 =================
-The #1 Auth plugin for minecraft, since 2012.
+The #1 Auth plugin for minecraft, since 2012.  
 The most secure and advanced login solution on the planet.
 
 Features:
