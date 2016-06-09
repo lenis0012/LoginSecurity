@@ -1,5 +1,6 @@
 package com.lenis0012.bukkit.loginsecurity.integrate.autoin;
 
+import com.gmail.bartlomiejkmazur.autoin.api.APICore;
 import com.gmail.bartlomiejkmazur.autoin.api.auth.BukkitLoginPlugin;
 import com.gmail.bartlomiejkmazur.autoin.api.auth.EventPriority;
 import com.gmail.bartlomiejkmazur.autoin.core.server.bukkit.BukkitAutoIn;
@@ -18,6 +19,10 @@ public class LoginPluginLoginSecurity extends BukkitLoginPlugin {
     public LoginPluginLoginSecurity(LoginSecurity plugin) {
         this.plugin = plugin;
         this.autoIn = (BukkitAutoIn) Bukkit.getPluginManager().getPlugin("AutoIn");
+    }
+
+    public void register() {
+        APICore.getAPI().addLoginPlugin("LoginSecurity", this);
     }
 
     @Override

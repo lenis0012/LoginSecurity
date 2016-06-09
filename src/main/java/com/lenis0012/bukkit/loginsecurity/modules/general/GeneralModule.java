@@ -4,7 +4,9 @@ import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.commands.CommandAdmin;
 import com.lenis0012.bukkit.loginsecurity.commands.CommandLogin;
 import com.lenis0012.bukkit.loginsecurity.commands.CommandRegister;
+import com.lenis0012.bukkit.loginsecurity.integrate.autoin.LoginPluginLoginSecurity;
 import com.lenis0012.pluginutils.Module;
+import org.bukkit.Bukkit;
 
 import java.util.logging.Level;
 
@@ -20,6 +22,13 @@ public class GeneralModule extends Module<LoginSecurity> {
         registerCommands();
         registerListeners();
         this.locationMode = LocationMode.valueOf(LoginSecurity.getConfiguration().getLocation().toUpperCase());
+
+        // AutoIn support
+        if(Bukkit.getPluginManager().isPluginEnabled("AutoIn")) {
+            plugin.getLogger().log(Level.INFO, "Attempting to hook with AutoIn...");
+            LoginPluginLoginSecurity hook = new LoginPluginLoginSecurity(plugin);
+            hook.register();
+        }
     }
 
     @Override
