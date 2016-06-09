@@ -30,6 +30,7 @@ public class RegisterAction extends AuthAction {
         final String hash = algorithm.hash(password);
         profile.setPassword(hash);
         profile.setHashingAlgorithm(algorithm.getId());
+        rehabPlayer(session);
         plugin.getDatabase().save(profile);
         return AuthMode.AUTHENTICATED;
     }
