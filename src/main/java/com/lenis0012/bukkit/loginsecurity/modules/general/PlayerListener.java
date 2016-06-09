@@ -87,16 +87,9 @@ public class PlayerListener implements Listener {
         final Player player = event.getPlayer();
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
         final PlayerProfile profile = session.getProfile();
-//        final AuthMode authMode = session.getAuthMode();
-        session.getProfile().setLastLogin(new Timestamp(System.currentTimeMillis()));
+        profile.setLastName(player.getName());
 
-        // Message
-//        if(authMode.hasAuthMessage()) {
-//            player.sendMessage(ChatColor.RED + authMode.getAuthMessage());
-//        }
-
-        if(session.isAuthorized()) {
-            session.saveProfileAsync();
+        if(session.isAuthorized() || !session.isRegistered()) {
             return;
         }
 
@@ -106,6 +99,7 @@ public class PlayerListener implements Listener {
             final PlayerInventory inventory = player.getInventory();
             profile.setInventory(InventorySerializer.serializeInventory(inventory));
             inventory.clear();
+            session.saveProfileAsync();
         }
 
         // Reset location
@@ -115,15 +109,13 @@ public class PlayerListener implements Listener {
                 case SPAWN:
                     player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
                     profile.setLoginLocation(new PlayerLocation(origin));
+                    session.saveProfileAsync();
                     break;
                 case RANDOM:
                 case DEFAULT:
                     break; // Do nothing (for now)
             }
         }
-
-        // Save profile
-        session.saveProfileAsync();
     }
 
     @EventHandler

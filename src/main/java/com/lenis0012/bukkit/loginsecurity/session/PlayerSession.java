@@ -36,6 +36,10 @@ public class PlayerSession {
      * Save the profile on a seperate thread.
      */
     public void saveProfileAsync() {
+        if(!isRegistered()) {
+            throw new IllegalStateException("Can't save profile when not registered!");
+        }
+
         try {
             refreshProfile();
             LoginSecurity.getInstance().getDatabase().save(profile);
@@ -85,6 +89,15 @@ public class PlayerSession {
      */
     public boolean isAuthorized() {
         return mode == AuthMode.AUTHENTICATED;
+    }
+
+    /**
+     * Check whether or not player is registered.
+     *
+     * @return True if registered, False otherwise
+     */
+    public boolean isRegistered() {
+        return profile.getPassword() != null;
     }
 
     /**

@@ -2,6 +2,7 @@ package com.lenis0012.bukkit.loginsecurity.modules.threading;
 
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.session.PlayerSession;
+import com.lenis0012.bukkit.loginsecurity.util.MetaData;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -24,7 +25,7 @@ public class TimeoutTask extends BukkitRunnable {
                 continue;
             }
 
-            long lastLogin = session.getProfile().getLastLogin().getTime();
+            long lastLogin = MetaData.get(player, "ls_login_time", Long.class);
             if(lastLogin + loginTimeout < System.currentTimeMillis()) {
                 player.kickPlayer("Login timed out!");
             }

@@ -56,8 +56,12 @@ public class ThreadingModule extends Module<LoginSecurity> implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(final PlayerQuitEvent event) {
         final Player player = event.getPlayer();
+        final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
         MetaData.unset(player, "ls_last_message");
-        sessionCache.put(ProfileUtil.getUUID(player), System.currentTimeMillis());
+        MetaData.unset(player, "ls_login_time");
+        if(session.isLoggedIn()) {
+            sessionCache.put(ProfileUtil.getUUID(player), System.currentTimeMillis());
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -65,9 +69,11 @@ public class ThreadingModule extends Module<LoginSecurity> implements Listener {
         final Player player = event.getPlayer();
         final UUID profileId = ProfileUtil.getUUID(player);
         final Long sessionTime = sessionCache.getIfPresent(profileId);
+        MetaData.set(player, "ls_login_time", System.currentTimeMillis());
         if(sessionTime == null) {
             return;
         }
+
         final long lastLogout = sessionTime;
 
         // Ip check
