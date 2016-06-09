@@ -1,16 +1,15 @@
 LoginSecurity 2.1
 =================
-The #1 Auth plugin for minecraft, since 2012.  
-The most secure and advanced login solution on the planet.
+The #1 Auth plugin for Minecraft since 2012.  
+The most secure and advanced Minecraft login solution on the planet.
 
 Features:
 ========
 - Login with custom password
 - Advanced database structure using EbeanORM
-- Hidden location
+- Hidden pre-login location
 - Hidden inventory
 - Hashing with BCrypt, Scrypt, PBKDF2, Whirlpool and SHA3_256
-- Completely resistant to SQL Injection
 - Captcha
 - Sessions & Login timeout
 - Username filter
@@ -24,7 +23,7 @@ Features:
 License:
 =======
 
-CopyRight (C) 2016, lenis0012
+Copyright (C) 2016, lenis0012
 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
