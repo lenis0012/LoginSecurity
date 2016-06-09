@@ -45,7 +45,7 @@ public class LoginPluginLoginSecurity extends BukkitLoginPlugin {
     public boolean isLoggedIn(Object o) {
         final Player player = (Player) o;
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
-        return session.isLoggedIn();
+        return session.isAuthorized();
     }
 
     @Override

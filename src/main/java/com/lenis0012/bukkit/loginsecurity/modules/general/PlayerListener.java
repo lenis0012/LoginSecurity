@@ -130,7 +130,7 @@ public class PlayerListener implements Listener {
     public void onBlockBreak(BlockBreakEvent event) {
         final Player player = event.getPlayer();
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
-        if(session.isLoggedIn()) return;
+        if(session.isAuthorized()) return;
 
         // Prevent moving
         event.setCancelled(true);
@@ -140,7 +140,17 @@ public class PlayerListener implements Listener {
     public void onBlockPlace(BlockPlaceEvent event) {
         final Player player = event.getPlayer();
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
-        if(session.isLoggedIn()) return;
+        if(session.isAuthorized()) return;
+
+        // Prevent moving
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onPlayerDropItem(PlayerDropItemEvent event) {
+        final Player player = event.getPlayer();
+        final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
+        if(session.isAuthorized()) return;
 
         // Prevent moving
         event.setCancelled(true);
@@ -154,7 +164,7 @@ public class PlayerListener implements Listener {
     public void onPlayerCommandPrepcoress(PlayerCommandPreprocessEvent event) {
         final Player player = event.getPlayer();
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
-        if(session.isLoggedIn()) return;
+        if(session.isAuthorized()) return;
 
         // Check whitelisted commands
         final String message = event.getMessage().toLowerCase();
@@ -176,7 +186,7 @@ public class PlayerListener implements Listener {
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         final Player player = event.getPlayer();
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
-        if(session.isLoggedIn()) return;
+        if(session.isAuthorized()) return;
 
         // Prevent moving
         event.setCancelled(true);
@@ -186,7 +196,7 @@ public class PlayerListener implements Listener {
     public void onPlayerMove(PlayerMoveEvent event) {
         final Player player = event.getPlayer();
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
-        if(session.isLoggedIn()) return;
+        if(session.isAuthorized()) return;
 
         // Prevent moving
         final Location from = event.getFrom();
@@ -201,7 +211,7 @@ public class PlayerListener implements Listener {
     public void onPlayerInteract(PlayerInteractEvent event) {
         final Player player = event.getPlayer();
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
-        if(session.isLoggedIn()) return;
+        if(session.isAuthorized()) return;
 
         event.setCancelled(true);
     }
@@ -210,7 +220,7 @@ public class PlayerListener implements Listener {
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         final Player player = event.getPlayer();
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
-        if(session.isLoggedIn()) return;
+        if(session.isAuthorized()) return;
 
         event.setCancelled(true);
     }
@@ -219,7 +229,7 @@ public class PlayerListener implements Listener {
     public void onFoodLevelChange(FoodLevelChangeEvent event) {
         final Player player = (Player) event.getEntity();
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
-        if(session.isLoggedIn()) return;
+        if(session.isAuthorized()) return;
 
         event.setCancelled(true);
     }
@@ -229,7 +239,7 @@ public class PlayerListener implements Listener {
         if(event.getEntityType() != EntityType.PLAYER) return; // Not a player
         final Player player = (Player) event.getEntity();
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
-        if(session.isLoggedIn()) return;
+        if(session.isAuthorized()) return;
 
         event.setCancelled(true);
     }
@@ -239,7 +249,7 @@ public class PlayerListener implements Listener {
         if(!(event.getTarget() instanceof Player)) return; // Not a player
         final Player player = (Player) event.getTarget();
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
-        if(session.isLoggedIn()) return;
+        if(session.isAuthorized()) return;
 
         event.setCancelled(true);
     }

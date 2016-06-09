@@ -19,7 +19,7 @@ public class TimeoutTask extends BukkitRunnable {
     public void run() {
         for(final Player player : Bukkit.getOnlinePlayers()) {
             final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
-            if(session.isLoggedIn()) {
+            if(session.isAuthorized()) {
                 // Player is logged in, don't time out.
                 continue;
             }

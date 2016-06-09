@@ -67,21 +67,24 @@ public class PlayerSession {
     }
 
     /**
-     * Check whether or not the player's auth mode is "AUTHENTICATED".
+     * Check whether the player has an account and is logged in.
+     * Note: You're probably looking for {@link #isAuthorized() isAuthorized}.
      *
      * @return Logged in
      */
     public boolean isLoggedIn() {
-        return mode == AuthMode.AUTHENTICATED;
+        return isAuthorized() && profile.getPassword() != null;
     }
 
     /**
-     * Check whether or not the player is authorized to move etc.
+     * Check whether or not the player's auth mode is "AUTHENTICATED".
+     * This means they're allowed to move etc.
+     * Returns true when player is logged in OR password is not required and player has no account.
      *
      * @return Authorized
      */
     public boolean isAuthorized() {
-        return isLoggedIn();
+        return mode == AuthMode.AUTHENTICATED;
     }
 
     /**
