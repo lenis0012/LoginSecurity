@@ -1,6 +1,14 @@
 {
-  "name": "LoginSecurity v2.0.13",
-  "type": "release",
-  "gameVersion": "1.9",
-  "downloadURL": "http://ci.lenis0012.com/job/LoginSecurity/12/artifact/target/LoginSecurity-Spigot-2.0.13.jar"
+  "release": {
+    "name": "LoginSecurity v2.0.13",
+    "type": "release",
+    "gameVersion": "1.9",
+    "downloadURL": "http://ci.lenis0012.com/job/LoginSecurity/12/artifact/target/LoginSecurity-Spigot-2.0.13.jar"
+  },
+  "alpha": {
+    "name": "LoginSecurity v2.1-ALPHA001",
+    "type": "alpha",
+    "gameVersion": "1.9 & 1.10",
+    "downloadURL": "http://ci.lenis0012.com/job/LoginSecurity/61/artifact/target/LoginSecurity-Spigot-2.1-alpha1.jar"
+  }
 }
