@@ -53,7 +53,7 @@ public class ThreadingModule extends Module<LoginSecurity> implements Listener {
         this.sessionCache = CacheBuilder.newBuilder().expireAfterWrite(sessionTimeout, TimeUnit.SECONDS).build();
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler
     public void onPlayerQuit(final PlayerQuitEvent event) {
         final Player player = event.getPlayer();
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);

@@ -75,7 +75,7 @@ public class PlayerListener implements Listener {
         LoginSecurity.getSessionManager().preloadSession(event.getName(), event.getUniqueId());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
         // Unload player
         LoginSecurity.getSessionManager().onPlayerLogout(event.getPlayer());
