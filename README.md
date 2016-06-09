@@ -1,36 +1,30 @@
-LoginSecurity 2
-==============
-The #1 Auth plugin for minecraft, since 1.2.5.
-Worlds must-known plugin for security & control
+LoginSecurity 2.1
+=================
+The #1 Auth plugin for minecraft, since 2012.
+The most secure and advanced login solution on the planet.
 
 Features:
 ========
-- Login with custom passwords
-- Completely optimized code
-- No Corss-Thread acces
-- Optional or required passwords
-- MySQL and SQLite support
-- Fast handling
-- Custom commands
-- Max/min password length
-- MD5 Encryption
-- Automatic LockDown whem MySQL conection is lost
-- Task to reconnect with MySQL, keeps the connection fresh
-- Usefull auto updater
-- Converter from SQLite to MySQL wehn switching
-- Converter from YAML to SQLite and MySQL
-- Safe data files with .db format
-- Advanced Error handling
-- Command to change and remove password
-- Easy admin command to manage player settings
-- More than 15 events being blocked when not logged in
-- Blindness effect on jon
-- Much more to come
+- Login with custom password
+- Advanced database structure using EbeanORM
+- Hidden location
+- Hidden inventory
+- Hashing with BCrypt, Scrypt, PBKDF2, Whirlpool and SHA3_256
+- Completely resistant to SQL Injection
+- Captcha
+- Sessions & Login timeout
+- Username filter
+- UUID Support
+- Advanced and detailed configuration
+- Action-based system & API
+- Reliable and fast
+- Easy to set up
+- Used by thousands of server owners
 
 License:
 =======
 
-CopyRight (C) 2013, lenis0012
+CopyRight (C) 2016, lenis0012
 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
