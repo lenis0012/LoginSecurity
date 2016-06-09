@@ -8,6 +8,7 @@ import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.hashing.Algorithm;
 import com.lenis0012.bukkit.loginsecurity.modules.storage.StorageModule;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
+import com.lenis0012.bukkit.loginsecurity.util.ProfileUtil;
 import com.lenis0012.pluginutils.PluginHolder;
 import com.lenis0012.pluginutils.modules.configuration.Configuration;
 import org.bukkit.Bukkit;
@@ -144,9 +145,11 @@ public class LegacyMigration extends AbstractMigration {
         OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(builder.toString()));
         if(player != null) {
             profile.setLastName(player.getName());
-            profile.setUniqueUserId(
-                    UUID.nameUUIDFromBytes(("OfflinePlayer:" + player.getName())
-                            .getBytes(Charsets.UTF_8)).toString());
+            if(!ProfileUtil.useOnlineUUID()) {
+                profile.setUniqueUserId(
+                        UUID.nameUUIDFromBytes(("OfflinePlayer:" + player.getName())
+                        .getBytes(Charsets.UTF_8)).toString());
+            }
         }
 
         return profile;
