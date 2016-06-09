@@ -1,16 +1,22 @@
 package com.lenis0012.bukkit.loginsecurity.modules.migration;
 
+import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.SqlQuery;
 import com.avaje.ebean.SqlUpdate;
+import com.google.common.base.Charsets;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
+import com.lenis0012.bukkit.loginsecurity.hashing.Algorithm;
 import com.lenis0012.bukkit.loginsecurity.modules.storage.StorageModule;
+import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 import com.lenis0012.pluginutils.PluginHolder;
+import com.lenis0012.pluginutils.modules.configuration.Configuration;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 
 import java.io.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,13 +49,22 @@ public class LegacyMigration extends AbstractMigration {
     @Override
     public boolean execute(String[] params) {
         final PluginHolder plugin = LoginSecurity.getInstance();
+        final EbeanServer database = plugin.getDatabase();
         final StorageModule storage = plugin.getModule(StorageModule.class);
         final File file = new File(plugin.getDataFolder(), "users.db");
         final Logger logger = plugin.getLogger();
-        final String platform = storage.isRunningMySQL() ? "mysql" : "sqlite";
 
         String url = "jdbc:sqlite:" + file.getPath();
         String driver = "org.sqlite.JDBC";
+        if(storage.isRunningMySQL()) {
+            Configuration config = new Configuration(new File(plugin.getDataFolder(), "database.yml"));
+            String host = config.getString("mysql.host");
+            String user = config.getString("mysql.username");
+            String password = config.getString("mysql.password");
+            String db = config.getString("mysql.database");
+            url = "jdbc:mysql://" + host + "/" + db + "?user=" + user + "&password=" + password;
+            driver = "com.mysql.jdbc.Driver";
+        }
 
         // Load driver
         log("Loading driver...");
@@ -60,95 +75,81 @@ public class LegacyMigration extends AbstractMigration {
             return false;
         }
 
-        // Load SQL Query
-        log("Loading upgrade query...");
-        final StringBuilder builder = new StringBuilder();
-        BufferedReader reader = null;
-        try {
-            final InputStream input = plugin.getResource("sql/" + platform + "/legacy_upgrade.sql");
-            reader = new BufferedReader(new InputStreamReader(input));
-            String line;
-            while((line = reader.readLine()) != null) {
-                builder.append(line).append('\n');
-            }
-        } catch(IOException e) {
-            logger.log(Level.SEVERE, "Failed to read update query", e);
-            return false;
-        } finally {
-            if(reader != null) {
-                try {
-                    reader.close();
-                } catch(IOException e) {}
-            }
-        }
-
-        // MySQL: Apply upgrade script
-        if(storage.isRunningMySQL()) {
-            SqlUpdate update = plugin.getDatabase().createSqlUpdate(builder.toString());
-            update.execute();
-        }
-
-        // SQLite: Apply upgrade script
+        log("Creating backup...");
         if(!storage.isRunningMySQL()) {
-            // Create backup
-            log("Creating backup...");
             try {
                 copyFile(file, new File(plugin.getDataFolder(), "users.backup.db"));
             } catch(IOException e) {
-                logger.log(Level.SEVERE, "Failed to create backup", e);
-            }
-
-            // Execute upgrade query
-            log("Executing query, this might take a while...");
-            Connection connection = null;
-            try {
-                connection = DriverManager.getConnection(url);
-                Statement statement = connection.createStatement();
-                statement.execute(builder.toString());
-            } catch(SQLException e) {
-                logger.log(Level.SEVERE, "Failed to run SQL query", e);
-                return false;
-            } finally {
-                if(connection != null) {
-                    try {
-                        connection.close();
-                    } catch(SQLException e) {}
-                }
-            }
-
-            // Update files
-            log("Finalizing...");
-            File newFile = new File(plugin.getDataFolder(), "LoginSecurity.sql");
-            if(newFile.exists()) {
-                log("Deleting old database...");
-                long startTime = System.currentTimeMillis();
-                while(!newFile.delete()) {
-                    if(startTime + 30000L > System.currentTimeMillis()) {
-                        logger.log(Level.WARNING, "Failed to delete old database, please follow instructions on wiki to resolve!");
-                        return false;
-                    }
-                    try {
-                        Thread.sleep(50L);
-                    } catch(InterruptedException e) {
-                    }
-                }
-            }
-            log("Renaming new database...");
-            long startTime = System.currentTimeMillis();
-            while(!file.renameTo(newFile)) {
-                if(startTime + 30000L > System.currentTimeMillis()) {
-                    logger.log(Level.WARNING, "Failed to rename new database, please follow instructions on wiki to resolve!");
-                    return false;
-                }
-                try {
-                    Thread.sleep(50L);
-                } catch(InterruptedException e) {
-                }
+                logger.log(Level.WARNING, "Failed to create database backup... let's hope nothing goes wrong then =)", e);
             }
         }
 
-        storage.applyMissingUpgrades();
+        Connection connection = null;
+        try {
+            connection = DriverManager.getConnection(url);
+            Statement statement = connection.createStatement();
+
+            // Obtain column count
+            count(statement, "users");
+            Set<PlayerProfile> profiles = loadProfiles(statement, "users");
+//            loadUserIds(profiles);
+            saveProfiles(profiles, database);
+
+            // Cleanup
+            statement.execute("DROP TABLE users;");
+
+            log("Complete!");
+        } catch(SQLException e) {
+            logger.log(Level.SEVERE, "Failed to migrate database", e);
+            return false;
+        } finally {
+            // Release resources
+            if(connection != null) {
+                try {
+                    connection.close();
+                } catch(SQLException e) {}
+            }
+        }
+
+        // Attempt to delete the old file...
+        if(!file.delete() ) {
+            file.deleteOnExit();
+        }
+
         return true;
+    }
+
+    @Override
+    public PlayerProfile getProfile(ResultSet result) throws SQLException {
+        final String userId = result.getString("unique_user_id");
+        final String hash = result.getString("password");
+        final String ipAddress = result.getString("ip");
+        final int algorithm = result.getInt("encryption");
+        StringBuilder builder = new StringBuilder();
+        builder.append(userId.substring(0, 8)).append("-")
+                .append(userId.substring(8, 12)).append("-")
+                .append(userId.substring(12, 16)).append("-")
+                .append(userId.substring(16, 20)).append("-")
+                .append(userId.substring(20));
+
+        PlayerProfile profile = new PlayerProfile();
+        profile.setUniqueUserId(builder.toString());
+        profile.setPassword(hash);
+        profile.setHashingAlgorithm(algorithm);
+        profile.setIpAddress(ipAddress);
+        profile.setRegistrationDate(new Date(System.currentTimeMillis()));
+        profile.setLastLogin(new Timestamp(System.currentTimeMillis()));
+
+        // Attempt to get name
+        OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(builder.toString()));
+        if(player != null) {
+            profile.setLastName(player.getName());
+            profile.setUniqueUserId(
+                    UUID.nameUUIDFromBytes(("OfflinePlayer:" + player.getName())
+                            .getBytes(Charsets.UTF_8)).toString());
+        }
+
+        return profile;
     }
 
     @Override

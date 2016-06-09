@@ -1,3 +1,4 @@
+-- apply changes
 create table ls_actions (
   id                            integer auto_increment not null,
   timestamp                     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -37,7 +38,7 @@ create table ls_players (
   hashing_algorithm             integer,
   last_login                    datetime(6),
   location_id                   integer,
-  registration_date             date,
+  registration_date             date DEFAULT CURRENT_DATE,
   optlock                       bigint not null,
   constraint uq_ls_players_unique_user_id unique (unique_user_id),
   constraint uq_ls_players_location_id unique (location_id),

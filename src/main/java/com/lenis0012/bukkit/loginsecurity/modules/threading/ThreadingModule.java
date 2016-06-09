@@ -38,6 +38,7 @@ public class ThreadingModule extends Module<LoginSecurity> implements Listener {
         // threads
         (this.timeout = new TimeoutTask(plugin)).runTaskTimer(plugin, 20L, 20L);
         (this.message = new MessageTask(plugin)).runTaskTimer(plugin, 20L, 20L);
+        register(this);
     }
 
     @Override
@@ -49,9 +50,6 @@ public class ThreadingModule extends Module<LoginSecurity> implements Listener {
         final LoginSecurityConfig config = plugin.config();
         final int sessionTimeout = config.getSessionTimeout();
 
-//        if(sessionCache != null) {
-//            sessionCache.cleanUp(); // Clean old cache up.
-//        }
         this.sessionCache = CacheBuilder.newBuilder().expireAfterWrite(sessionTimeout, TimeUnit.SECONDS).build();
     }
 

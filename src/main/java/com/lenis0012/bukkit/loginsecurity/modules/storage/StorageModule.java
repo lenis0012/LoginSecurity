@@ -59,7 +59,7 @@ public class StorageModule extends Module<LoginSecurity> implements Comparator<S
         // Datasource settings
         DataSourceConfig source = new DataSourceConfig();
         final int isolation = TransactionIsolation.getLevel(config.getString("isolation"));
-        final boolean mysql = config.getBoolean("mysql.enabled");
+        this.mysql = config.getBoolean("mysql.enabled");
         source.setDriver(mysql ? "com.mysql.jdbc.Driver" : "org.sqlite.JDBC");
         source.setIsolationLevel(isolation);
         source.setHeartbeatSql("select 1");

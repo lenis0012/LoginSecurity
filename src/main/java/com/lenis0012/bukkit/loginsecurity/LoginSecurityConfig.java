@@ -57,13 +57,26 @@ public class LoginSecurityConfig extends AbstractConfig {
     @ConfigKey(path = "join.location")
     private String location = "DEFAULT";
 
+    /**
+     * Username settings.
+     */
+    @ConfigHeader({"Remove special characters like @ and # from the username.",
+            "Disabling this can be a security risk!"
+    })
+    @ConfigKey(path="username.filter-special-chars")
+    private boolean filterSpecialChars = true;
+    @ConfigKey(path="username.min-length")
+    private int usernameMinLength = 3;
+    @ConfigKey(path="username.max-length")
+    private int usernameMaxLength = 16;
+
     @ConfigHeader("Session timeout, set to -1 to disable.")
     @ConfigKey
     private int sessionTimeout = 60;
 
     @ConfigHeader("Login timeout, set to -1 to disable.")
     @ConfigKey
-    private int loginTimeout = 60;
+    private int loginTimeout = 120;
 
     @ConfigHeader("Login/register message delay")
     @ConfigKey

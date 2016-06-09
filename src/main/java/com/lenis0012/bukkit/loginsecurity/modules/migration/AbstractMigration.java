@@ -1,13 +1,28 @@
 package com.lenis0012.bukkit.loginsecurity.modules.migration;
 
+import com.avaje.ebean.EbeanServer;
+import com.avaje.ebean.Transaction;
+import com.google.common.collect.Sets;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
+import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
+import com.lenis0012.bukkit.loginsecurity.util.ProfileUtil;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 
+import javax.persistence.PersistenceException;
 import java.io.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public abstract class AbstractMigration {
+    protected static final int ACCOUNTS_BATCH_SIZE = 100;
     private static final String PROGRESS_FORMAT = "Migrating %s: %s [%s]";
+
     private long progressUpdateFrequency = 2000L;
     private long nextProgressUpdate = 0L;
 
@@ -23,6 +38,102 @@ public abstract class AbstractMigration {
     public abstract String getName();
 
     public abstract int minParams();
+
+    public PlayerProfile getProfile(ResultSet result) throws SQLException {
+        throw new IllegalStateException("Didn't override getProfile!");
+    }
+
+    protected void saveProfiles(Set<PlayerProfile> profiles, EbeanServer database) {
+        log("All entries were loaded, now saving in to new database...");
+        Transaction transaction = null;
+        this.entriesCompleted = 0;
+        try {
+            transaction = database.beginTransaction();
+            transaction.setBatchMode(true);
+            transaction.setBatchSize(ACCOUNTS_BATCH_SIZE);
+            for(PlayerProfile profile : profiles) {
+                database.save(profile);
+                if(++entriesCompleted % ACCOUNTS_BATCH_SIZE == 0) {
+                    database.commitTransaction();
+                    if(entriesCompleted != entriesTotal) {
+                        transaction = database.beginTransaction();
+                        transaction.setBatchMode(true);
+                        transaction.setBatchSize(ACCOUNTS_BATCH_SIZE);
+                    }
+                }
+
+                // status update
+                progressUpdate("Inserting accounts in to database");
+            }
+            if(++entriesCompleted % ACCOUNTS_BATCH_SIZE != 0) {
+                database.commitTransaction();
+            }
+        } catch(PersistenceException e) {
+            if(transaction != null) {
+                database.endTransaction();
+            }
+        }
+    }
+
+    protected void loadUserIds(Set<PlayerProfile> profiles) {
+        log("Loaded accounts from database, now doing UUID lookup...");
+        this.entriesCompleted = 0;
+        boolean useOnlineUUID = ProfileUtil.useOnlineUUID();
+        Iterator<PlayerProfile> it = profiles.iterator();
+        while(it.hasNext()) {
+            PlayerProfile profile = it.next();
+            if(useOnlineUUID) {
+                OfflinePlayer offline = Bukkit.getOfflinePlayer(profile.getLastName());
+                if(offline == null || offline.getUniqueId() == null) {
+                    it.remove();
+                    continue;
+                }
+
+                profile.setUniqueUserId(offline.getUniqueId().toString());
+            } else {
+                profile.setUniqueUserId(ProfileUtil.getUUID(profile.getLastName(), null).toString());
+            }
+        }
+
+        int removed = entriesTotal - profiles.size();
+        this.entriesTotal = profiles.size();
+        if(removed > 0) {
+            log(removed + " profiles were not loaded because we couldn't get their UUID!");
+        }
+    }
+
+    protected Set<PlayerProfile> loadProfiles(Statement statement, String table) throws SQLException {
+        final Set<PlayerProfile> profiles = Sets.newHashSet();
+        ResultSet result = statement.executeQuery("SELECT * FROM " + table + ";");
+        while(result.next()) {
+            PlayerProfile profile = getProfile(result);
+            if(profile != null) {
+                // Profile is null when authentication method isn't found
+                profiles.add(profile);
+            }
+
+            // Progress update
+            entriesCompleted += 1;
+            progressUpdate("Loading accounts from " + getName());
+        }
+        result.close();
+
+        // Update count
+        int removed = entriesTotal - profiles.size();
+        this.entriesTotal = profiles.size();
+        if(removed > 0) {
+            log(removed + " profiles were not loaded because the password type was unsupported!");
+        }
+        return profiles;
+    }
+
+    protected void count(Statement statement, String table) throws SQLException {
+        log("Counting total amount of accounts...");
+        ResultSet result = statement.executeQuery("SELECT COUNT(*) FROM " + table + ";");
+        this.entriesTotal = result.getInt(1);
+        result.close();
+        log("Total accounts: " + entriesTotal);
+    }
 
     protected void progressUpdate(String status) {
         Logger logger = LoginSecurity.getInstance().getLogger();
@@ -45,7 +156,7 @@ public abstract class AbstractMigration {
 
     protected void copyFile(InputStream from, File to) throws IOException {
         FileOutputStream output = null;
-        to.mkdirs();
+        to.getParentFile().mkdirs();
         try {
             output = new FileOutputStream(to);
             byte[] buffer = new byte[1024];

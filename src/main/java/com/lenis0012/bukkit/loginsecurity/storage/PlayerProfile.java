@@ -1,7 +1,5 @@
 package com.lenis0012.bukkit.loginsecurity.storage;
 
-import lombok.Data;
-
 import javax.persistence.*;
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -20,7 +18,7 @@ public class PlayerProfile {
     @Column(length = 16)
     private String lastName;
 
-    @Column
+    @Column(length = 64)
     private String ipAddress;
 
     @Column(length = 512)
@@ -29,18 +27,22 @@ public class PlayerProfile {
     @Column
     private int hashingAlgorithm;
 
-    @Column
-    private Timestamp lastLogin;
-
-    @OneToOne(cascade = CascadeType.REMOVE)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "location_id")
     private PlayerLocation loginLocation;
 
-    @Column
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "inventory_id")
+    private PlayerInventory inventory;
+
+    @Column(columnDefinition = "timestamp DEFAULT CURRENT_TIMESTAMP")
+    private Timestamp lastLogin;
+
+    @Column(columnDefinition = "date DEFAULT CURRENT_DATE")
     private Date registrationDate;
 
     @Version
-    @Column(name = "optlock", nullable = false)
+    @Column(name = "optlock")
     private long version;
 
     public int getId() {
@@ -105,6 +107,14 @@ public class PlayerProfile {
 
     public void setLoginLocation(PlayerLocation loginLocation) {
         this.loginLocation = loginLocation;
+    }
+
+    public PlayerInventory getInventory() {
+        return inventory;
+    }
+
+    public void setInventory(PlayerInventory inventory) {
+        this.inventory = inventory;
     }
 
     public Date getRegistrationDate() {

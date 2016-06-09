@@ -37,7 +37,7 @@ create table ls_players (
   hashing_algorithm             integer,
   last_login                    timestamp,
   location_id                   integer,
-  registration_date             date,
+  registration_date             date DEFAULT CURRENT_DATE,
   optlock                       integer not null,
   constraint uq_ls_players_unique_user_id unique (unique_user_id),
   constraint uq_ls_players_location_id unique (location_id),

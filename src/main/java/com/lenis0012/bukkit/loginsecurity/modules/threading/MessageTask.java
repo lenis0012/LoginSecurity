@@ -5,6 +5,7 @@ import com.lenis0012.bukkit.loginsecurity.session.AuthMode;
 import com.lenis0012.bukkit.loginsecurity.session.PlayerSession;
 import com.lenis0012.bukkit.loginsecurity.util.MetaData;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -32,7 +33,7 @@ public class MessageTask extends BukkitRunnable {
                 continue;
             }
 
-            player.sendMessage(authMode.getAuthMessage());
+            player.sendMessage(ChatColor.RED + authMode.getAuthMessage());
             MetaData.set(player, "ls_last_message", System.currentTimeMillis());
         }
     }

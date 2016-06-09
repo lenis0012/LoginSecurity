@@ -6,6 +6,8 @@ import com.lenis0012.bukkit.loginsecurity.LoginSecurityConfig;
 import com.lenis0012.bukkit.loginsecurity.session.AuthMode;
 import com.lenis0012.bukkit.loginsecurity.session.PlayerSession;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerLocation;
+import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
+import com.lenis0012.bukkit.loginsecurity.util.InventorySerializer;
 import com.lenis0012.bukkit.loginsecurity.util.MetaData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -21,6 +23,8 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
+import org.bukkit.inventory.PlayerInventory;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -42,6 +46,32 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
         // Pre-load player to improve performance...
+        for(Player player : Bukkit.getOnlinePlayers()) {
+            if(player.getName().equalsIgnoreCase(event.getName())) {
+                PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
+                if(session.isAuthorized()) {
+                    event.setLoginResult(Result.KICK_OTHER);
+                    event.setKickMessage("[LoginSecurity] This player is already online!");
+                    return;
+                }
+            }
+        }
+
+        final String name = event.getName();
+        final LoginSecurityConfig config = LoginSecurity.getConfiguration();
+        if(config.isFilterSpecialChars() && !name.replaceAll("[^a-zA-Z0-9_]", "").equals(name)) {
+            event.setLoginResult(Result.KICK_OTHER);
+            event.setKickMessage("[LoginSecurity] Your username contains illegal characters!");
+            return;
+        }
+
+        if(name.length() < config.getUsernameMinLength() || name.length() > config.getUsernameMaxLength()) {
+            event.setLoginResult(Result.KICK_OTHER);
+            event.setKickMessage("[LoginSecurity] Your username must is too long/short! (" +
+                    config.getUsernameMinLength() + " - " + config.getUsernameMaxLength() + " chars)");
+            return;
+        }
+
         LoginSecurity.getSessionManager().preloadSession(event.getName(), event.getUniqueId());
     }
 
@@ -56,29 +86,44 @@ public class PlayerListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
-        final AuthMode authMode = session.getAuthMode();
+        final PlayerProfile profile = session.getProfile();
+//        final AuthMode authMode = session.getAuthMode();
         session.getProfile().setLastLogin(new Timestamp(System.currentTimeMillis()));
 
         // Message
-        if(authMode.hasAuthMessage()) {
-            player.sendMessage(ChatColor.RED + authMode.getAuthMessage());
-        }
+//        if(authMode.hasAuthMessage()) {
+//            player.sendMessage(ChatColor.RED + authMode.getAuthMessage());
+//        }
 
         if(session.isAuthorized()) {
+            session.saveProfileAsync();
             return;
         }
 
-        final Location origin = player.getLocation().clone();
-        switch(general.getLocationMode()) {
-            case SPAWN:
-                player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
-                session.getProfile().setLoginLocation(new PlayerLocation(origin));
-                session.saveProfileAsync();
-                break;
-            case RANDOM:
-            case DEFAULT:
-                return; // Do nothing (for now)
+        // Clear inventory
+        if(profile.getInventory() == null) {
+            // Clear inventory
+            final PlayerInventory inventory = player.getInventory();
+            profile.setInventory(InventorySerializer.serializeInventory(inventory));
+            inventory.clear();
         }
+
+        // Reset location
+        if(profile.getLoginLocation() == null) {
+            final Location origin = player.getLocation().clone();
+            switch(general.getLocationMode()) {
+                case SPAWN:
+                    player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
+                    profile.setLoginLocation(new PlayerLocation(origin));
+                    break;
+                case RANDOM:
+                case DEFAULT:
+                    break; // Do nothing (for now)
+            }
+        }
+
+        // Save profile
+        session.saveProfileAsync();
     }
 
     @EventHandler
@@ -144,7 +189,12 @@ public class PlayerListener implements Listener {
         if(session.isLoggedIn()) return;
 
         // Prevent moving
-        event.setTo(event.getFrom());
+        final Location from = event.getFrom();
+        final Location to = event.getTo();
+        if(from.getBlockX() != to.getBlockX() || from.getBlockZ() != to.getBlockZ()) {
+            event.setTo(event.getFrom());
+        }
+        // TODO: Set user to fly mode....
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
