@@ -1,6 +1,7 @@
 package com.lenis0012.bukkit.loginsecurity.session;
 
 import com.lenis0012.bukkit.loginsecurity.session.action.ActionResponse;
+import com.lenis0012.bukkit.loginsecurity.session.exceptions.ProfileRefreshException;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 import com.lenis0012.bukkit.loginsecurity.util.InventorySerializer;
 import org.bukkit.entity.Player;
@@ -43,6 +44,7 @@ public abstract class AuthAction {
 
         if(profile.getInventory() != null) {
             InventorySerializer.deserializeInventory(profile.getInventory(), player.getInventory());
+//            player.updateInventory();
             profile.setInventory(null);
             changed = true;
         }

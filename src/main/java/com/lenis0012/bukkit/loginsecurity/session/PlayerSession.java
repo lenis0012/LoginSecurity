@@ -40,11 +40,7 @@ public class PlayerSession {
             throw new IllegalStateException("Can't save profile when not registered!");
         }
 
-        try {
-            refreshProfile();
-            LoginSecurity.getInstance().getDatabase().save(profile);
-        } catch(ProfileRefreshException e) {
-        }
+        LoginSecurity.getInstance().getDatabase().save(profile);
     }
 
     /**
