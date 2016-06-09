@@ -61,7 +61,7 @@ public class CaptchaFont extends MapFont {
             boolean[] bigger = new boolean[16 * 16];
             for(int j = 0; j < data.length; j++) {
                 int row = j / 8;
-                int col = j % 8;
+                int col = 7 - (j % 8);
                 bigger[row * 2 * 16 + col * 2] = data[j];
                 bigger[(row * 2 + 1) * 16 + col * 2] = data[j];
                 bigger[(row * 2 + 1) * 16 + col * 2 + 1] = data[j];
