@@ -1,10 +1,7 @@
 package com.lenis0012.bukkit.loginsecurity.modules.general;
 
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
-import com.lenis0012.bukkit.loginsecurity.commands.CommandAdmin;
-import com.lenis0012.bukkit.loginsecurity.commands.CommandChangePass;
-import com.lenis0012.bukkit.loginsecurity.commands.CommandLogin;
-import com.lenis0012.bukkit.loginsecurity.commands.CommandRegister;
+import com.lenis0012.bukkit.loginsecurity.commands.*;
 import com.lenis0012.bukkit.loginsecurity.integrate.autoin.LoginPluginLoginSecurity;
 import com.lenis0012.pluginutils.Module;
 import org.bukkit.Bukkit;
@@ -45,6 +42,7 @@ public class GeneralModule extends Module<LoginSecurity> {
         register(new CommandLogin(plugin), "login");
         register(new CommandRegister(plugin), "register");
         register(new CommandChangePass(plugin), "changepassword");
+        register(new CommandLogout(plugin), "logout");
         register(new CommandAdmin(plugin), "lac");
     }
 

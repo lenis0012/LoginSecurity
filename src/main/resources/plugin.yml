@@ -13,9 +13,12 @@ commands:
     description: Set a password for your account.
     usage: /register <password>
   changepassword:
-    dexcription: Change your account password.
+    description: Change your account password.
     aliases: [changepass]
     usage: /changepass <old pass> <new pass>
+  logout:
+    description: Log out of your account.
+    usage: /logout
   lac:
     description: LoginSecurity Admin command.
     usage: /lac

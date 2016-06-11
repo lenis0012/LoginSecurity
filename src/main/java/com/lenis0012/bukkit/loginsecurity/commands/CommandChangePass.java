@@ -30,7 +30,7 @@ public class CommandChangePass extends Command {
 
         // Verify auth mode
         if(!session.isLoggedIn()) {
-            reply(false, "You are currently nog logged in!");
+            reply(false, "You are currently not logged in!");
             return;
         }
 
