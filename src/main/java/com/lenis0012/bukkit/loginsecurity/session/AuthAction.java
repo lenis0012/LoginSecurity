@@ -5,6 +5,7 @@ import com.lenis0012.bukkit.loginsecurity.session.exceptions.ProfileRefreshExcep
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 import com.lenis0012.bukkit.loginsecurity.util.InventorySerializer;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
 
 public abstract class AuthAction {
     private final AuthActionType type;
@@ -42,9 +43,9 @@ public abstract class AuthAction {
         final PlayerProfile profile = session.getProfile();
         boolean changed = false;
 
+        player.removePotionEffect(PotionEffectType.BLINDNESS);
         if(profile.getInventory() != null) {
             InventorySerializer.deserializeInventory(profile.getInventory(), player.getInventory());
-//            player.updateInventory();
             profile.setInventory(null);
             changed = true;
         }

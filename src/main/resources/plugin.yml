@@ -12,15 +12,10 @@ commands:
   register:
     description: Set a password for your account.
     usage: /register <password>
-  changepass:
-    description: Change the password for your account.
-    usage: /changepass <old> <new>
-  rmpass:
-    description: Remove your password.
-    usage: /rmpass <password>
-  logout:
-    description: Logout and end your session.
-    usage: /logout
+  changepassword:
+    dexcription: Change your account password.
+    aliases: [changepass]
+    usage: /changepass <old pass> <new pass>
   lac:
     description: LoginSecurity Admin command.
     usage: /lac

@@ -68,7 +68,12 @@ public class CaptchaManager extends Module<LoginSecurity> implements Listener {
 
         String captcha = MetaData.get(player, "ls_captcha_value", String.class);
         if(!event.getMessage().trim().equalsIgnoreCase(captcha)) {
-            player.kickPlayer("Wrong captcha! Please try again.");
+            Bukkit.getScheduler().runTask(plugin, new Runnable() {
+                @Override
+                public void run() {
+                    player.kickPlayer("Wrong captcha! Please try again.");
+                }
+            });
             return;
         }
 

@@ -25,6 +25,8 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -91,6 +93,11 @@ public class PlayerListener implements Listener {
 
         if(session.isAuthorized() || !session.isRegistered()) {
             return;
+        }
+
+        final LoginSecurityConfig config = LoginSecurity.getConfiguration();
+        if( config.isBlindness()) {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, 1));
         }
 
         // Clear inventory

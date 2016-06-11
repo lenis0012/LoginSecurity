@@ -56,6 +56,12 @@ public class LoginSecurityConfig extends AbstractConfig {
     })
     @ConfigKey(path = "join.location")
     private String location = "DEFAULT";
+    @ConfigHeader({
+            "Hides the player's inventory until they log in.",
+            "The inventory is never lost, even after reboot or crash."
+    })
+    @ConfigKey(path="join.hide-inventory")
+    private boolean hideInventory = true;
 
     /**
      * Username settings.
