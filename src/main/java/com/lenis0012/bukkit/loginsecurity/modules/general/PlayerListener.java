@@ -105,7 +105,6 @@ public class PlayerListener implements Listener {
             // Clear inventory
             final PlayerInventory inventory = player.getInventory();
             profile.setInventory(InventorySerializer.serializeInventory(inventory));
-            System.out.println(profile.getInventory().getContents());
             inventory.clear();
             session.saveProfileAsync();
         }
