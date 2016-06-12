@@ -97,7 +97,6 @@ public class StorageModule extends Module<LoginSecurity> implements Comparator<S
             plugin.getLogger().log(Level.SEVERE, "Failed to scan migration scripts!");
         }
         Collections.sort(migrations, this);
-        System.out.println("mig: " + migrations.toString());
 
         // Apply missing migrations
         applyMissingUpgrades();
@@ -126,11 +125,15 @@ public class StorageModule extends Module<LoginSecurity> implements Comparator<S
                 plugin.getLogger().log(Level.INFO, "Applying database upgrade " + version + ": " + name);
                 String content = getContent("sql/" + platform + "/" + migration);
                 generator.runScript(false, content);
-                plugin.getDatabase().save(new Migration(version, name, new Timestamp(System.currentTimeMillis())));
+                database.save(new Migration(version, name, new Timestamp(System.currentTimeMillis())));
                 updatesRan++;
             }
         }
         plugin.getLogger().log(Level.INFO, "Applied " + updatesRan + " missing database upgrades.");
+    }
+
+    public EbeanServer getDatabase() {
+        return database;
     }
 
     public boolean isRunningMySQL() {

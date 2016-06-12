@@ -1,5 +1,6 @@
 package com.lenis0012.bukkit.loginsecurity;
 
+import com.avaje.ebean.EbeanServer;
 import com.google.common.collect.Lists;
 import com.lenis0012.bukkit.loginsecurity.modules.captcha.CaptchaManager;
 import com.lenis0012.bukkit.loginsecurity.modules.general.GeneralModule;
@@ -83,5 +84,10 @@ public class LoginSecurity extends PluginHolder {
         list.add(PlayerLocation.class);
         list.add(PlayerInventory.class);
         return list;
+    }
+
+    @Override
+    public EbeanServer getDatabase() {
+        return getModule(StorageModule.class).getDatabase();
     }
 }
