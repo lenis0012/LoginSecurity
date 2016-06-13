@@ -14,6 +14,16 @@ import java.util.UUID;
  * Therefor, if online mode is enabled, we get a corrected version of the UUID.
  */
 public class ProfileUtil {
+    private static final UserIdMode userIdMode = useOnlineUUID() ? UserIdMode.MOJANG : UserIdMode.OFFLINE;
+
+    /**
+     * Get what mode of UUID transforming the database uses.
+     *
+     * @return UUID Mode
+     */
+    public static UserIdMode getUserIdMode() {
+        return userIdMode;
+    }
 
     /**
      * Get UUID for player.
@@ -52,12 +62,13 @@ public class ProfileUtil {
      * @return bungeecord support
      */
     public static boolean isBungeecord() {
-        try {
-            Class<?> spigotConfig = Class.forName("org.spigotmc.SpigotConfig");
-            Field bungee = spigotConfig.getField("bungee");
-            return bungee.getBoolean(null);
-        } catch(Exception e) {
-            return false; // Couldn't detect spigot
-        }
+        return false; // We don't know whether or not bungee is in online-mode
+//        try {
+//            Class<?> spigotConfig = Class.forName("org.spigotmc.SpigotConfig");
+//            Field bungee = spigotConfig.getField("bungee");
+//            return bungee.getBoolean(null);
+//        } catch(Exception e) {
+//            return false; // Couldn't detect spigot
+//        }
     }
 }

@@ -12,6 +12,9 @@ import com.avaje.ebeaninternal.server.lib.sql.TransactionIsolation;
 import com.google.common.collect.Lists;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.storage.Migration;
+import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
+import com.lenis0012.bukkit.loginsecurity.util.ProfileUtil;
+import com.lenis0012.bukkit.loginsecurity.util.UserIdMode;
 import com.lenis0012.pluginutils.Module;
 import com.lenis0012.pluginutils.modules.configuration.Configuration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -130,6 +133,20 @@ public class StorageModule extends Module<LoginSecurity> implements Comparator<S
             }
         }
         plugin.getLogger().log(Level.INFO, "Applied " + updatesRan + " missing database upgrades.");
+
+        // Fix profile uuids
+        List<PlayerProfile> profiles = database.find(PlayerProfile.class).where().isNull("uuid_mode").findList();
+        profiles.addAll(database.find(PlayerProfile.class).where().eq("uuid_mode", UserIdMode.UNKNOWN).findList());
+        if(!profiles.isEmpty()) {
+            plugin.getLogger().log(Level.INFO, "Refactoring UUID for " + profiles.size() + " profiles...");
+            UserIdMode mode = ProfileUtil.getUserIdMode();
+            for(PlayerProfile profile : profiles) {
+                profile.setUniqueUserId(mode.getUserId(profile));
+                profile.setUniqueIdMode(mode);
+            }
+            database.save(profiles);
+            plugin.getLogger().log(Level.INFO, "Successfully updated UUIDs!");
+        }
     }
 
     public EbeanServer getDatabase() {

@@ -1,5 +1,7 @@
 package com.lenis0012.bukkit.loginsecurity.storage;
 
+import com.lenis0012.bukkit.loginsecurity.util.UserIdMode;
+
 import javax.persistence.*;
 import java.sql.Date;
 import java.sql.Timestamp;
@@ -12,8 +14,11 @@ public class PlayerProfile {
     @Column
     private int id;
 
-    @Column(unique = true, updatable = false, length = 128)
+    @Column(unique = true, length = 128)
     private String uniqueUserId;
+
+    @Column(name = "uuid_mode")
+    private UserIdMode uniqueIdMode = UserIdMode.UNKNOWN;
 
     @Column(length = 16)
     private String lastName;
@@ -131,5 +136,13 @@ public class PlayerProfile {
 
     public void setVersion(long version) {
         this.version = version;
+    }
+
+    public UserIdMode getUniqueIdMode() {
+        return uniqueIdMode;
+    }
+
+    public void setUniqueIdMode(UserIdMode uniqueIdMode) {
+        this.uniqueIdMode = uniqueIdMode;
     }
 }
