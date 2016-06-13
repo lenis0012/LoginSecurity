@@ -34,7 +34,7 @@ public class CommandRegister extends Command {
             return;
         }
 
-        if(session.getAuthMode() != AuthMode.UNREGISTERED) {
+        if(session.isRegistered()) {
             reply(false, "You are already registered under this account!");
             return;
         }
