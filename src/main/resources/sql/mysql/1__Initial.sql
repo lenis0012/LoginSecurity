@@ -1,6 +1,7 @@
+-- apply changes
 create table ls_actions (
   id                            integer auto_increment not null,
-  timestamp                     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  timestamp                     timestamp DEFAULT CURRENT_TIMESTAMP,
   unique_user_id                varchar(255),
   type                          varchar(255),
   service                       varchar(255),

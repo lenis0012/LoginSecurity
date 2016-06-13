@@ -14,7 +14,7 @@ public class ActionEntry {
     @Column
     private int id;
 
-    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Column(columnDefinition = "timestamp DEFAULT CURRENT_TIMESTAMP")
     private Timestamp timestamp;
 
     @Column
