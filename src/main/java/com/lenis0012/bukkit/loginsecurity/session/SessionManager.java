@@ -77,6 +77,7 @@ public class SessionManager {
             // New user...
             profile = new PlayerProfile();
             profile.setUniqueUserId(playerId.toString());
+            profile.setUniqueIdMode(ProfileUtil.getUserIdMode());
             authMode = LoginSecurity.getConfiguration().isPasswordRequired() ? AuthMode.UNREGISTERED : AuthMode.AUTHENTICATED;
         }
 
