@@ -137,6 +137,7 @@ public abstract class AbstractMigration {
     protected void count(Statement statement, String table) throws SQLException {
         log("Counting total amount of accounts...");
         ResultSet result = statement.executeQuery("SELECT COUNT(*) FROM " + table + ";");
+        result.next();
         this.entriesTotal = result.getInt(1);
         result.close();
         log("Total accounts: " + entriesTotal);

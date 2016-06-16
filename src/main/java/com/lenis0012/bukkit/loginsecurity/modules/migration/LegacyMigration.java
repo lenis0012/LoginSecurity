@@ -35,7 +35,7 @@ public class LegacyMigration extends AbstractMigration {
                 Connection connection = transaction.getConnection();
                 Statement statement = connection.createStatement();
                 final ResultSet result = statement.executeQuery("SELECT COUNT(*) FROM users;");
-                return result.getInt(0) > 0;
+                return result.next() && result.getInt(1) > 0;
             } catch(SQLException e) {
                 plugin.getLogger().log(Level.WARNING, "Couldn't check mysql database", e);
                 return false;
@@ -64,13 +64,39 @@ public class LegacyMigration extends AbstractMigration {
         String url = "jdbc:sqlite:" + file.getPath();
         String driver = "org.sqlite.JDBC";
         if(storage.isRunningMySQL()) {
-            Configuration config = new Configuration(new File(plugin.getDataFolder(), "database.yml"));
-            String host = config.getString("mysql.host");
-            String user = config.getString("mysql.username");
-            String password = config.getString("mysql.password");
-            String db = config.getString("mysql.database");
-            url = "jdbc:mysql://" + host + "/" + db + "?user=" + user + "&password=" + password;
-            driver = "com.mysql.jdbc.Driver";
+            // Run using ebean
+            Transaction transaction = database.beginTransaction();
+            Set<PlayerProfile> profiles;
+            try {
+                Connection connection = transaction.getConnection();
+                Statement statement = connection.createStatement();
+                count(statement, "users");
+                profiles = loadProfiles(statement, "users");
+            } catch(SQLException e) {
+                logger.log(Level.SEVERE, "Failed to migrate database", e);
+                return false;
+            } finally {
+                database.endTransaction();
+            }
+
+            // Save
+            saveProfiles(profiles, database);
+
+            // Cleanup
+            transaction = database.beginTransaction();
+            try {
+                Connection connection = transaction.getConnection();
+                Statement statement = connection.createStatement();
+                statement.execute("DROP TABLE users;");
+            } catch(SQLException e) {
+                logger.log(Level.SEVERE, "Failed to migrate database", e);
+                return false;
+            } finally {
+                database.endTransaction();
+            }
+
+            log("Complete!");
+            return true;
         }
 
         // Load driver
@@ -83,12 +109,10 @@ public class LegacyMigration extends AbstractMigration {
         }
 
         log("Creating backup...");
-        if(!storage.isRunningMySQL()) {
-            try {
-                copyFile(file, new File(plugin.getDataFolder(), "users.backup.db"));
-            } catch(IOException e) {
-                logger.log(Level.WARNING, "Failed to create database backup... let's hope nothing goes wrong then =)", e);
-            }
+        try {
+            copyFile(file, new File(plugin.getDataFolder(), "users.backup.db"));
+        } catch(IOException e) {
+            logger.log(Level.WARNING, "Failed to create database backup... let's hope nothing goes wrong then =)", e);
         }
 
         Connection connection = null;
@@ -99,11 +123,7 @@ public class LegacyMigration extends AbstractMigration {
             // Obtain column count
             count(statement, "users");
             Set<PlayerProfile> profiles = loadProfiles(statement, "users");
-//            loadUserIds(profiles);
             saveProfiles(profiles, database);
-
-            // Cleanup
-            statement.execute("DROP TABLE users;");
 
             log("Complete!");
         } catch(SQLException e) {

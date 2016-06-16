@@ -14,8 +14,8 @@ public class ActionEntry {
     @Column
     private int id;
 
-    @Column(columnDefinition = "timestamp DEFAULT CURRENT_TIMESTAMP")
-    private Timestamp timestamp;
+    @Column
+    private Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
     @Column
     private String uniqueUserId;

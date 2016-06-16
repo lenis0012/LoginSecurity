@@ -40,11 +40,11 @@ public class PlayerProfile {
     @JoinColumn(name = "inventory_id")
     private PlayerInventory inventory;
 
-    @Column(columnDefinition = "timestamp DEFAULT CURRENT_TIMESTAMP")
-    private Timestamp lastLogin;
+    @Column
+    private Timestamp lastLogin = new Timestamp(System.currentTimeMillis());
 
-    @Column(columnDefinition = "date DEFAULT CURRENT_DATE")
-    private Date registrationDate;
+    @Column
+    private Date registrationDate = new Date(System.currentTimeMillis());
 
     @Version
     @Column(name = "optlock")

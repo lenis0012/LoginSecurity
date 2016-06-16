@@ -1,6 +1,6 @@
 create table ls_actions (
   id                            integer not null,
-  timestamp                     timestamp DEFAULT CURRENT_TIMESTAMP,
+  timestamp                     timestamp,
   unique_user_id                varchar(255),
   type                          varchar(255),
   service                       varchar(255),
@@ -48,8 +48,8 @@ create table ls_players (
   hashing_algorithm             integer,
   location_id                   integer,
   inventory_id                  integer,
-  last_login                    timestamp DEFAULT CURRENT_TIMESTAMP,
-  registration_date             date DEFAULT CURRENT_DATE,
+  last_login                    timestamp,
+  registration_date             date,
   optlock                       integer not null,
   constraint uq_ls_players_unique_user_id unique (unique_user_id),
   constraint uq_ls_players_location_id unique (location_id),

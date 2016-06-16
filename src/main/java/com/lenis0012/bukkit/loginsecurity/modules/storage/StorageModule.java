@@ -51,13 +51,15 @@ public class StorageModule extends Module<LoginSecurity> implements Comparator<S
         Configuration config = new Configuration(file);
         config.reload(false);
 
+        // TODO: Rewrite old config settings for mysql.. =)
+
         // Server settings
         ServerConfig server = new ServerConfig();
         server.setDefaultServer(false);
         server.setRegister(false);
         server.setClasses(plugin.getDatabaseClasses());
-        server.setName("LoginSecurity");
-        server.setLoggingLevel(LogLevel.SUMMARY);
+        server.setName("LoginSecurityDB");
+        server.setLoggingLevel(LogLevel.NONE);
 
         // Datasource settings
         DataSourceConfig source = new DataSourceConfig();
@@ -68,13 +70,16 @@ public class StorageModule extends Module<LoginSecurity> implements Comparator<S
         source.setHeartbeatSql("select 1");
         if(mysql) {
             source.setUrl(String.format("jdbc:mysql://%s/%s", config.getString("mysql.host"), config.getString("mysql.database")));
-            source.setUsername(config.getString("username"));
-            source.setPassword(config.getString("password"));
+            source.setUsername(config.getString("mysql.username"));
+            source.setPassword(config.getString("mysql.password"));
+            System.out.println("MYSQL");
         } else {
             server.setDatabasePlatform(new SQLitePlatform());
             server.getDatabasePlatform().getDbDdlSyntax().setIdentity("");
             String path = plugin.getDataFolder().getPath().replaceAll("\\\\", "/");
             source.setUrl("jdbc:sqlite:" + path + "/LoginSecurity.db");
+            source.setUsername("trump");
+            source.setPassword("donald");
         }
         server.setDataSourceConfig(source);
 
