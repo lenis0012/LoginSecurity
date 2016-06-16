@@ -66,7 +66,6 @@ public class SessionManager {
 
     public void onPlayerLogout(final Player player) {
         final UUID userId = ProfileUtil.getUUID(player);
-        CollisionE
         activeSessions.remove(userId);
     }
 
