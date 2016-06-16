@@ -1,4 +1,3 @@
--- apply changes
 create table ls_actions (
   id                            integer auto_increment not null,
   timestamp                     timestamp DEFAULT CURRENT_TIMESTAMP,
