@@ -15,8 +15,21 @@ import com.lenis0012.pluginutils.modules.configuration.ConfigurationModule;
 import org.apache.logging.log4j.LogManager;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.logging.Level;
 
 public class LoginSecurity extends PluginHolder {
+    private static final ExecutorService executorService = Executors.newCachedThreadPool();
+
+    /**
+     * Get the executor LoginSecurity uses for async processing.
+     *
+     * @return Executor service.
+     */
+    public static ExecutorService getExecutorService() {
+        return executorService;
+    }
 
     /**
      * Get session manager.
@@ -69,6 +82,10 @@ public class LoginSecurity extends PluginHolder {
 
     @Override
     public void disable() {
+        // Wait for all async processes to complete...
+        getLogger().log(Level.INFO, "Waiting for queued tasks...");
+        executorService.shutdown();
+        getLogger().log(Level.INFO, "ExecutorService shut down, ready to disable.");
     }
 
     public LoginSecurityConfig config() {

@@ -6,6 +6,7 @@ import com.google.common.collect.Sets;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 import com.lenis0012.bukkit.loginsecurity.util.ProfileUtil;
+import com.lenis0012.bukkit.loginsecurity.util.UserIdMode;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
@@ -52,6 +53,10 @@ public abstract class AbstractMigration {
             transaction.setBatchMode(true);
             transaction.setBatchSize(ACCOUNTS_BATCH_SIZE);
             for(PlayerProfile profile : profiles) {
+                PlayerProfile current = database.find(PlayerProfile.class).where().ieq("unique_user_id", profile.getUniqueUserId()).findUnique();
+                if(current != null) {
+                    database.delete(current);
+                }
                 database.save(profile);
                 if(++entriesCompleted % ACCOUNTS_BATCH_SIZE == 0) {
                     database.commitTransaction();
@@ -90,8 +95,10 @@ public abstract class AbstractMigration {
                 }
 
                 profile.setUniqueUserId(offline.getUniqueId().toString());
+                profile.setUniqueIdMode(UserIdMode.MOJANG);
             } else {
                 profile.setUniqueUserId(ProfileUtil.getUUID(profile.getLastName(), null).toString());
+                profile.setUniqueIdMode(UserIdMode.OFFLINE);
             }
         }
 

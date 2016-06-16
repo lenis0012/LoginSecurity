@@ -3,6 +3,7 @@ package com.lenis0012.bukkit.loginsecurity.modules.migration;
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.SqlQuery;
 import com.avaje.ebean.SqlUpdate;
+import com.avaje.ebean.Transaction;
 import com.google.common.base.Charsets;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.hashing.Algorithm;
@@ -28,13 +29,18 @@ public class LegacyMigration extends AbstractMigration {
         final PluginHolder plugin = LoginSecurity.getInstance();
         final StorageModule storage = plugin.getModule(StorageModule.class);
         if(storage.isRunningMySQL()) {
+            final EbeanServer database = storage.getDatabase();
+            Transaction transaction = database.beginTransaction();
             try {
-                SqlQuery query = plugin.getDatabase().createSqlQuery("SELECT COUNT(*) FROM users");
-                int rows = (Integer) query.findUnique().values().toArray(new Object[0])[0];
-                return rows > 0;
-            } catch(Exception e) {
-                e.printStackTrace(); //TODO: Remove debug
+                Connection connection = transaction.getConnection();
+                Statement statement = connection.createStatement();
+                final ResultSet result = statement.executeQuery("SELECT COUNT(*) FROM users;");
+                return result.getInt(0) > 0;
+            } catch(SQLException e) {
+                plugin.getLogger().log(Level.WARNING, "Couldn't check mysql database", e);
                 return false;
+            } finally {
+                database.endTransaction();
             }
         } else {
             final File file = new File(plugin.getDataFolder(), "users.db");

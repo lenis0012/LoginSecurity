@@ -39,8 +39,12 @@ public class PlayerSession {
         if(!isRegistered()) {
             throw new IllegalStateException("Can't save profile when not registered!");
         }
-
-        LoginSecurity.getInstance().getDatabase().save(profile);
+        LoginSecurity.getExecutorService().execute(new Runnable() {
+            @Override
+            public void run() {
+                LoginSecurity.getInstance().getDatabase().save(profile);
+            }
+        });
     }
 
     /**
@@ -114,10 +118,26 @@ public class PlayerSession {
         return Bukkit.getPlayer(profile.getLastName());
     }
 
-    public void performActionAsync(AuthAction action, ActionCallback callback) {
-        // TODO: Actually make async
-        ActionResponse response = performAction(action);
-        callback.call(response);
+    /**
+     * Perform an action in an async task.
+     * Runs callback when action is finished.
+     *
+     * @param action Action to perform
+     * @param callback To run when action has been performed.
+     */
+    public void performActionAsync(final AuthAction action, final ActionCallback callback) {
+        LoginSecurity.getExecutorService().execute(new Runnable() {
+            @Override
+            public void run() {
+                final ActionResponse response = performAction(action);
+                Bukkit.getScheduler().runTask(LoginSecurity.getInstance(), new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.call(response);
+                    }
+                });
+            }
+        });
     }
 
     /**
