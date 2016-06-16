@@ -17,6 +17,7 @@ import com.lenis0012.bukkit.loginsecurity.util.ProfileUtil;
 import com.lenis0012.bukkit.loginsecurity.util.UserIdMode;
 import com.lenis0012.pluginutils.Module;
 import com.lenis0012.pluginutils.modules.configuration.Configuration;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.persistence.PersistenceException;
@@ -49,9 +50,25 @@ public class StorageModule extends Module<LoginSecurity> implements Comparator<S
             copyFile(plugin.getResource("database.yml"), file);
         }
         Configuration config = new Configuration(file);
-        config.reload(false);
+        config.reload(true);
 
-        // TODO: Rewrite old config settings for mysql.. =)
+        // Check config for mysql settings
+        FileConfiguration conf = plugin.getConfig();
+        if(conf.contains("MySQL")) {
+            // Rewrite mysql settings
+            config.set("mysql.enabled", conf.getBoolean("MySQL.use"));
+            String host = conf.getString("MySQL.host", "localhost") + ":" + conf.getInt("MySQL.port", 3306);
+            config.set("mysql.host", host);
+            config.set("mysql.username", conf.getString("MySQL.username"));
+            config.set("mysql.password", config.getString("MySQL.password"));
+            config.set("mysql.database", config.getString("MySQL.database"));
+            config.save();
+
+            // Cleanup old config
+            conf.set("MySQL", null);
+            conf.set("settings", null);
+            plugin.saveConfig();
+        }
 
         // Server settings
         ServerConfig server = new ServerConfig();
