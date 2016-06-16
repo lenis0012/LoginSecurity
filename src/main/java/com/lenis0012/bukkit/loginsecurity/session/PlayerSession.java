@@ -2,6 +2,7 @@ package com.lenis0012.bukkit.loginsecurity.session;
 
 import com.avaje.ebean.EbeanServer;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
+import com.lenis0012.bukkit.loginsecurity.LoginSecurityConfig;
 import com.lenis0012.bukkit.loginsecurity.events.AuthActionEvent;
 import com.lenis0012.bukkit.loginsecurity.events.AuthModeChangedEvent;
 import com.lenis0012.bukkit.loginsecurity.session.action.ActionCallback;
@@ -54,15 +55,15 @@ public class PlayerSession {
         final EbeanServer database = LoginSecurity.getInstance().getDatabase();
         PlayerProfile newProfile = database.find(PlayerProfile.class).where().ieq("unique_user_id", profile.getUniqueUserId()).findUnique();
 
-        if(newProfile != null && mode == AuthMode.UNREGISTERED) {
+        if(newProfile != null && !isRegistered()) {
             throw new ProfileRefreshException("Profile was registered while in database!");
         }
 
-        if(newProfile == null && mode != AuthMode.UNREGISTERED) {
+        if(newProfile == null && isRegistered()) {
             throw new ProfileRefreshException("Profile was not found, even though it should be there!");
         }
 
-        if(newProfile == null && mode == AuthMode.UNREGISTERED) {
+        if(newProfile == null) {
             // Player isn't registered, nothing to update.
             return;
         }
