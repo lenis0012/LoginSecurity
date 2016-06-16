@@ -1,13 +1,17 @@
 {
-  "version": "LoginSecurity v2.0.13",
+  "version": "LoginSecurity v2.1-BETA01",
   "data":
   [
     [
       "---[ Changelog ]---",
       "",
-      "- Fixed security flaw",
+      "- AuthMe Support",
       "",
-      "Rebooting asap is advised."
+      "- AutoIn Support",
+      "",
+      "- Captcha",
+      "",
+      "for more check bukkitdev/spigotmc"
     ],
     [
       "====[ DONATE ]====",
