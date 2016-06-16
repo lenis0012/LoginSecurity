@@ -3,6 +3,7 @@ package com.lenis0012.bukkit.loginsecurity.modules.general;
 import com.google.common.collect.Lists;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurityConfig;
+import com.lenis0012.bukkit.loginsecurity.events.AuthModeChangedEvent;
 import com.lenis0012.bukkit.loginsecurity.session.AuthMode;
 import com.lenis0012.bukkit.loginsecurity.session.PlayerSession;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerLocation;
@@ -124,6 +125,30 @@ public class PlayerListener implements Listener {
                     break; // Do nothing (for now)
             }
         }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerJoinLate(final PlayerJoinEvent event) {
+        final Player player = event.getPlayer();
+        final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
+        if(!session.isLoggedIn() || !player.hasPermission("ls.update")) {
+            return;
+        }
+
+        general.checkUpdates(player);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onAuthChange(AuthModeChangedEvent event) {
+        final PlayerSession session = event.getSession();
+        final Player player = session.getPlayer();
+        if(event.getCurrentMode() != AuthMode.AUTHENTICATED) {
+            return;
+        } if(!session.isLoggedIn() || !player.hasPermission("ls.update")) {
+            return;
+        }
+
+        general.checkUpdates(player);
     }
 
     @EventHandler

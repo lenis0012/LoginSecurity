@@ -76,6 +76,12 @@ public class LoginSecurityConfig extends AbstractConfig {
     @ConfigKey(path="username.max-length")
     private int usernameMaxLength = 16;
 
+    @ConfigKey(path = "updater.enabled")
+    private boolean updaterEnabled = true;
+    @ConfigHeader("The type of builds you are checking. RELEASE, BETA, ALPHA")
+    @ConfigKey(path = "updater.channel")
+    private String updaterChannel = "BETA";
+
     @ConfigHeader("Session timeout, set to -1 to disable.")
     @ConfigKey
     private int sessionTimeout = 60;
