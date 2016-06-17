@@ -8,7 +8,9 @@ import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.session.AuthMode;
 import com.lenis0012.bukkit.loginsecurity.session.AuthService;
 import com.lenis0012.bukkit.loginsecurity.session.PlayerSession;
+import com.lenis0012.bukkit.loginsecurity.session.action.ActionCallback;
 import com.lenis0012.bukkit.loginsecurity.session.action.LoginAction;
+import com.lenis0012.bukkit.loginsecurity.session.action.LogoutAction;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -29,7 +31,7 @@ public class LoginPluginLoginSecurity extends BukkitLoginPlugin {
     public void forceLogin(Object o) {
         final Player player = (Player) o;
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
-        session.performAction(new LoginAction(AuthService.PLUGIN, autoIn));
+        session.performActionAsync(new LoginAction(AuthService.PLUGIN, autoIn), ActionCallback.EMPTY);
     }
 
     @Override
@@ -38,7 +40,9 @@ public class LoginPluginLoginSecurity extends BukkitLoginPlugin {
 
     @Override
     public void forceLogout(Object o) {
-        // TODO: Logout
+        final Player player = (Player) o;
+        final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
+        session.performActionAsync(new LogoutAction(AuthService.PLUGIN, autoIn), ActionCallback.EMPTY);
     }
 
     @Override
@@ -60,8 +64,9 @@ public class LoginPluginLoginSecurity extends BukkitLoginPlugin {
             final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
             return session.getAuthMode() != AuthMode.UNREGISTERED;
         }
-        // TODO: Support offline player...
-        return false;
+
+        final PlayerSession session = LoginSecurity.getSessionManager().getOfflineSession(nick);
+        return session.isRegistered();
     }
 
     @Override
@@ -71,6 +76,6 @@ public class LoginPluginLoginSecurity extends BukkitLoginPlugin {
 
     @Override
     public EventPriority getJoinEventPriority() {
-        return EventPriority.MONITOR;
+        return EventPriority.NORMAL;
     }
 }

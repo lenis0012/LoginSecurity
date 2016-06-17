@@ -64,7 +64,7 @@ public class ThreadingModule extends Module<LoginSecurity> implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoin(final PlayerJoinEvent event) {
         final Player player = event.getPlayer();
         final UUID profileId = ProfileUtil.getUUID(player);

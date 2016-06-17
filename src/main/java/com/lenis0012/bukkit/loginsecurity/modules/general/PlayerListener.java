@@ -85,12 +85,17 @@ public class PlayerListener implements Listener {
         MetaData.unset(event.getPlayer(), "ls_login_tries");
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
         final PlayerProfile profile = session.getProfile();
         profile.setLastName(player.getName());
+
+        // Admin update check
+        if(session.isAuthorized() && player.hasPermission("ls.update")) {
+            general.checkUpdates(player);
+        }
 
         if(session.isAuthorized() || !session.isRegistered()) {
             return;
@@ -125,17 +130,6 @@ public class PlayerListener implements Listener {
                     break; // Do nothing (for now)
             }
         }
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerJoinLate(final PlayerJoinEvent event) {
-        final Player player = event.getPlayer();
-        final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
-        if(!session.isLoggedIn() || !player.hasPermission("ls.update")) {
-            return;
-        }
-
-        general.checkUpdates(player);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
