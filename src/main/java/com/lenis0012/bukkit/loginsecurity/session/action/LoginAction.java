@@ -25,7 +25,12 @@ public class LoginAction extends AuthAction {
         rehabPlayer(session);
         session.getProfile().setLastLogin(new Timestamp(System.currentTimeMillis()));
         session.getProfile().setIpAddress(session.getPlayer().getAddress().getAddress().toString());
-        LoginSecurity.getInstance().getDatabase().save(session.getProfile());
+        LoginSecurity.getExecutorService().execute(new Runnable() {
+            @Override
+            public void run() {
+                LoginSecurity.getInstance().getDatabase().save(session.getProfile());
+            }
+        });
         return AuthMode.AUTHENTICATED;
     }
 }

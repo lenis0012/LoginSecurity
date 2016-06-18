@@ -86,11 +86,7 @@ public class ThreadingModule extends Module<LoginSecurity> implements Listener {
 
         // Allow log in once
         final int seconds = (int) ((System.currentTimeMillis() - lastLogout) / 1000L);
-        session.performActionAsync(new LoginAction(AuthService.SESSION, plugin), new ActionCallback() {
-            @Override
-            public void call(ActionResponse response) {
-                player.sendMessage("You last login session was continued, from " + seconds + " seconds ago.");
-            }
-        });
+        session.performAction(new LoginAction(AuthService.SESSION, plugin));
+        player.sendMessage("You last login session was continued, from " + seconds + " seconds ago.");
     }
 }
