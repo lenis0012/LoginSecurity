@@ -4,7 +4,7 @@
 
     <groupId>com.lenis0012.bukkit</groupId>
     <artifactId>LoginSecurity</artifactId>
-    <version>2.1-BETA02-SNAPSHOT</version>
+    <version>2.1.1</version>
     <packaging>jar</packaging>
     <name>LoginSecurity</name>
     <url>http://dev.bukkit.org/server-mods/loginsecurity/</url>
@@ -213,7 +213,7 @@
             </resource>
         </resources>
         <finalName>${project.name}</finalName>
-        <defaultGoal>clean install javadoc:javadoc</defaultGoal>
+        <defaultGoal>clean install</defaultGoal>
         <!-- Plugins -->
         <plugins>
             <!-- Compiler plugin -->
@@ -291,15 +291,30 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>net.md-5</groupId>
+                <artifactId>scriptus</artifactId>
+                <version>0.3.1</version>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>describe</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <!-- Jar plugin (add argon2 to class-path) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>2.5</version>
                 <configuration>
                     <archive>
                         <manifestEntries>
                             <Built-By>lenis0012</Built-By>
                             <Class-Path>./LoginSecurity/argon2-jvm-1.1.jar</Class-Path>
+                            <Implementation-Version>${describe}</Implementation-Version>
                         </manifestEntries>
                     </archive>
                 </configuration>
