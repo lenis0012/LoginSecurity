@@ -213,7 +213,7 @@
             </resource>
         </resources>
         <finalName>${project.name}</finalName>
-        <defaultGoal>clean install</defaultGoal>
+        <defaultGoal>clean install javadoc:javadoc</defaultGoal>
         <!-- Plugins -->
         <plugins>
             <!-- Compiler plugin -->
