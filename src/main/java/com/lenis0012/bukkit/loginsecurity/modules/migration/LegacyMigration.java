@@ -37,7 +37,7 @@ public class LegacyMigration extends AbstractMigration {
                 final ResultSet result = statement.executeQuery("SELECT COUNT(*) FROM users;");
                 return result.next() && result.getInt(1) > 0;
             } catch(SQLException e) {
-                plugin.getLogger().log(Level.WARNING, "Couldn't check mysql database", e);
+//                plugin.getLogger().log(Level.WARNING, "Couldn't check mysql database", e);
                 return false;
             } finally {
                 database.endTransaction();
