@@ -2,6 +2,7 @@ package com.lenis0012.bukkit.loginsecurity.storage;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 
 import javax.persistence.*;
 
@@ -43,7 +44,16 @@ public class PlayerLocation {
     }
 
     public Location asLocation() {
-        return new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
+        if(world == null) {
+            return null;
+        }
+
+        World bukkitWorld = Bukkit.getWorld(world);
+        if(bukkitWorld == null) {
+            return null;
+        }
+
+        return new Location(bukkitWorld, x, y, z, yaw, pitch);
     }
 
     public int getId() {

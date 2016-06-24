@@ -5,6 +5,7 @@ import com.lenis0012.bukkit.loginsecurity.session.action.ActionResponse;
 import com.lenis0012.bukkit.loginsecurity.session.exceptions.ProfileRefreshException;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 import com.lenis0012.bukkit.loginsecurity.util.InventorySerializer;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
@@ -62,7 +63,10 @@ public abstract class AuthAction {
         }
 
         if(profile.getLoginLocation() != null) {
-            player.teleport(profile.getLoginLocation().asLocation());
+            Location location = profile.getLoginLocation().asLocation();
+            if(location != null) {
+                player.teleport(location);
+            }
             profile.setLoginLocation(null);
             changed = true;
         }
