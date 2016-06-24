@@ -1,0 +1,66 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.lenis0012.bukkit</groupId>
+        <artifactId>loginsecurity-parent</artifactId>
+        <version>2.1.2-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>loginsecurity-spigot</artifactId>
+    <name>LoginSecurity-Spigot</name>
+
+    <properties>
+        <project.updaterInfo>https://raw.githubusercontent.com/lenis0012/LoginSecurity-2/master/latest_version.json</project.updaterInfo>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.lenis0012.bukkit</groupId>
+            <artifactId>loginsecurity-common</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.lenis0012.updater</groupId>
+            <artifactId>updater-spigot</artifactId>
+            <version>1</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <!-- Resources -->
+        <resources>
+            <resource>
+                <directory>src/main/resources/</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.4</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>${project.name}-${project.version}</finalName>
+                            <relocations>
+                                <!-- Relocate updater -->
+                                <relocation>
+                                    <pattern>com.lenis0012.updater</pattern>
+                                    <shadedPattern>com.lenis0012.bukkit.loginsecurity.libs.updater</shadedPattern>
+                                </relocation>
+                            </relocations>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
