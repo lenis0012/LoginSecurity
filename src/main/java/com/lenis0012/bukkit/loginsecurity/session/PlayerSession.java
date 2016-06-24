@@ -12,6 +12,8 @@ import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.UUID;
+
 /**
  * Player session
  */
@@ -69,6 +71,13 @@ public class PlayerSession {
         }
 
         this.profile = newProfile;
+    }
+
+    /**
+     * Reset the player's profile to a blank profile.
+     */
+    public void resetProfile() {
+        this.profile = LoginSecurity.getSessionManager().createBlankProfile(UUID.fromString(profile.getUniqueUserId()));
     }
 
     /**

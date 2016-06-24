@@ -4,7 +4,15 @@ import com.google.common.collect.Maps;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.modules.migration.AbstractMigration;
 import com.lenis0012.bukkit.loginsecurity.modules.migration.MigrationModule;
+import com.lenis0012.bukkit.loginsecurity.session.AuthService;
+import com.lenis0012.bukkit.loginsecurity.session.PlayerSession;
+import com.lenis0012.bukkit.loginsecurity.session.action.ActionCallback;
+import com.lenis0012.bukkit.loginsecurity.session.action.ActionResponse;
+import com.lenis0012.bukkit.loginsecurity.session.action.RemovePassAction;
+import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 import com.lenis0012.pluginutils.modules.command.Command;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -60,6 +68,24 @@ public class CommandAdmin extends Command {
             String usage = info.usage().isEmpty() ? "" : info.usage();
             reply("&b/" + name + usage + " &7- &f" + info.description());
         }
+    }
+
+    @SubCommand(description = "Remove a user's password", usage = "<username>", minArgs = 1)
+    public void rmpass() {
+        String name = getArg(0);
+        Player player = Bukkit.getPlayer(name);
+        PlayerSession session = player != null ? LoginSecurity.getSessionManager().getPlayerSession(player) : LoginSecurity.getSessionManager().getOfflineSession(name);
+        if(!session.isRegistered()) {
+            reply(false, "No player with that name has been registered!");
+        }
+
+        final Player admin = player;
+        session.performActionAsync(new RemovePassAction(AuthService.ADMIN, player), new ActionCallback() {
+            @Override
+            public void call(ActionResponse response) {
+                reply(admin, true, "Successfully reset player account!");
+            }
+        });
     }
 
     @SubCommand(description = "Import from another database", usage = "<source> [args]", minArgs = 1)

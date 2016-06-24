@@ -75,12 +75,17 @@ public class SessionManager {
         AuthMode authMode = AuthMode.UNAUTHENTICATED;
         if(profile == null) {
             // New user...
-            profile = new PlayerProfile();
-            profile.setUniqueUserId(playerId.toString());
-            profile.setUniqueIdMode(ProfileUtil.getUserIdMode());
+            profile = createBlankProfile(playerId);
             authMode = LoginSecurity.getConfiguration().isPasswordRequired() ? AuthMode.UNREGISTERED : AuthMode.AUTHENTICATED;
         }
 
         return new PlayerSession(profile, authMode);
+    }
+
+    protected final PlayerProfile createBlankProfile(final UUID playerId) {
+        PlayerProfile profile = new PlayerProfile();
+        profile.setUniqueUserId(playerId.toString());
+        profile.setUniqueIdMode(ProfileUtil.getUserIdMode());
+        return profile;
     }
 }
