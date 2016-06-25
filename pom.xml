@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -13,15 +14,17 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.jdkVersion>1.7</project.jdkVersion>
-        <project.bukkitUpdaterInfo>41702</project.bukkitUpdaterInfo>
-        <project.spigotUpdaterInfo>https://raw.githubusercontent.com/lenis0012/LoginSecurity-2/master/latest_version.json</project.spigotUpdaterInfo>
     </properties>
 
     <profiles>
         <profile>
             <id>bukkit</id>
+	        <activation>
+	            <activeByDefault>true</activeByDefault>
+	        </activation>
             <properties>
-                <project.updaterInfo>${project.bukkitUpdaterInfo}</project.updaterInfo>
+                <project.updaterInfo>41702</project.updaterInfo>
+                <project.platform>Bukkit</project.platform>
             </properties>
             <dependencies>
                 <dependency>
@@ -36,7 +39,8 @@
         <profile>
             <id>spigot</id>
             <properties>
-                <project.updaterInfo>${project.spigotUpdaterInfo}</project.updaterInfo>
+                <project.updaterInfo>https://raw.githubusercontent.com/lenis0012/LoginSecurity-2/master/latest_version.json</project.updaterInfo>
+                <project.platform>Spigot</project.platform>
             </properties>
             <dependencies>
                 <dependency>
@@ -147,7 +151,7 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
-        <finalName>${project.name}-${project.version}</finalName>
+        <finalName>${project.name}-${project.version}-${project.platform}</finalName>
         <defaultGoal>clean install javadoc:javadoc</defaultGoal>
         <!-- Plugins -->
         <plugins>
