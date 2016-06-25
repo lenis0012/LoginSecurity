@@ -1,25 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.lenis0012.bukkit</groupId>
-    <artifactId>LoginSecurity</artifactId>
+    <artifactId>loginsecurity</artifactId>
     <version>2.1.2-SNAPSHOT</version>
-    <packaging>jar</packaging>
+
     <name>LoginSecurity</name>
     <url>http://dev.bukkit.org/server-mods/loginsecurity/</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.jdkVersion>1.7</project.jdkVersion>
+        <project.bukkitUpdaterInfo>41702</project.bukkitUpdaterInfo>
+        <project.spigotUpdaterInfo>https://raw.githubusercontent.com/lenis0012/LoginSecurity-2/master/latest_version.json</project.spigotUpdaterInfo>
     </properties>
+
+    <profiles>
+        <profile>
+            <id>bukkit</id>
+            <properties>
+                <project.updaterInfo>${project.bukkitUpdaterInfo}</project.updaterInfo>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.lenis0012.updater</groupId>
+                    <artifactId>updater-bukkit</artifactId>
+                    <version>1</version>
+                    <scope>compile</scope>
+                    <optional>true</optional>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>spigot</id>
+            <properties>
+                <project.updaterInfo>${project.spigotUpdaterInfo}</project.updaterInfo>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.lenis0012.updater</groupId>
+                    <artifactId>updater-spigot</artifactId>
+                    <version>1</version>
+                    <scope>compile</scope>
+                    <optional>true</optional>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 
     <repositories>
         <!-- Repo for access to CraftBukkit -->
         <repository>
-            <id>md5-repo</id>
+            <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
 
+        <!-- Author's repo -->
         <repository>
             <id>lenis0012-repo</id>
             <url>http://ci.lenis0012.com/plugin/repository/everything/</url>
@@ -27,11 +65,7 @@
         
         <!-- Repo access to Argon2 -->
         <repository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
             <id>bintray-phxql-maven</id>
-            <name>bintray</name>
             <url>http://dl.bintray.com/phxql/maven</url>
         </repository>
     </repositories>
@@ -41,7 +75,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.9-R0.1-SNAPSHOT</version>
+            <version>1.10-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -49,31 +83,43 @@
             <artifactId>lenisutils</artifactId>
             <version>1</version>
             <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
-        <!-- Used libraries -->
+        <!-- Hash libraries -->
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
             <version>1.54</version>
             <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>de.mkammerer</groupId>
             <artifactId>argon2-jvm</artifactId>
-            <version>1.1</version>
+            <version>1.2</version>
+            <!-- Added to the classpath by the maven jar plugin -->
             <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
+        <!-- Used libraries -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.16.6</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
             <version>2.5</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.lenis0012.updater</groupId>
+            <artifactId>updater-api</artifactId>
+            <version>1</version>
+            <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
         <!-- 3rd party plugins -->
         <dependency>
@@ -83,13 +129,7 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/AutoIn.jar</systemPath>
         </dependency>
-        <dependency>
-            <groupId>com.lenis0012.updater</groupId>
-            <artifactId>updater-api</artifactId>
-            <version>1</version>
-            <scope>compile</scope>
-        </dependency>
-        <!-- testing -->
+        <!-- Testing dependencies -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -98,107 +138,6 @@
         </dependency>
     </dependencies>
 
-    <profiles>
-        <profile>
-            <id>bukkit</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <properties>
-                <project.updaterInfo>41702</project.updaterInfo>
-            </properties>
-            <dependencies>
-                <dependency>
-                    <groupId>com.lenis0012.updater</groupId>
-                    <artifactId>updater-bukkit</artifactId>
-                    <version>1</version>
-                    <scope>compile</scope>
-                </dependency>
-            </dependencies>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-shade-plugin</artifactId>
-                        <version>2.4</version>
-                        <executions>
-                            <execution>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>shade</goal>
-                                </goals>
-                                <configuration>
-                                    <finalName>${project.name}-Bukkit-${project.version}</finalName>
-                                    <artifactSet>
-                                        <includes>
-                                            <include>com.lenis0012.updater:updater-api</include>
-                                            <include>com.lenis0012.updater:updater-bukkit</include>
-                                        </includes>
-                                    </artifactSet>
-                                    <relocations>
-                                        <!-- Relocate updater -->
-                                        <relocation>
-                                            <pattern>com.lenis0012.updater</pattern>
-                                            <shadedPattern>com.lenis0012.bukkit.loginsecurity.libs.updater</shadedPattern>
-                                        </relocation>
-                                    </relocations>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>spigot</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <properties>
-                <project.updaterInfo>https://raw.githubusercontent.com/lenis0012/LoginSecurity-2/master/latest_version.json</project.updaterInfo>
-            </properties>
-            <dependencies>
-                <dependency>
-                    <groupId>com.lenis0012.updater</groupId>
-                    <artifactId>updater-spigot</artifactId>
-                    <version>1</version>
-                    <scope>compile</scope>
-                </dependency>
-            </dependencies>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-shade-plugin</artifactId>
-                        <version>2.4</version>
-                        <executions>
-                            <execution>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>shade</goal>
-                                </goals>
-                                <configuration>
-                                    <finalName>${project.name}-Spigot-${project.version}</finalName>
-                                    <artifactSet>
-                                        <includes>
-                                            <include>com.lenis0012.updater:updater-api</include>
-                                            <include>com.lenis0012.updater:updater-spigot</include>
-                                        </includes>
-                                    </artifactSet>
-                                    <relocations>
-                                        <!-- Relocate updater -->
-                                        <relocation>
-                                            <pattern>com.lenis0012.updater</pattern>
-                                            <shadedPattern>com.lenis0012.bukkit.loginsecurity.libs.updater</shadedPattern>
-                                        </relocation>
-                                    </relocations>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
-
     <!-- Build -->
     <build>
         <!-- Resources -->
@@ -206,13 +145,9 @@
             <resource>
                 <directory>src/main/resources/</directory>
                 <filtering>true</filtering>
-                <targetPath>.</targetPath>
-                <includes>
-                    <include>**</include>
-                </includes>
             </resource>
         </resources>
-        <finalName>${project.name}</finalName>
+        <finalName>${project.name}-${project.version}</finalName>
         <defaultGoal>clean install javadoc:javadoc</defaultGoal>
         <!-- Plugins -->
         <plugins>
@@ -220,76 +155,72 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.4</version>
+                <version>3.5.1</version>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                    <showWarnings>true</showWarnings>
-                    <showDeprecation>false</showDeprecation>
+                    <source>${project.jdkVersion}</source>
+                    <target>${project.jdkVersion}</target>
                 </configuration>
             </plugin>
             <!-- Shading plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>2.4</version>
+                <version>2.4.3</version>
                 <executions>
                     <execution>
-                        <id>general</id>
+                        <id>shade</id>
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
                         </goals>
-                        <configuration>
-                            <createDependencyReducedPom>false</createDependencyReducedPom>
-                            <transformers>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.x.y.Main</mainClass>
-                                </transformer>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                                    <resource>META-INF/spring.handlers</resource>
-                                </transformer>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                                    <resource>META-INF/spring.schemas</resource>
-                                </transformer>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                                    <resource>META-INF/spring.tooling</resource>
-                                </transformer>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
-                            </transformers>
-                            <filters>
-                                <filter>
-                                    <artifact>*:*</artifact>
-                                    <excludes>
-                                        <exclude>META-INF/*.SF</exclude>
-                                        <exclude>META-INF/*.DSA</exclude>
-                                        <exclude>META-INF/*.RSA</exclude>
-                                    </excludes>
-                                </filter>
-                            </filters>
-                            <artifactSet>
-                                <includes>
-                                    <include>com.lenis0012.bukkit:lenisutils</include>
-                                    <include>org.bouncycastle:bcprov-jdk15on</include>
-                                    <!--<include>de.mkammerer:argon2-jvm</include>-->
-                                    <include>org.projectlombok:lombok</include>
-                                </includes>
-                            </artifactSet>
-                            <relocations>
-                                <!-- Relocate utils -->
-                                <relocation>
-                                    <pattern>com.lenis0012.pluginutils</pattern>
-                                    <shadedPattern>com.lenis0012.bukkit.loginsecurity.libs.pluginutils</shadedPattern>
-                                </relocation>
-                            </relocations>
-                        </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <!-- META-INF transformer, required by bouncycastle -->
+                    <transformers>
+                        <transformer
+                                implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                            <mainClass>com.x.y.Main</mainClass>
+                        </transformer>
+                        <transformer
+                                implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                            <resource>META-INF/spring.handlers</resource>
+                        </transformer>
+                        <transformer
+                                implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                            <resource>META-INF/spring.schemas</resource>
+                        </transformer>
+                        <transformer
+                                implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                            <resource>META-INF/spring.tooling</resource>
+                        </transformer>
+                        <transformer
+                                implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+                    </transformers>
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.DSA</exclude>
+                                <exclude>META-INF/*.RSA</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
+                    <relocations>
+                        <!-- Relocate utils -->
+                        <relocation>
+                            <pattern>com.lenis0012.pluginutils</pattern>
+                            <shadedPattern>com.lenis0012.bukkit.loginsecurity.libs.pluginutils</shadedPattern>
+                        </relocation>
+                        <!-- Relocate updater -->
+                        <relocation>
+                            <pattern>com.lenis0012.updater</pattern>
+                            <shadedPattern>com.lenis0012.bukkit.loginsecurity.libs.updater</shadedPattern>
+                        </relocation>
+                    </relocations>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>net.md-5</groupId>
@@ -308,7 +239,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.5</version>
+                <version>3.0.1</version>
                 <configuration>
                     <archive>
                         <manifestEntries>
@@ -319,13 +250,12 @@
                     </archive>
                 </configuration>
             </plugin>
-            <!-- Javadocs (run width javadoc:javadoc) -->
+            <!-- Javadocs (run with javadoc:javadoc) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.4</version>
                 <configuration>
-                    <reportOutputDirectory>${project.build.directory}</reportOutputDirectory>
-                    <destDir>javadocs</destDir>
                     <additionalparam>-Xdoclint:none</additionalparam>
                 </configuration>
             </plugin>
