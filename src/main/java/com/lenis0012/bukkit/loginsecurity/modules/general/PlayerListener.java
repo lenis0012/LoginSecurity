@@ -107,12 +107,13 @@ public class PlayerListener implements Listener {
         }
 
         // Clear inventory
+        boolean saveAsync = false;
         if(profile.getInventory() == null) {
             // Clear inventory
             final PlayerInventory inventory = player.getInventory();
             profile.setInventory(InventorySerializer.serializeInventory(inventory));
             inventory.clear();
-            session.saveProfileAsync();
+            saveAsync = true;
         }
 
         // Reset location
@@ -122,13 +123,17 @@ public class PlayerListener implements Listener {
                 case SPAWN:
                     player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
                     profile.setLoginLocation(new PlayerLocation(origin));
-                    session.saveProfileAsync();
+                    saveAsync = true;
                     break;
                 case RANDOM:
                     // TODO: Add random in.
                 case DEFAULT:
                     break; // Do nothing (for now)
             }
+        }
+
+        if(saveAsync) {
+            session.saveProfileAsync();
         }
     }
 
