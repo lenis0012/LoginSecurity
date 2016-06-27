@@ -1,13 +1,13 @@
 {
-  "version": "LoginSecurity v2.1.1",
+  "version": "LoginSecurity v2.1.2",
   "data":
   [
     [
       "---[ Changelog ]---",
       "",
-      "- Improve performance",
+      "- Added admin remove command",
       "",
-      "- Fix optional password",
+      "- Fixed i mysql issues",
       "",
       "- Fix inventory clearing"
     ],
