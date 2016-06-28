@@ -259,6 +259,9 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>2.10.4</version>
                 <configuration>
+                    <reportOutputDirectory>${project.build.directory}</reportOutputDirectory>
+                    <destDir>javadocs</destDir>
+                    <additionalparam>-Xdoclint:none</additionalparam>
                     <show>public</show>
                     <failOnError>false</failOnError>
                 </configuration>
