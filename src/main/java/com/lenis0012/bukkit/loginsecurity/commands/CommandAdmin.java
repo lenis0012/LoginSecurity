@@ -9,7 +9,6 @@ import com.lenis0012.bukkit.loginsecurity.session.PlayerSession;
 import com.lenis0012.bukkit.loginsecurity.session.action.ActionCallback;
 import com.lenis0012.bukkit.loginsecurity.session.action.ActionResponse;
 import com.lenis0012.bukkit.loginsecurity.session.action.RemovePassAction;
-import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 import com.lenis0012.pluginutils.modules.command.Command;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -18,6 +17,9 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
+
+import static com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys.*;
+import static com.lenis0012.bukkit.loginsecurity.LoginSecurity.translate;
 
 public class CommandAdmin extends Command {
     private final Map<String, Method> methods = Maps.newLinkedHashMap(); // maintain order for help command
@@ -41,59 +43,59 @@ public class CommandAdmin extends Command {
         String subCommand = getArgLength() > 0 ? getArg(0) : "help";
         Method method = methods.get(subCommand.toLowerCase());
         if(method == null) {
-            reply(false, "Unknown subcommand! Use /lac for help.");
+            reply(false, translate(COMMAND_UNKNOWN).param("cmd", "/lac"));
             return;
         }
 
         SubCommand info = method.getAnnotation(SubCommand.class);
         if(getArgLength() < info.minArgs() + 1) {
-            reply(false, "Not enough arguments! Use /lac for help.");
+            reply(false, translate(COMMAND_NOT_ENOUGH_ARGS).param("cmd", "/lac"));
             return;
         }
 
         try {
             method.invoke(this);
         } catch(Exception e) {
-            reply(false, "Error while executing command: " + e.getMessage());
+            reply(false, translate(COMMAND_ERROR).param("error", e.getMessage()));
             plugin.getLogger().log(Level.SEVERE, "Error while executing command", e);
         }
     }
 
-    @SubCommand(description = "Display command help", minArgs = -1)
+    @SubCommand(description = "lacHelp", minArgs = -1)
     public void help() {
         reply("&3&lL&b&loginSecurity &3&lA&b&ldmin &3&lC&b&lommand:");
         for(Entry<String, Method> entry : methods.entrySet()) {
             String name = entry.getKey();
             SubCommand info = entry.getValue().getAnnotation(SubCommand.class);
-            String usage = info.usage().isEmpty() ? "" : info.usage();
-            reply("&b/" + name + usage + " &7- &f" + info.description());
+            String usage = info.usage().isEmpty() ? "" : translate(info.usage()).toString();
+            reply("&b/" + name + usage + " &7- &f" + translate(info.description()));
         }
     }
 
-    @SubCommand(description = "Remove a user's password", usage = "<username>", minArgs = 1)
+    @SubCommand(description = "lacRmpass", usage = "lcRmpassArgs", minArgs = 1)
     public void rmpass() {
         String name = getArg(0);
         Player player = Bukkit.getPlayer(name);
         PlayerSession session = player != null ? LoginSecurity.getSessionManager().getPlayerSession(player) : LoginSecurity.getSessionManager().getOfflineSession(name);
         if(!session.isRegistered()) {
-            reply(false, "No player with that name has been registered!");
+            reply(false, translate(LAC_NOT_REGISTERED));
         }
 
         final Player admin = player;
         session.performActionAsync(new RemovePassAction(AuthService.ADMIN, player), new ActionCallback() {
             @Override
             public void call(ActionResponse response) {
-                reply(admin, true, "Successfully reset player account!");
+                reply(admin, true, translate(LAC_RESET_PLAYER));
             }
         });
     }
 
-    @SubCommand(description = "Import from another database", usage = "<source> [args]", minArgs = 1)
+    @SubCommand(description = "lacImport", usage = "lacImportArgs", minArgs = 1)
     public void dbimport() {
         MigrationModule module = plugin.getModule(MigrationModule.class);
         AbstractMigration migration = module.getMigration(getArg(1));
         if(migration == null) {
-            reply(false, "Unknown database type, please check the wiki!");
+            reply(false, translate(LAC_UNKNOWN_SOURCE));
             return;
         }
 
@@ -103,7 +105,7 @@ public class CommandAdmin extends Command {
         }
 
         if(!migration.canExecute(params)) {
-            reply(false, "Couldn't perform import, please check log!");
+            reply(false, translate(LAC_IMPORT_FAILED));
             return;
         }
 

@@ -4,6 +4,9 @@ import com.avaje.ebean.EbeanServer;
 import com.google.common.collect.Lists;
 import com.lenis0012.bukkit.loginsecurity.modules.captcha.CaptchaManager;
 import com.lenis0012.bukkit.loginsecurity.modules.general.GeneralModule;
+import com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys;
+import com.lenis0012.bukkit.loginsecurity.modules.language.LanguageModule;
+import com.lenis0012.bukkit.loginsecurity.modules.language.TranslatedMessage;
 import com.lenis0012.bukkit.loginsecurity.modules.migration.MigrationModule;
 import com.lenis0012.bukkit.loginsecurity.modules.storage.StorageModule;
 import com.lenis0012.bukkit.loginsecurity.modules.threading.ThreadingModule;
@@ -49,6 +52,26 @@ public class LoginSecurity extends PluginHolder {
         return ((LoginSecurity) getInstance()).config();
     }
 
+    /**
+     * Translate a message by key.
+     *
+     * @param key Key to translate
+     * @return Translated version by key and selected language
+     */
+    public static TranslatedMessage translate(LanguageKeys key) {
+        return getInstance().getModule(LanguageModule.class).translate(key);
+    }
+
+    /**
+     * Translate a message by key.
+     *
+     * @param key Key to translate
+     * @return Translated version by key and selected language
+     */
+    public static TranslatedMessage translate(String key) {
+        return getInstance().getModule(LanguageModule.class).translate(key);
+    }
+
     private LoginSecurityConfig config;
     private SessionManager sessionManager;
 
@@ -73,6 +96,7 @@ public class LoginSecurity extends PluginHolder {
 
         // Register modules
         registry.registerModules(
+                LanguageModule.class,
                 StorageModule.class,
                 MigrationModule.class,
                 GeneralModule.class,

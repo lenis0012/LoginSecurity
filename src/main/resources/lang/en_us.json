@@ -1,0 +1,14 @@
+{
+  "commandError": "Error while executing command: %error%",
+  "commandUnknown": "Unknown command! Use %cmd% for help.",
+  "commandArguments": "Not enough arguments! Use %cmd% for gelp.",
+  "lacHelp": "Display command help",
+  "lacRmpass": "Remove a user's password",
+  "lacRmpassArgs": "<username>",
+  "lacNotRegistered": "No player with that name has been registered!",
+  "lacResetPlayer": "Successfully reset player account!",
+  "lacImport": "Import from another database",
+  "lacImportArgs": "<source> [args]",
+  "lacUnknownSource": "Unknown database type, please check the wiki!",
+  "lacImportFailed": "Couldn't perform import, please check log!"
+}
