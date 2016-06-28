@@ -72,7 +72,7 @@ public class CommandAdmin extends Command {
         }
     }
 
-    @SubCommand(description = "lacRmpass", usage = "lcRmpassArgs", minArgs = 1)
+    @SubCommand(description = "lacRmpass", usage = "lacRmpassArgs", minArgs = 1)
     public void rmpass() {
         String name = getArg(0);
         Player player = Bukkit.getPlayer(name);

@@ -8,6 +8,7 @@ public class TranslatedMessage {
     }
 
     public TranslatedMessage param(String key, String value) {
+        if(message == null) return this;
         message = message.replace("%" + key + "%", value);
         return this;
     }
