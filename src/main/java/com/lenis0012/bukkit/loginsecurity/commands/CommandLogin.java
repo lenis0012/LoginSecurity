@@ -12,6 +12,9 @@ import com.lenis0012.bukkit.loginsecurity.util.MetaData;
 import com.lenis0012.pluginutils.modules.command.Command;
 import org.bukkit.entity.Player;
 
+import static com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys.*;
+import static com.lenis0012.bukkit.loginsecurity.LoginSecurity.translate;
+
 public class CommandLogin extends Command {
     public CommandLogin(LoginSecurity plugin) {
         setMinArgs(1);
@@ -26,13 +29,13 @@ public class CommandLogin extends Command {
         LoginSecurityConfig config = LoginSecurity.getConfiguration();
         int tries = MetaData.get(player, "ls_login_tries", 0) + 1;
         if(tries > config.getMaxLoginTries()) {
-            player.kickPlayer("[LoginSecurity] Exceeded max login tries: " + config.getMaxLoginTries());
+            player.kickPlayer("[LoginSecurity] " + translate(LOGIN_TRIES_EXCEEDED).param("max", config.getMaxLoginTries()).toString());
             return;
         }
 
         // Verify auth mode
         if(session.getAuthMode() != AuthMode.UNAUTHENTICATED) {
-            reply(false, "You are not registered or already logged in!");
+            reply(false, translate(GENERAL_NOT_AUTHENTICATED));
             return;
         }
 
@@ -40,14 +43,14 @@ public class CommandLogin extends Command {
         final PlayerProfile profile = session.getProfile();
         final Algorithm algorithm = Algorithm.getById(profile.getHashingAlgorithm());
         if(algorithm == null) {
-            reply(false, "You account uses an unknown hashing algorithm, please report this to an admin.");
+            reply(false, translate(GENERAL_UNKNOWN_HASH));
             return;
         }
 
         // Verify login
         final boolean validated = algorithm.check(password, profile.getPassword());
         if(!validated) {
-            reply(false, "Login failed! Invalid password.");
+            reply(false, translate(LOGIN_FAIL));
             return;
         }
 
@@ -72,7 +75,7 @@ public class CommandLogin extends Command {
                 return;
             }
 
-            command.reply(player, true, "Successfully logged in.");
+            command.reply(player, true, translate(LOGIN_SUCCESS));
         }
     }
 }

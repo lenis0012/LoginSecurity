@@ -4,7 +4,6 @@ import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurityConfig;
 import com.lenis0012.bukkit.loginsecurity.modules.captcha.CaptchaManager;
 import com.lenis0012.bukkit.loginsecurity.session.AuthAction;
-import com.lenis0012.bukkit.loginsecurity.session.AuthMode;
 import com.lenis0012.bukkit.loginsecurity.session.AuthService;
 import com.lenis0012.bukkit.loginsecurity.session.PlayerSession;
 import com.lenis0012.bukkit.loginsecurity.session.action.ActionCallback;
@@ -12,7 +11,9 @@ import com.lenis0012.bukkit.loginsecurity.session.action.ActionResponse;
 import com.lenis0012.bukkit.loginsecurity.session.action.RegisterAction;
 import com.lenis0012.pluginutils.modules.command.Command;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
+
+import static com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys.*;
+import static com.lenis0012.bukkit.loginsecurity.LoginSecurity.translate;
 
 public class CommandRegister extends Command {
     private final LoginSecurity plugin;
@@ -30,12 +31,12 @@ public class CommandRegister extends Command {
 
         LoginSecurityConfig config = LoginSecurity.getConfiguration();
         if(password.length() < config.getPasswordMinLength() || password.length() > config.getPasswordMaxLength()) {
-            reply(false, "Password must be between %s and %s characters!", config.getPasswordMinLength(), config.getPasswordMaxLength());
+            reply(false, translate(GENERAL_PASSWORD_LENGTH).param("min", config.getPasswordMinLength()).param("max", config.getPasswordMaxLength()));
             return;
         }
 
         if(session.isRegistered()) {
-            reply(false, "You are already registered under this account!");
+            reply(false, translate(REGISTER_ALREADY));
             return;
         }
 
@@ -48,7 +49,7 @@ public class CommandRegister extends Command {
                     session.performActionAsync(action, new RegisterCallback(CommandRegister.this, player));
                 }
             });
-            reply(true, "Please enter the captcha on the map in the chat!");
+            reply(true, translate(REGISTER_CAPTCHA));
         } else {
             AuthAction action = new RegisterAction(AuthService.PLAYER, player, password);
             session.performActionAsync(action, new RegisterCallback(this, player));
@@ -71,7 +72,7 @@ public class CommandRegister extends Command {
                 return;
             }
 
-            command.reply(player, true, "Successfully registered, you are now logged in.");
+            command.reply(player, true, translate(REGISTER_SUCCESS));
         }
     }
 }

@@ -8,6 +8,9 @@ import com.lenis0012.bukkit.loginsecurity.session.action.ActionResponse;
 import com.lenis0012.bukkit.loginsecurity.session.action.LogoutAction;
 import com.lenis0012.pluginutils.modules.command.Command;
 
+import static com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys.*;
+import static com.lenis0012.bukkit.loginsecurity.LoginSecurity.translate;
+
 public class CommandLogout extends Command {
     private final LoginSecurity plugin;
 
@@ -22,16 +25,16 @@ public class CommandLogout extends Command {
 
         // Verify auth mode
         if(!session.isLoggedIn()) {
-            reply(false, "You are currently not logged in!");
+            reply(false, translate(GENERAL_NOT_LOGGED_IN));
             return;
         }
 
         AuthAction action = new LogoutAction(AuthService.PLAYER, player);
         ActionResponse response = session.performAction(action);
         if(!response.isSuccess()) {
-            reply(false, "Couldn't log out! " + response.getErrorMessage());
+            reply(false, translate(LOGOUT_FAIL).param("error", response.getErrorMessage()));
             return;
         }
-        reply(true, "You have successfully logged out!");
+        reply(true, translate(LOGOUT_SUCCESS));
     }
 }

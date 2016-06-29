@@ -13,6 +13,9 @@ import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 import com.lenis0012.pluginutils.modules.command.Command;
 import org.bukkit.entity.Player;
 
+import static com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys.*;
+import static com.lenis0012.bukkit.loginsecurity.LoginSecurity.translate;
+
 public class CommandChangePass extends Command {
     private final LoginSecurity plugin;
 
@@ -30,14 +33,14 @@ public class CommandChangePass extends Command {
 
         // Verify auth mode
         if(!session.isLoggedIn()) {
-            reply(false, "You are currently not logged in!");
+            reply(false, translate(GENERAL_NOT_LOGGED_IN));
             return;
         }
 
         // Verify new password
         LoginSecurityConfig config = LoginSecurity.getConfiguration();
         if(changed.length() < config.getPasswordMinLength() || changed.length() > config.getPasswordMaxLength()) {
-            reply(false, "Password must be between %s and %s characters!", config.getPasswordMinLength(), config.getPasswordMaxLength());
+            reply(false, translate(GENERAL_PASSWORD_LENGTH).param("min", config.getPasswordMinLength()).param("max", config.getPasswordMaxLength()));
             return;
         }
 
@@ -45,14 +48,14 @@ public class CommandChangePass extends Command {
         final PlayerProfile profile = session.getProfile();
         final Algorithm algorithm = Algorithm.getById(profile.getHashingAlgorithm());
         if(algorithm == null) {
-            reply(false, "You account uses an unknown hashing algorithm, please report this to an admin.");
+            reply(false, translate(GENERAL_UNKNOWN_HASH));
             return;
         }
 
         // Verify login
         final boolean validated = algorithm.check(password, profile.getPassword());
         if(!validated) {
-            reply(false, "Login failed! Invalid password.");
+            reply(false, translate(CHANGE_FAIL));
             return;
         }
 
@@ -76,7 +79,7 @@ public class CommandChangePass extends Command {
                 return;
             }
 
-            command.reply(player, true, "Successfully changed password!");
+            command.reply(player, true, translate(CHANGE_SUCCESS));
         }
     }
 }

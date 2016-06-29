@@ -7,9 +7,9 @@ public class TranslatedMessage {
         this.message = message;
     }
 
-    public TranslatedMessage param(String key, String value) {
+    public TranslatedMessage param(String key, Object value) {
         if(message == null) return this;
-        message = message.replace("%" + key + "%", value);
+        message = message.replace("%" + key + "%", value.toString());
         return this;
     }
 
