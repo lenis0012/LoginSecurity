@@ -21,9 +21,11 @@ public class Translation {
     private String name;
 
     public Translation(Translation fallback, Reader reader, String name) throws IOException {
+        this(fallback, new JsonParser().parse(reader).getAsJsonObject(), name);
+    }
+
+    public Translation(Translation fallback, JsonObject data, String name) throws IOException {
         this.fallback = fallback;
-        JsonParser parser = new JsonParser();
-        JsonObject data = parser.parse(reader).getAsJsonObject();
         for(Entry<String, JsonElement> entry : data.entrySet()) {
             translations.put(entry.getKey(), entry.getValue().getAsString());
         }

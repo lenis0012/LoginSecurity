@@ -90,9 +90,13 @@ public class LoginSecurityConfig extends AbstractConfig {
     @ConfigKey
     private int loginTimeout = 120;
 
-    @ConfigHeader("Login/register message delay")
+    @ConfigHeader("Login/register message delay.")
     @ConfigKey
     private int loginMessageDelay = 10;
+
+    @ConfigHeader("Language for messages, check wiki for more info.")
+    @ConfigKey
+    private String language = "en_us";
 
     public LoginSecurityConfig(ConfigurationModule module) {
         super(module);

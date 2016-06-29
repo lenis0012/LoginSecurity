@@ -3,13 +3,12 @@ package com.lenis0012.bukkit.loginsecurity.modules.language;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.pluginutils.Module;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.logging.Level;
 
 public class LanguageModule extends Module<LoginSecurity> {
     private Translation translation;
+    private LanguageAPI languageAPI;
 
     public LanguageModule(LoginSecurity plugin) {
         super(plugin);
@@ -20,13 +19,38 @@ public class LanguageModule extends Module<LoginSecurity> {
         logger().log(Level.INFO, "Loading base translations from \"en_us\"");
         Translation base = byResource("en_us", null);
 
-        // TODO: Actually load from config
-        logger().log(Level.INFO, "Loading specified translations from \"en_us\"");
-        this.translation = base;
+        this.languageAPI = new LanguageAPI();
+        String languageCode = LoginSecurity.getConfiguration().getLanguage();
+        logger().log(Level.INFO, "Loading specified translations from \"" + languageCode + "\"");
+        File file = new File(plugin.getDataFolder(), languageCode + ".json");
+        if(languageCode.equalsIgnoreCase("en_us") || languageCode.equalsIgnoreCase("default")) {
+            // Use built-in
+            this.translation = base;
+        } else if(file.exists()) {
+            // Use local file
+            this.translation = byFile(file, base);
+        } else {
+            try {
+                this.translation = languageAPI.getTranslation(languageCode, base);
+            } catch (IOException e) {
+                logger().log(Level.WARNING, "Couldn't get translation, defaulting to en_us", e);
+                this.translation = base;
+            }
+        }
     }
 
     @Override
     public void disable() {
+    }
+
+    private Translation byFile(File file, Translation fallback) {
+        String name = file.getName().split("\\.")[0];
+        try {
+            InputStream input = new FileInputStream(file);
+            return new Translation(fallback, new InputStreamReader(input), name);
+        } catch(IOException e) {
+            throw new RuntimeException("Couldn't read internal language file", e);
+        }
     }
 
     private Translation byResource(String name, Translation fallback) {
