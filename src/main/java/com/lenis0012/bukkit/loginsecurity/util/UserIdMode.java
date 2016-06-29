@@ -20,7 +20,7 @@ public enum UserIdMode {
 
         switch(this) {
             case OFFLINE:
-                return UUID.nameUUIDFromBytes(("OfflinePlayer:" + profile.getLastName().toLowerCase()).getBytes()).toString();
+                return profile.getLastName() == null ? profile.getUniqueUserId() : UUID.nameUUIDFromBytes(("OfflinePlayer:" + profile.getLastName().toLowerCase()).getBytes()).toString();
             case MOJANG:
                 return profile.getUniqueUserId();
             default:

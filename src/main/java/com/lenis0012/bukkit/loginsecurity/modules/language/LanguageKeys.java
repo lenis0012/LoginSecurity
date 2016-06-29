@@ -13,7 +13,7 @@ public enum LanguageKeys {
      */
     LOGIN_TRIES_EXCEEDED("loginTriesExceeded"),
     LOGIN_FAIL("loginFail"),
-    LOGIN_SUCCESS("loginSeuccess"),
+    LOGIN_SUCCESS("loginSuccess"),
     /**
      * Changepass command
      */
