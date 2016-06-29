@@ -45,10 +45,23 @@ public enum LanguageKeys {
     LAC_UNKNOWN_SOURCE("lacUnknownSource"),
     LAC_IMPORT_FAILED("lacImportFailed"),
     /**
+     * Messages
+     */
+    SESSION_CONTINUE("sessionContinue"),
+    MESSAGE_LOGIN("messageLogin"),
+    MESSAGE_REGISTER("messageRegister"),
+    /**
      * Errors
      */
     ERROR_REFRESH_PROFILE("errorRefreshProfile"),
-    ERROR_NOT_REGISTERED("errorNotRegistered");
+    ERROR_NOT_REGISTERED("errorNotRegistered"),
+    /**
+     * Kick messages
+     */
+    KICK_ALREADY_ONLINE("kickAlreadyOnline"),
+    KICK_USERNAME_CHARS("kickUsernameChars"),
+    KICK_USERNAME_LENGTH("kickUsernameLength"),
+    KICK_TIME_OUT("kickTimeOut");
 
     private final String value;
 

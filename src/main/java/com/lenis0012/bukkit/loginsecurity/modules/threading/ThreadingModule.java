@@ -6,8 +6,6 @@ import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurityConfig;
 import com.lenis0012.bukkit.loginsecurity.session.AuthService;
 import com.lenis0012.bukkit.loginsecurity.session.PlayerSession;
-import com.lenis0012.bukkit.loginsecurity.session.action.ActionCallback;
-import com.lenis0012.bukkit.loginsecurity.session.action.ActionResponse;
 import com.lenis0012.bukkit.loginsecurity.session.action.LoginAction;
 import com.lenis0012.bukkit.loginsecurity.util.MetaData;
 import com.lenis0012.bukkit.loginsecurity.util.ProfileUtil;
@@ -18,6 +16,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+
+import static com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys.*;
+import static com.lenis0012.bukkit.loginsecurity.LoginSecurity.translate;
 
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -87,6 +88,6 @@ public class ThreadingModule extends Module<LoginSecurity> implements Listener {
         // Allow log in once
         final int seconds = (int) ((System.currentTimeMillis() - lastLogout) / 1000L);
         session.performAction(new LoginAction(AuthService.SESSION, plugin));
-        player.sendMessage("You last login session was continued, from " + seconds + " seconds ago.");
+        player.sendMessage(translate(SESSION_CONTINUE).param("sec", seconds).toString());
     }
 }

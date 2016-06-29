@@ -7,6 +7,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import static com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys.*;
+import static com.lenis0012.bukkit.loginsecurity.LoginSecurity.translate;
+
 public class TimeoutTask extends BukkitRunnable {
     private final LoginSecurity plugin;
     private long loginTimeout;
@@ -27,7 +30,7 @@ public class TimeoutTask extends BukkitRunnable {
 
             long lastLogin = MetaData.get(player, "ls_login_time", Long.class);
             if(lastLogin + loginTimeout < System.currentTimeMillis()) {
-                player.kickPlayer("Login timed out!");
+                player.kickPlayer(translate(KICK_TIME_OUT).toString());
             }
         }
     }

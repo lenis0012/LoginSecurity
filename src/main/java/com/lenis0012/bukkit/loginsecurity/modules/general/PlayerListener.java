@@ -11,7 +11,6 @@ import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 import com.lenis0012.bukkit.loginsecurity.util.InventorySerializer;
 import com.lenis0012.bukkit.loginsecurity.util.MetaData;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -29,7 +28,9 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.sql.Timestamp;
+import static com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys.*;
+import static com.lenis0012.bukkit.loginsecurity.LoginSecurity.translate;
+
 import java.util.List;
 
 /**
@@ -54,7 +55,7 @@ public class PlayerListener implements Listener {
                 PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
                 if(session.isAuthorized()) {
                     event.setLoginResult(Result.KICK_OTHER);
-                    event.setKickMessage("[LoginSecurity] This player is already online!");
+                    event.setKickMessage("[LoginSecurity] " + translate(KICK_ALREADY_ONLINE));
                     return;
                 }
             }
@@ -64,14 +65,14 @@ public class PlayerListener implements Listener {
         final LoginSecurityConfig config = LoginSecurity.getConfiguration();
         if(config.isFilterSpecialChars() && !name.replaceAll("[^a-zA-Z0-9_]", "").equals(name)) {
             event.setLoginResult(Result.KICK_OTHER);
-            event.setKickMessage("[LoginSecurity] Your username contains illegal characters!");
+            event.setKickMessage("[LoginSecurity] " + translate(KICK_USERNAME_CHARS));
             return;
         }
 
         if(name.length() < config.getUsernameMinLength() || name.length() > config.getUsernameMaxLength()) {
             event.setLoginResult(Result.KICK_OTHER);
-            event.setKickMessage("[LoginSecurity] Your username must is too long/short! (" +
-                    config.getUsernameMinLength() + " - " + config.getUsernameMaxLength() + " chars)");
+            event.setKickMessage("[LoginSecurity] " + translate(KICK_USERNAME_LENGTH)
+                    .param("min", config.getUsernameMinLength()).param("max", config.getPasswordMaxLength()));
             return;
         }
 

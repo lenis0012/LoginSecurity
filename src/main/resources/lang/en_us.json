@@ -28,6 +28,13 @@
   "lacImportArgs": "<source> [args]",
   "lacUnknownSource": "Unknown database type, please check the wiki!",
   "lacImportFailed": "Couldn't perform import, please check log!",
+  "sessionContinue": "Your last login session was continues, from %sec% seconds ago.",
+  "messageLogin": "Please log in using /login <password>",
+  "messageRegister": "Please register using /register <password>",
   "errorRefreshProfile": "Your account was modified by a third party, please rejoin!",
-  "errorNotRegistered": "User is not registered!"
+  "errorNotRegistered": "User is not registered!",
+  "kickAlreadyOnline": "This player is already online!",
+  "kickUsernameChars": "Your username contains illegal characters!",
+  "kickUsernameLength": "Your username is too long/shot! (%min% - %max% chars)",
+  "kickTimeOut": "Login timed out!"
 }
