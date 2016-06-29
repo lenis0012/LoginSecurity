@@ -77,6 +77,7 @@ public class StorageModule extends Module<LoginSecurity> implements Comparator<S
         server.setClasses(plugin.getDatabaseClasses());
         server.setName("LoginSecurityDB");
         server.setLoggingLevel(LogLevel.NONE);
+        server.setEnhanceLogLevel(0);
 
         // Datasource settings
         DataSourceConfig source = new DataSourceConfig();
@@ -105,6 +106,7 @@ public class StorageModule extends Module<LoginSecurity> implements Comparator<S
         ClassLoader previous = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(getClassLoader());
         this.database = EbeanServerFactory.create(server);
+        database.getAdminLogging().setLogLevel(LogLevel.NONE);
         Thread.currentThread().setContextClassLoader(previous);
 
         // List migrations
