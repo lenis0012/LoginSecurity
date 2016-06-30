@@ -94,7 +94,11 @@ public class LoginSecurityConfig extends AbstractConfig {
     @ConfigKey
     private int loginMessageDelay = 10;
 
-    @ConfigHeader("Language for messages, check wiki for more info.")
+    @ConfigHeader({
+            "Language for messages, check wiki for more info.",
+            "List: http://lang.lenis0012.com/list",
+            "Note: Changing this setting will request info from lang.lenis0012.com!"
+    })
     @ConfigKey
     private String language = "en_us";
 

@@ -22,7 +22,7 @@ public enum AuthMode {
     private final String authMessage;
 
     AuthMode(LanguageKeys authMessage) {
-        this.authMessage = translate(authMessage).toString();
+        this.authMessage = authMessage != null ? translate(authMessage).toString() : null;
     }
 
     public boolean hasAuthMessage() {

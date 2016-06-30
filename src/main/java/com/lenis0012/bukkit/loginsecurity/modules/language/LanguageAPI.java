@@ -8,17 +8,17 @@ import com.google.gson.JsonParser;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
 public class LanguageAPI {
-    private static final String API_BASEPOINT = "http://lang.lenis0012.com/LoginSecurity";
+    private static final String API_BASEPOINT = "http://lang.lenis0012.com";
     private static final String API_LIST = "/list";
-    private static final String API_LANGUAGE = "/language?code=%s";
+    private static final String API_LANGUAGE = "/language/%s";
     private final List<Language> languages = Lists.newArrayList();
     private final JsonParser parser = new JsonParser();
 
@@ -45,16 +45,20 @@ public class LanguageAPI {
 
     public Translation getTranslation(String code, Translation fallback) throws IOException {
         JsonObject response = apiRequest(API_LANGUAGE, code);
-        return new Translation(fallback, response, code);
+        if(!response.get("success").getAsBoolean()) {
+            throw new IOException(response.get("error").getAsString());
+        }
+        return new Translation(fallback, response.get("data").getAsJsonObject(), code);
     }
 
     private JsonObject apiRequest(String endpoint, Object... parameters) throws IOException {
         endpoint = String.format(endpoint, parameters);
         URL url = new URL(API_BASEPOINT + endpoint);
-        URLConnection connection = url.openConnection();
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setUseCaches(false);
         BufferedReader reader = null;
         try {
-            reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));
             String line;
             StringBuilder builder = new StringBuilder();
             while((line = reader.readLine()) != null) {
