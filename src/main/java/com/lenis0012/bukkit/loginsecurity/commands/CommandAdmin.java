@@ -72,7 +72,8 @@ public class CommandAdmin extends Command {
             String name = entry.getKey();
             SubCommand info = entry.getValue().getAnnotation(SubCommand.class);
             String usage = info.usage().isEmpty() ? "" : translate(info.usage()).toString();
-            reply("&b/" + name + usage + " &7- &f" + translate(info.description()));
+            String desc = info.description().startsWith("NoTrans:") ? info.description().substring("NoTrans:".length()) : translate(info.description()).toString();
+            reply("&b/" + name + usage + " &7- &f" + desc);
         }
     }
 
@@ -116,7 +117,7 @@ public class CommandAdmin extends Command {
         migration.execute(params);
     }
 
-    @SubCommand(description = "Download update from bukkit/spigot")
+    @SubCommand(description = "NoTrans:Download update from bukkit/spigot")
     public void update() {
         final Updater updater = plugin.getModule(GeneralModule.class).getUpdater();
         final Version version = updater.getNewVersion();
