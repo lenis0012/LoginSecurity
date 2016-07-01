@@ -74,7 +74,7 @@ public class CommandAdmin extends Command {
 
     @SubCommand(description = "lacRmpass", usage = "lacRmpassArgs", minArgs = 1)
     public void rmpass() {
-        String name = getArg(0);
+        String name = getArg(1);
         Player player = Bukkit.getPlayer(name);
         PlayerSession session = player != null ? LoginSecurity.getSessionManager().getPlayerSession(player) : LoginSecurity.getSessionManager().getOfflineSession(name);
         if(!session.isRegistered()) {
