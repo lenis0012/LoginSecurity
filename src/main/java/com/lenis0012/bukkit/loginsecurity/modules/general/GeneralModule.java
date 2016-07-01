@@ -110,6 +110,10 @@ public class GeneralModule extends Module<LoginSecurity> {
         }
     }
 
+    public Updater getUpdater() {
+        return updater;
+    }
+
     public void checkUpdates(final Player player) {
         LoginSecurity.getExecutorService().execute(new Runnable() {
             @Override
@@ -125,6 +129,8 @@ public class GeneralModule extends Module<LoginSecurity> {
                         player.sendMessage(ChatColor.translateAlternateColorCodes('&',
                                 "&bA new &3" + version.getType().toString() + " build for LoginSecurity is available! &3" +
                                         version.getName() + " &afor &9" + version.getServerVersion()));
+                        player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                                "&bUse &3/lac update &bto download the new version."));
                     }
                 });
             }
