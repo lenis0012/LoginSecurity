@@ -5,11 +5,9 @@
     [
       "---[ Changelog ]---",
       "",
-      "- Added admin remove command",
+      "- Added translations",
       "",
-      "- Fixed i mysql issues",
-      "",
-      "- Fix inventory clearing"
+      "- Fixed rmpass command"
     ],
     [
       "====[ DONATE ]====",
