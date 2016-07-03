@@ -21,7 +21,7 @@
   "commandArguments": "Nemám dost argumentů! Použijte %cmd% pro nápovědu.",
   "lacHelp": "Zobrazit nápovědu k příkazům",
   "lacRmpass": "Odstranit heslo uživatele",
-  "lacRmpassArgs": "<hrac>",
+  "lacRmpassArgs": "<hráč>",
   "lacNotRegistered": "Žádný hráč s tímto jménem není registrován!",
   "lacResetPlayer": "Uspěšně resetován účet hráče!",
   "lacImport": "Importovat z jiné databáze",
