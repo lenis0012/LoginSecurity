@@ -3,6 +3,12 @@ LoginSecurity 2.1
 The #1 Auth plugin for Minecraft since 2012.  
 The most secure and advanced Minecraft login solution on the planet.
 
+Links:
+======
+- [SpigotMC](https://www.spigotmc.org/resources/loginsecurity.19362/)
+- [Bukkit](http://dev.bukkit.org/bukkit-plugins/loginsecurity/)
+- [Curse](http://mods.curse.com/bukkit-plugins/minecraft/loginsecurity)
+
 Features:
 ========
 - Login with custom password
