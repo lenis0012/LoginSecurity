@@ -10,6 +10,7 @@ import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 import com.lenis0012.bukkit.loginsecurity.util.ProfileUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.sql.Date;
@@ -59,9 +60,17 @@ public class SessionManager {
     }
 
     public final PlayerSession getOfflineSession(final String playerName) {
-        // TODO: Build local cache from world files. (maybe add cache mode in config)
-        final UUID fallback = Bukkit.getOfflinePlayer(playerName).getUniqueId();
-        return getOfflineSession(ProfileUtil.getUUID(playerName, fallback));
+        final EbeanServer database = LoginSecurity.getInstance().getDatabase();
+        PlayerProfile profile = database.find(PlayerProfile.class).where().ieq("last_name", playerName).findUnique();
+        if(profile == null) {
+            OfflinePlayer offline = Bukkit.getOfflinePlayer(playerName);
+            if(offline == null || offline.getUniqueId() == null) {
+                return null;
+            }
+
+            return getOfflineSession(ProfileUtil.getUUID(playerName, offline.getUniqueId()));
+        }
+        return new PlayerSession(profile, AuthMode.UNAUTHENTICATED);
     }
 
     public void onPlayerLogout(final Player player) {

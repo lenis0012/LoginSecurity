@@ -66,7 +66,7 @@ public class LoginPluginLoginSecurity extends BukkitLoginPlugin {
         }
 
         final PlayerSession session = LoginSecurity.getSessionManager().getOfflineSession(nick);
-        return session.isRegistered();
+        return session != null && session.isRegistered();
     }
 
     @Override
