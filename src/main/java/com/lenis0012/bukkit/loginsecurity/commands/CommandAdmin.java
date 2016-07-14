@@ -80,14 +80,15 @@ public class CommandAdmin extends Command {
     @SubCommand(description = "lacRmpass", usage = "lacRmpassArgs", minArgs = 1)
     public void rmpass() {
         String name = getArg(1);
-        Player player = Bukkit.getPlayer(name);
-        PlayerSession session = player != null ? LoginSecurity.getSessionManager().getPlayerSession(player) : LoginSecurity.getSessionManager().getOfflineSession(name);
+        Player target = Bukkit.getPlayer(name);
+        PlayerSession session = target != null ? LoginSecurity.getSessionManager().getPlayerSession(target) : LoginSecurity.getSessionManager().getOfflineSession(name);
         if(!session.isRegistered()) {
             reply(false, translate(LAC_NOT_REGISTERED));
+            return;
         }
 
         final Player admin = player;
-        session.performActionAsync(new RemovePassAction(AuthService.ADMIN, player), new ActionCallback() {
+        session.performActionAsync(new RemovePassAction(AuthService.ADMIN, admin), new ActionCallback() {
             @Override
             public void call(ActionResponse response) {
                 reply(admin, true, translate(LAC_RESET_PLAYER));
