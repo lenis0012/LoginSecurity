@@ -16,6 +16,6 @@ public class RemovePassAction extends AuthAction {
         }
         LoginSecurity.getInstance().getDatabase().delete(session.getProfile());
         session.resetProfile();
-        return session.getAuthMode();
+        return LoginSecurity.getConfiguration().isPasswordRequired() ? AuthMode.UNREGISTERED : AuthMode.AUTHENTICATED;
     }
 }

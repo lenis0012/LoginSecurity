@@ -91,7 +91,11 @@ public class PlayerListener implements Listener {
         final Player player = event.getPlayer();
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
         final PlayerProfile profile = session.getProfile();
-        profile.setLastName(player.getName());
+        boolean saveAsync = false;
+        if(profile.getLastName() == null || !player.getName().equals(profile.getLastName())) {
+            profile.setLastName(player.getName());
+            saveAsync = true;
+        }
 
         // Admin update check
         if(session.isAuthorized() && player.hasPermission("ls.update")) {
@@ -103,13 +107,12 @@ public class PlayerListener implements Listener {
         }
 
         final LoginSecurityConfig config = LoginSecurity.getConfiguration();
-        if( config.isBlindness()) {
+        if(config.isBlindness()) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, 1));
         }
 
         // Clear inventory
-        boolean saveAsync = false;
-        if(profile.getInventory() == null) {
+        if(profile.getInventory() == null && config.isHideInventory()) {
             // Clear inventory
             final PlayerInventory inventory = player.getInventory();
             profile.setInventory(InventorySerializer.serializeInventory(inventory));
@@ -144,7 +147,7 @@ public class PlayerListener implements Listener {
         final Player player = session.getPlayer();
         if(event.getCurrentMode() != AuthMode.AUTHENTICATED) {
             return;
-        } if(!session.isLoggedIn() || !player.hasPermission("ls.update")) {
+        } if(!session.isLoggedIn() || !player.hasPermission("loginsecurity.update")) {
             return;
         }
 
@@ -186,7 +189,7 @@ public class PlayerListener implements Listener {
      */
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerCommandPrepcoress(PlayerCommandPreprocessEvent event) {
+    public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
         final Player player = event.getPlayer();
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
         if(session.isAuthorized()) return;
