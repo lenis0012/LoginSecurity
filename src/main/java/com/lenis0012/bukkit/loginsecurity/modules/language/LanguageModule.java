@@ -30,10 +30,8 @@ public class LanguageModule extends Module<LoginSecurity> {
             // Use local file
             this.translation = byFile(file, base);
         } else {
-            logger().log(Level.INFO, "FUCK ME");
             try {
                 this.translation = languageAPI.getTranslation(languageCode, base);
-                logger().log(Level.INFO, "FUCK ME TWICE");
             } catch (IOException e) {
                 logger().log(Level.WARNING, "Couldn't get translation, defaulting to en_us", e);
                 this.translation = base;
