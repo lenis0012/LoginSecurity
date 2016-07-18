@@ -104,6 +104,9 @@ public class PlayerListener implements Listener {
         }
 
         if(session.isAuthorized() || !session.isRegistered()) {
+            if(saveAsync) {
+                session.saveProfileAsync();
+            }
             return;
         }
 
