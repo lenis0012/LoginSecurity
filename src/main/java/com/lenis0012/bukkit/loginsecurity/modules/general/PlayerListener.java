@@ -89,6 +89,7 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
+        if(player.hasMetadata("NPC")) return;
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
         final PlayerProfile profile = session.getProfile();
         boolean saveAsync = false;
@@ -167,6 +168,7 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
         final Player player = event.getPlayer();
+        if(player.hasMetadata("NPC")) return;
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
         if(session.isAuthorized()) return;
 
@@ -177,6 +179,7 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent event) {
         final Player player = event.getPlayer();
+        if(player.hasMetadata("NPC")) return;
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
         if(session.isAuthorized()) return;
 
@@ -191,6 +194,7 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
         final Player player = event.getPlayer();
+        if(player.hasMetadata("NPC")) return;
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
         if(session.isAuthorized()) return;
 
@@ -213,6 +217,7 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         final Player player = event.getPlayer();
+        if(player.hasMetadata("NPC")) return;
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
         if(session.isAuthorized()) return;
 
@@ -223,6 +228,7 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerMove(PlayerMoveEvent event) {
         final Player player = event.getPlayer();
+        if(player.hasMetadata("NPC")) return;
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
         if(session.isAuthorized()) return;
 
@@ -238,6 +244,7 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
         final Player player = event.getPlayer();
+        if(player.hasMetadata("NPC")) return;
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
         if(session.isAuthorized()) return;
 
@@ -247,6 +254,7 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         final Player player = event.getPlayer();
+        if(player.hasMetadata("NPC")) return;
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
         if(session.isAuthorized()) return;
 
@@ -256,6 +264,7 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onFoodLevelChange(FoodLevelChangeEvent event) {
         final Player player = (Player) event.getEntity();
+        if(player.hasMetadata("NPC")) return;
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
         if(session.isAuthorized()) return;
 
@@ -266,6 +275,7 @@ public class PlayerListener implements Listener {
     public void onEntityDamage(EntityDamageEvent event) {
         if(event.getEntityType() != EntityType.PLAYER) return; // Not a player
         final Player player = (Player) event.getEntity();
+        if(player.hasMetadata("NPC")) return;
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
         if(session.isAuthorized()) return;
 
@@ -276,6 +286,7 @@ public class PlayerListener implements Listener {
     public void onTarget(EntityTargetEvent event) {
         if(!(event.getTarget() instanceof Player)) return; // Not a player
         final Player player = (Player) event.getTarget();
+        if(player.hasMetadata("NPC")) return;
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
         if(session.isAuthorized()) return;
 
