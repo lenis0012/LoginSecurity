@@ -1,13 +1,22 @@
 {
-  "version": "LoginSecurity v2.1.3",
+  "version": "LoginSecurity v2.1.4",
   "data":
   [
     [
       "---[ Changelog ]---",
       "",
-      "- Added translations",
+      "- Fixed lac error",
       "",
-      "- Fixed rmpass command"
+      "- Update english language",
+      "",
+      "- Fixed rmpass"
+    ],
+    [
+      "- Fixed NPC issues",
+      "",
+      "- Removed debug code",
+      "",
+      "- Improve player retrieval"
     ],
     [
       "====[ DONATE ]====",
