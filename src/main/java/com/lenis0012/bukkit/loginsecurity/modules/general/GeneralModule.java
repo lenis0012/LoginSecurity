@@ -4,6 +4,7 @@ import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurityConfig;
 import com.lenis0012.bukkit.loginsecurity.commands.*;
 import com.lenis0012.bukkit.loginsecurity.integrate.autoin.LoginPluginLoginSecurity;
+import com.lenis0012.bukkit.loginsecurity.modules.language.LanguageModule;
 import com.lenis0012.bukkit.loginsecurity.util.Metrics;
 import com.lenis0012.bukkit.loginsecurity.util.Metrics.Graph;
 import com.lenis0012.bukkit.loginsecurity.util.Metrics.Plotter;
@@ -25,6 +26,7 @@ import java.util.logging.Level;
 public class GeneralModule extends Module<LoginSecurity> {
     private LocationMode locationMode;
     private Updater updater;
+    private Metrics metrics;
 
     public GeneralModule(LoginSecurity plugin) {
         super(plugin);
@@ -69,6 +71,14 @@ public class GeneralModule extends Module<LoginSecurity> {
         // Algorithm
         Graph algorithm = metrics.createGraph("Algorithm");
         algorithm.addPlotter(new Plotter(config.getHashingAlgorithm().toString()) {
+            @Override
+            public int getValue() {
+                return 1;
+            }
+        });
+
+        Graph language = metrics.createGraph("Language");
+        language.addPlotter(new Plotter(plugin.getModule(LanguageModule.class).getTranslation().getName()) {
             @Override
             public int getValue() {
                 return 1;

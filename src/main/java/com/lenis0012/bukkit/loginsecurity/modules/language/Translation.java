@@ -32,6 +32,14 @@ public class Translation {
         this.name = name.split("\\.")[0];
     }
 
+    public String getName() {
+        return this.name;
+    }
+
+    public String getLocalizedName() {
+        return translations.get("localizedName");
+    }
+
     /**
      * Get the translation for a key.
      *

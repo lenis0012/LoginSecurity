@@ -62,6 +62,10 @@ public class LanguageModule extends Module<LoginSecurity> {
         }
     }
 
+    public Translation getTranslation() {
+        return translation;
+    }
+
     public TranslatedMessage translate(LanguageKeys key) {
         return translate(key.toString());
     }
