@@ -25,7 +25,7 @@ Features:
 - Reliable and fast
 - Easy to set up
 - Used by thousands of server owners
-- Eight existing translations and more to come!
+- Ten existing translations and more to come!
 
 License:
 =======
