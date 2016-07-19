@@ -76,6 +76,14 @@ public class LoginSecurityConfig extends AbstractConfig {
     @ConfigKey(path="username.max-length")
     private int usernameMaxLength = 16;
 
+    @ConfigHeader(path="command-shortcut", value="Shortcut that can be used as alternative to login/register command. Does not replace the defaults")
+    @ConfigKey(path="command-shortcut.enabled")
+    private boolean useCommandShortcut = false;
+    @ConfigKey(path="command-shortcut.login")
+    private String loginCommandShortcut = "/l";
+    @ConfigKey(path="command-shortcut.register")
+    private String registerCommandShortcut = "/reg";
+
     @ConfigKey(path = "updater.enabled")
     private boolean updaterEnabled = true;
     @ConfigHeader("The type of builds you are checking. RELEASE, BETA, ALPHA")

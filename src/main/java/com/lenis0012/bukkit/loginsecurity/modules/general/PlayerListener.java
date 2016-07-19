@@ -199,6 +199,15 @@ public class PlayerListener implements Listener {
         final Player player = event.getPlayer();
         if(player.hasMetadata("NPC")) return;
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
+        final LoginSecurityConfig config = LoginSecurity.getConfiguration();
+        if(config.isUseCommandShortcut()) {
+            if(event.getMessage().startsWith(config.getLoginCommandShortcut() + " ")) {
+                event.setMessage("/login " + event.getMessage().substring(config.getLoginCommandShortcut().length()));
+            } else if(event.getMessage().startsWith(config.getRegisterCommandShortcut() + " ")) {
+                event.setMessage("/register " + event.getMessage().substring(config.getLoginCommandShortcut().length()));
+            }
+        }
+
         if(session.isAuthorized()) return;
 
         // Check whitelisted commands
