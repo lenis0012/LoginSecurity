@@ -104,7 +104,7 @@ public class PlayerListener implements Listener {
         }
 
         if(session.isAuthorized() || !session.isRegistered()) {
-            if(saveAsync) {
+            if(session.isRegistered() && saveAsync) {
                 session.saveProfileAsync();
             }
             return;
@@ -298,9 +298,10 @@ public class PlayerListener implements Listener {
     public void onTarget(EntityTargetEvent event) {
         if(!(event.getTarget() instanceof Player)) return; // Not a player
         final Player player = (Player) event.getTarget();
-        if(player.hasMetadata("NPC")) return;
+        if(!player.isOnline()) return; // Target logged out
+        if(player.hasMetadata("NPC")) return; // Target is not human
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
-        if(session.isAuthorized()) return;
+        if(session.isAuthorized()) return; // Target is authenticated
 
         event.setCancelled(true);
     }
