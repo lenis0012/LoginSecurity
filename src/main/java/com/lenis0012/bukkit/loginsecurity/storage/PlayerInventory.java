@@ -1,5 +1,8 @@
 package com.lenis0012.bukkit.loginsecurity.storage;
 
+import com.avaje.ebean.config.dbplatform.DbType;
+import com.avaje.ebean.config.dbplatform.MySqlClob;
+
 import javax.persistence.*;
 
 @Entity
@@ -10,21 +13,22 @@ public class PlayerInventory {
     @Column(unique = true, updatable = false)
     private int id;
 
-    @Column
+    @Column(length = 512)
     private String helmet;
 
-    @Column
+    @Column(length = 512)
     private String chestplate;
 
-    @Column
+    @Column(length = 512)
     private String leggings;
 
-    @Column
+    @Column(length = 512)
     private String boots;
 
-    @Column
+    @Column(length = 512)
     private String offHand;
 
+    @Lob
     @Column(nullable = false)
     private String contents;
 

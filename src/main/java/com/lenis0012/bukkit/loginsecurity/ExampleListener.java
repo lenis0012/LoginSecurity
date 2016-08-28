@@ -5,6 +5,7 @@ import com.lenis0012.bukkit.loginsecurity.session.AuthAction;
 import com.lenis0012.bukkit.loginsecurity.session.AuthActionType;
 import com.lenis0012.bukkit.loginsecurity.session.AuthService;
 import com.lenis0012.bukkit.loginsecurity.session.PlayerSession;
+import com.lenis0012.bukkit.loginsecurity.session.action.RemovePassAction;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
@@ -34,10 +35,10 @@ public class ExampleListener implements Listener {
             PlayerSession session = event.getSession();
 
             // Create action to remove password authentication by your plugin
-//            AuthAction deletePassword = new AuthAction(AuthActionType.REMOVE_PASSWORD, AuthService.PLUGIN, LoginSecurity.getInstance());
+            AuthAction deletePassword = new RemovePassAction(AuthService.PLUGIN, LoginSecurity.getInstance()); // Use your plugin instead
 
             // Run the action
-//            session.performAction(event.getPlayer(), deletePassword);
+            session.performAction(deletePassword);
         }
     }
 }

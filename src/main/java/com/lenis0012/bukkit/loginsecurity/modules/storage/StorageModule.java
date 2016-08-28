@@ -151,7 +151,9 @@ public class StorageModule extends Module<LoginSecurity> implements Comparator<S
             if(!installed || database.find(Migration.class).where().ieq("version", version).findRowCount() == 0) {
                 plugin.getLogger().log(Level.INFO, "Applying database upgrade " + version + ": " + name);
                 String content = getContent("sql/" + platform + "/" + migration);
-                generator.runScript(false, content);
+                if(!content.isEmpty()) {
+                    generator.runScript(false, content);
+                }
                 database.save(new Migration(version, name, new Timestamp(System.currentTimeMillis())));
                 updatesRan++;
             }

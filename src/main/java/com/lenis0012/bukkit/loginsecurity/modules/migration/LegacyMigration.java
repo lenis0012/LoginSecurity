@@ -23,6 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class LegacyMigration extends AbstractMigration {
+    private boolean userIdExists;
 
     @Override
     public boolean executeAutomatically() {
@@ -35,7 +36,12 @@ public class LegacyMigration extends AbstractMigration {
                 Connection connection = transaction.getConnection();
                 Statement statement = connection.createStatement();
                 final ResultSet result = statement.executeQuery("SELECT COUNT(*) FROM users;");
-                return result.next() && result.getInt(1) > 0;
+                if(result.next() && result.getInt(1) > 0) {
+                    this.userIdExists = columnExists(connection, "unique_user_id");
+                    return true;
+                } else {
+                    return false;
+                }
             } catch(SQLException e) {
 //                plugin.getLogger().log(Level.WARNING, "Couldn't check mysql database", e);
                 return false;
@@ -118,11 +124,15 @@ public class LegacyMigration extends AbstractMigration {
         Connection connection = null;
         try {
             connection = DriverManager.getConnection(url);
+            this.userIdExists = columnExists(connection, "unique_user_id");
             Statement statement = connection.createStatement();
 
             // Obtain column count
             count(statement, "users");
             Set<PlayerProfile> profiles = loadProfiles(statement, "users");
+            if(!userIdExists) {
+                loadUserIds(profiles);
+            }
             saveProfiles(profiles, database);
 
             log("Complete!");
@@ -148,34 +158,40 @@ public class LegacyMigration extends AbstractMigration {
 
     @Override
     public PlayerProfile getProfile(ResultSet result) throws SQLException {
-        final String userId = result.getString("unique_user_id");
         final String hash = result.getString("password");
         final String ipAddress = result.getString("ip");
         final int algorithm = result.getInt("encryption");
-        StringBuilder builder = new StringBuilder();
-        builder.append(userId.substring(0, 8)).append("-")
-                .append(userId.substring(8, 12)).append("-")
-                .append(userId.substring(12, 16)).append("-")
-                .append(userId.substring(16, 20)).append("-")
-                .append(userId.substring(20));
 
         PlayerProfile profile = new PlayerProfile();
-        profile.setUniqueUserId(builder.toString());
         profile.setPassword(hash);
         profile.setHashingAlgorithm(algorithm);
         profile.setIpAddress(ipAddress);
         profile.setRegistrationDate(new Date(System.currentTimeMillis()));
         profile.setLastLogin(new Timestamp(System.currentTimeMillis()));
 
-        // Attempt to get name
-        OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(builder.toString()));
-        if(player != null) {
-            profile.setLastName(player.getName());
-            if(!ProfileUtil.useOnlineUUID()) {
-                profile.setUniqueUserId(
-                        UUID.nameUUIDFromBytes(("OfflinePlayer:" + player.getName())
-                        .getBytes(Charsets.UTF_8)).toString());
+        if(userIdExists) {
+            final String userId = result.getString("unique_user_id");
+            StringBuilder builder = new StringBuilder();
+            builder.append(userId.substring(0, 8)).append("-")
+                    .append(userId.substring(8, 12)).append("-")
+                    .append(userId.substring(12, 16)).append("-")
+                    .append(userId.substring(16, 20)).append("-")
+                    .append(userId.substring(20));
+            profile.setUniqueUserId(builder.toString());
+
+            // Attempt to get name
+            OfflinePlayer player = Bukkit.getOfflinePlayer(UUID.fromString(builder.toString()));
+            if (player != null) {
+                profile.setLastName(player.getName());
+                if (!ProfileUtil.useOnlineUUID()) {
+                    profile.setUniqueUserId(
+                            UUID.nameUUIDFromBytes(("OfflinePlayer:" + player.getName())
+                                    .getBytes(Charsets.UTF_8)).toString());
+                }
             }
+        } else {
+            final String name = result.getString("username");
+            profile.setLastName(name);
         }
 
         return profile;
@@ -189,5 +205,13 @@ public class LegacyMigration extends AbstractMigration {
     @Override
     public int minParams() {
         return 0; //
+    }
+
+    public boolean columnExists(Connection connection, String columnName) throws SQLException {
+        DatabaseMetaData meta = connection.getMetaData();
+        ResultSet rs = meta.getColumns(null, null, "users", columnName);
+        boolean success = rs.next();
+        rs.close();
+        return success;
     }
 }
