@@ -14,6 +14,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -161,6 +162,7 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         final Player player = event.getPlayer();
+        if(player.hasMetadata("NPC")) return;
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
         if(session.isAuthorized()) return;
 
@@ -181,13 +183,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerDropItem(PlayerDropItemEvent event) {
-        final Player player = event.getPlayer();
-        if(player.hasMetadata("NPC")) return;
-        final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
-        if(session.isAuthorized()) return;
-
-        // Prevent moving
-        event.setCancelled(true);
+        defaultEventAction(event);
     }
 
     /**
@@ -228,13 +224,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent event) {
-        final Player player = event.getPlayer();
-        if(player.hasMetadata("NPC")) return;
-        final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
-        if(session.isAuthorized()) return;
-
-        // Prevent moving
-        event.setCancelled(true);
+        defaultEventAction(event);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -255,22 +245,12 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
-        final Player player = event.getPlayer();
-        if(player.hasMetadata("NPC")) return;
-        final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
-        if(session.isAuthorized()) return;
-
-        event.setCancelled(true);
+        defaultEventAction(event);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-        final Player player = event.getPlayer();
-        if(player.hasMetadata("NPC")) return;
-        final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
-        if(session.isAuthorized()) return;
-
-        event.setCancelled(true);
+        defaultEventAction(event);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -304,5 +284,17 @@ public class PlayerListener implements Listener {
         if(session.isAuthorized()) return; // Target is authenticated
 
         event.setCancelled(true);
+    }
+
+    private void defaultEventAction(PlayerEvent event) {
+        if(!(event instanceof Cancellable)) {
+            throw new IllegalArgumentException("Event cannot be cancelled!");
+        }
+        final Player player = event.getPlayer();
+        if(player.hasMetadata("NPC")) return;
+        final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
+        if(session.isAuthorized()) return;
+
+        ((Cancellable) event).setCancelled(true);
     }
 }
