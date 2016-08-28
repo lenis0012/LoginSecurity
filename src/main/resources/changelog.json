@@ -1,22 +1,15 @@
 {
-  "version": "LoginSecurity v2.1.4",
+  "version": "LoginSecurity v2.1.5",
   "data":
   [
     [
       "---[ Changelog ]---",
       "",
-      "- Fixed lac error",
+      "- Fixed inventory issue on MySQL",
       "",
-      "- Update english language",
+      "- Fixed join error",
       "",
-      "- Fixed rmpass"
-    ],
-    [
-      "- Fixed NPC issues",
-      "",
-      "- Removed debug code",
-      "",
-      "- Improve player retrieval"
+      "- Fix migration for 2.0.9 and lower"
     ],
     [
       "====[ DONATE ]====",
