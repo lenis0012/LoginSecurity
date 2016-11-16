@@ -6,7 +6,7 @@
 
     <groupId>com.lenis0012.bukkit</groupId>
     <artifactId>loginsecurity</artifactId>
-    <version>2.1.5</version>
+    <version>2.1.6-SNAPSHOT</version>
     <name>LoginSecurity</name>
     <url>http://dev.bukkit.org/server-mods/loginsecurity/</url>
 
@@ -65,6 +65,12 @@
             <id>lenis0012-repo</id>
             <url>http://ci.lenis0012.com/plugin/repository/everything/</url>
         </repository>
+
+        <!-- Vault repo -->
+        <repository>
+            <id>vault-repo</id>
+            <url>http://nexus.hc.to/content/repositories/pub_releases</url>
+        </repository>
         
         <!-- Repo access to Argon2 -->
         <repository>
@@ -78,7 +84,13 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.10-R0.1-SNAPSHOT</version>
+            <version>1.10.2-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.milkbowl.vault</groupId>
+            <artifactId>VaultAPI</artifactId>
+            <version>1.6</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

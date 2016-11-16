@@ -19,6 +19,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
@@ -50,7 +51,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
-        // Pre-load player to improve performance...
+        // Check if player already online
         for(Player player : Bukkit.getOnlinePlayers()) {
             if(player.getName().equalsIgnoreCase(event.getName())) {
                 PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
@@ -62,6 +63,7 @@ public class PlayerListener implements Listener {
             }
         }
 
+        // Verify name
         final String name = event.getName();
         final LoginSecurityConfig config = LoginSecurity.getConfiguration();
         if(config.isFilterSpecialChars() && !name.replaceAll("[^a-zA-Z0-9_]", "").equals(name)) {
@@ -70,6 +72,7 @@ public class PlayerListener implements Listener {
             return;
         }
 
+        // Verify name length
         if(name.length() < config.getUsernameMinLength() || name.length() > config.getUsernameMaxLength()) {
             event.setLoginResult(Result.KICK_OTHER);
             event.setKickMessage("[LoginSecurity] " + translate(KICK_USERNAME_LENGTH)
@@ -77,6 +80,7 @@ public class PlayerListener implements Listener {
             return;
         }
 
+        // Pre-load player to improve performance...
         LoginSecurity.getSessionManager().preloadSession(event.getName(), event.getUniqueId());
     }
 
