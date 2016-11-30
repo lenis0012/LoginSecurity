@@ -1,15 +1,13 @@
 {
-  "version": "LoginSecurity v2.1.5",
+  "version": "LoginSecurity v2.1.6",
   "data":
   [
     [
       "---[ Changelog ]---",
       "",
-      "- Fixed inventory issue on MySQL",
+      "- Compile for 1.11",
       "",
-      "- Fixed join error",
-      "",
-      "- Fix migration for 2.0.9 and lower"
+      "- Fix NPC related error"
     ],
     [
       "====[ DONATE ]====",
