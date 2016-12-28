@@ -37,6 +37,8 @@ public enum LanguageKeys {
     COMMAND_UNKNOWN("commandUnknown"),
     COMMAND_NOT_ENOUGH_ARGS("commandArguments"),
     LAC_HELP("lacHelp"),
+    LAC_RELOAD("lacReload"),
+    LAC_RELOAD_COMPLETE("lacReloadComplete"),
     LAC_RMPASS("lacRmpass"),
     LAC_RMPASS_ARGS("lacRmpassArgs"),
     LAC_NOT_REGISTERED("lacNotRegistered"),
