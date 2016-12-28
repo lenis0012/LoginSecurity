@@ -38,7 +38,7 @@ public class LegacyMigration extends AbstractMigration {
                 final ResultSet result = statement.executeQuery("SELECT COUNT(*) FROM users;");
                 if(result.next() && result.getInt(1) > 0) {
                     this.userIdExists = columnExists(connection, "unique_user_id");
-                    return true;
+                    return columnExists(connection, "ip") && columnExists(connection, "encryption"); // make sure this is our database.
                 } else {
                     return false;
                 }
