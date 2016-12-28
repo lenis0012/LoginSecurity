@@ -133,6 +133,10 @@ public class GeneralModule extends Module<LoginSecurity> {
                 }
 
                 final Version version = updater.getNewVersion();
+                if(version == null || version.getType() == null) {
+                    logger().log(Level.WARNING, "Updater was in unexpected state, please report on https://github.com/lenis0012/LoginSecurity-2/issues");
+                    return;
+                }
                 Bukkit.getScheduler().runTask(plugin, new Runnable() {
                     @Override
                     public void run() {
