@@ -100,25 +100,6 @@
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
-        <!-- Database -->
-        <dependency>
-            <groupId>org.jooq</groupId>
-            <artifactId>jooq</artifactId>
-            <version>3.9.1</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jooq</groupId>
-            <artifactId>jooq-meta</artifactId>
-            <version>3.9.1</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jooq</groupId>
-            <artifactId>jooq-codegen</artifactId>
-            <version>3.9.1</version>
-            <scope>provided</scope>
-        </dependency>
         <!-- Hash libraries -->
         <dependency>
             <groupId>org.bouncycastle</groupId>
@@ -154,14 +135,6 @@
             <version>1</version>
             <scope>compile</scope>
             <optional>true</optional>
-        </dependency>
-        <!-- 3rd party plugins -->
-        <dependency>
-            <groupId>com.gotoginal</groupId>
-            <artifactId>AutoIn</artifactId>
-            <version>3.0-alpha.7</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/AutoIn.jar</systemPath>
         </dependency>
         <!-- Testing dependencies -->
         <dependency>
@@ -207,6 +180,16 @@
                         <goals>
                             <goal>shade</goal>
                         </goals>
+                        <configuration>
+                            <artifactSet>
+                                <includes>
+                                    <include>io.ebean:ebean</include>
+                                    <include>com.lenis0012.bukkit:lenisutils</include>
+                                    <include>com.lenis0012.updater:updater-api</include>
+                                    <include>org.bouncycastle:bcprov-jdk15on</include>
+                                </includes>
+                            </artifactSet>
+                        </configuration>
                     </execution>
                 </executions>
                 <configuration>
@@ -295,50 +278,6 @@
                     <additionalparam>-Xdoclint:none</additionalparam>
                     <show>public</show>
                     <failOnError>false</failOnError>
-                </configuration>
-            </plugin>
-            <!-- JOOQ Code generation -->
-            <plugin>
-                <groupId>org.jooq</groupId>
-                <artifactId>jooq-codegen-maven</artifactId>
-                <version>3.9.1</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>mysql</groupId>
-                        <artifactId>mysql-connector-java</artifactId>
-                        <version>6.0.5</version>
-                    </dependency>
-                </dependencies>
-
-                <configuration>
-                    <jdbc>
-                        <driver>com.mysql.cj.jdbc.Driver</driver>
-                        <url>jdbc:mysql://localhost</url>
-                        <user>root</user>
-                        <password></password>
-                    </jdbc>
-                    <generator>
-                        <database>
-                            <name>org.jooq.util.mysql.MySQLDatabase</name>
-                            <includes>.*</includes>
-                            <excludes></excludes>
-                            <inputSchema>minecraft</inputSchema>
-                        </database>
-                        <target>
-                            <packageName>com.lenis0012.bukkit.loginsecurity.database.generated</packageName>
-                            <directory>target/generated-sources/jooq</directory>
-                        </target>
-                        <generate>
-                            <daos>true</daos>
-                        </generate>
-                    </generator>
                 </configuration>
             </plugin>
         </plugins>

@@ -52,6 +52,8 @@ public class ThreadingModule extends Module<LoginSecurity> implements Listener {
         final int sessionTimeout = config.getSessionTimeout();
 
         this.sessionCache = CacheBuilder.newBuilder().expireAfterWrite(sessionTimeout, TimeUnit.SECONDS).build();
+        timeout.reload();
+        message.reload();
     }
 
     @EventHandler
