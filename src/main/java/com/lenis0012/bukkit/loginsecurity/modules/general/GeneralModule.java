@@ -3,10 +3,6 @@ package com.lenis0012.bukkit.loginsecurity.modules.general;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurityConfig;
 import com.lenis0012.bukkit.loginsecurity.commands.*;
-import com.lenis0012.bukkit.loginsecurity.modules.language.LanguageModule;
-import com.lenis0012.bukkit.loginsecurity.util.Metrics;
-import com.lenis0012.bukkit.loginsecurity.util.Metrics.Graph;
-import com.lenis0012.bukkit.loginsecurity.util.Metrics.Plotter;
 import com.lenis0012.pluginutils.Module;
 import com.lenis0012.updater.api.ReleaseType;
 import com.lenis0012.updater.api.Updater;
@@ -18,14 +14,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.logging.Level;
 
 public class GeneralModule extends Module<LoginSecurity> {
     private LocationMode locationMode;
     private Updater updater;
-    private Metrics metrics;
 
     public GeneralModule(LoginSecurity plugin) {
         super(plugin);
@@ -36,12 +30,6 @@ public class GeneralModule extends Module<LoginSecurity> {
         registerCommands();
         registerListeners();
         setupUpdater();
-        try {
-            setupMetrics();
-        } catch(IOException e) {
-            // We should probably stay silent actually :P, Don't want to annoy the user with something he can disable.
-//            logger().log(Level.WARNING, "Couldn't load metrics", e);
-        }
 
         // This line is so alone :(  I feel bad for him
         this.locationMode = LocationMode.valueOf(LoginSecurity.getConfiguration().getLocation().toUpperCase());
@@ -53,32 +41,6 @@ public class GeneralModule extends Module<LoginSecurity> {
 
     public LocationMode getLocationMode() {
         return locationMode;
-    }
-
-    private void setupMetrics() throws IOException {
-        // Create metrics
-        final Metrics metrics = new Metrics(plugin);
-        final LoginSecurityConfig config = LoginSecurity.getConfiguration();
-
-        // Algorithm
-        Graph algorithm = metrics.createGraph("Algorithm");
-        algorithm.addPlotter(new Plotter(config.getHashingAlgorithm().toString()) {
-            @Override
-            public int getValue() {
-                return 1;
-            }
-        });
-
-        Graph language = metrics.createGraph("Language");
-        language.addPlotter(new Plotter(plugin.getModule(LanguageModule.class).getTranslation().getName()) {
-            @Override
-            public int getValue() {
-                return 1;
-            }
-        });
-
-        // Start
-        metrics.start();
     }
 
     private void setupUpdater() {
