@@ -1,6 +1,7 @@
 ### Git ###
 *.orig
 *.iml
+.idea
 
 ### Maven ###
 target/
