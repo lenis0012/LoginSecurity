@@ -12,7 +12,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.jdkVersion>1.7</project.jdkVersion>
+        <project.jdkVersion>1.8</project.jdkVersion>
     </properties>
 
     <profiles>
