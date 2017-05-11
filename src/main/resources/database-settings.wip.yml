@@ -1,0 +1,33 @@
+#> Database settings
+#> Supported platforms: JDBC(SQLite & MySQL)
+#> Planned platforms: Flatfile, MongoDB
+#>
+#> The basic settings for sqlite and mysql and shortcuts for jdbc.
+#> If you want to use MySQL/SQLite but don't know what JDBC is, use the basic settings.
+#>
+#> For more information, please refer to our wiki: TO_BE_REFERENCED
+
+basic:
+  platform: sqlite
+  sqlite:
+    file: '{PLUGIN_DIR}/LoginSecurity.db'
+  mysql:
+    user: 'root'
+    password: ''
+    url: 'localhost:3306'
+    database: 'minecraft'
+
+advanced:
+  jdbc:
+    driver: 'com.mysql.jdbc.Driver'
+    url: 'jdbc:mysql://localhost:3306/minecraft'
+    username: 'root'
+    password: ''
+    batch-size: 100
+  mongodb:
+    url: 'mongodb://localhost:27017'
+  flatfile:
+    directory: '{PLUGIN_DIR}/playerdata'
+    compressed: false
+    store-by-name: false
+    subdirectory-length: 0

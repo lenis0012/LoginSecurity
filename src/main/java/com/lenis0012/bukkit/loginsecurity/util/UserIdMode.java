@@ -7,11 +7,21 @@ import java.util.UUID;
 
 public enum UserIdMode {
     @EnumValue("U")
-    UNKNOWN,
+    UNKNOWN("U"),
     @EnumValue("M")
-    MOJANG,
+    MOJANG("M"),
     @EnumValue("O")
-    OFFLINE;
+    OFFLINE("O");
+
+    private final String id;
+
+    UserIdMode(String id) {
+        this.id = id;
+    }
+
+    public String getId() {
+        return id;
+    }
 
     public String getUserId(final PlayerProfile profile) {
         if(profile.getUniqueIdMode() == this) {
@@ -26,5 +36,14 @@ public enum UserIdMode {
             default:
                 throw new IllegalStateException("Invalid uuid mode: " + toString());
         }
+    }
+
+    public static UserIdMode fromId(String id) {
+        for(UserIdMode mode : values()) {
+            if(mode.id.equalsIgnoreCase(id)) {
+                return mode;
+            }
+        }
+        throw new IllegalStateException("Invalid uuid mode: " + id);
     }
 }

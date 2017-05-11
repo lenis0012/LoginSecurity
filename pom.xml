@@ -12,7 +12,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.jdkVersion>1.7</project.jdkVersion>
+        <project.jdkVersion>1.8</project.jdkVersion>
     </properties>
 
     <profiles>
@@ -98,7 +98,6 @@
             <artifactId>lenisutils</artifactId>
             <version>1</version>
             <scope>compile</scope>
-            <optional>true</optional>
         </dependency>
         <!-- Hash libraries -->
         <dependency>
@@ -106,7 +105,6 @@
             <artifactId>bcprov-jdk15on</artifactId>
             <version>1.54</version>
             <scope>compile</scope>
-            <optional>true</optional>
         </dependency>
         <!-- Used libraries -->
         <dependency>
@@ -126,7 +124,6 @@
             <artifactId>updater-api</artifactId>
             <version>1</version>
             <scope>compile</scope>
-            <optional>true</optional>
         </dependency>
         <!-- Testing dependencies -->
         <dependency>
