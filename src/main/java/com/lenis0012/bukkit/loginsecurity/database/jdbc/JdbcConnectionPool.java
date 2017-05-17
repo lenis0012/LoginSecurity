@@ -75,6 +75,18 @@ public class JdbcConnectionPool {
     /**
      * Get a new connection from the pool.
      * This connection may either be a new, or recycled connection.
+     * Recycled connections are always validated. If this is undesired, see {@link #getConnection(boolean)}.
+     *
+     * @return A connection from the pool, recycled or new.
+     * @throws SQLException Database access error
+     */
+    public Connection getConnection() throws SQLException {
+        return getConnection(true);
+    }
+
+    /**
+     * Get a new connection from the pool.
+     * This connection may either be a new, or recycled connection.
      * If not validated, an invalid recycled connection may be returned.
      *
      * @param validate Whether or not the connection should be validated if recycled

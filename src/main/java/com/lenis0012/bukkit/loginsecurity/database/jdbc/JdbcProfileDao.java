@@ -15,18 +15,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class JdbcProfileDao implements ProfileDao {
-    private final JdbcDaoFactory daoFactory;
+    private final JdbcConnectionPool connectionPool;
     private final Logger logger;
 
-    JdbcProfileDao(JdbcDaoFactory daoFactory, Logger logger) {
-        this.daoFactory = daoFactory;
+    JdbcProfileDao(JdbcConnectionPool connectionPool, Logger logger) {
+        this.connectionPool = connectionPool;
         this.logger = logger;
     }
 
     @Override
     public CompletableFuture<PlayerProfile> findById(int id) {
         return CompletableFuture.supplyAsync(() -> {
-            try(Connection connection = daoFactory.getConnection()) {
+            try(Connection connection =  connectionPool.getConnection()) {
                 PreparedStatement statement = connection.prepareStatement("SELECT * FROM ls_players WHERE id=?;");
                 statement.setInt(1, id);
                 return process(statement.executeQuery());
@@ -40,7 +40,7 @@ public class JdbcProfileDao implements ProfileDao {
     @Override
     public CompletableFuture<PlayerProfile> findByUniqueUserId(UUID uniqueUserId) {
         return CompletableFuture.supplyAsync(() -> {
-            try(Connection connection = daoFactory.getConnection()) {
+            try(Connection connection = connectionPool.getConnection()) {
                 PreparedStatement statement = connection.prepareStatement("SELECT * FROM ls_players WHERE unique_user_id=?;");
                 statement.setString(1, uniqueUserId.toString());
                 ResultSet result = statement.executeQuery();
@@ -54,7 +54,7 @@ public class JdbcProfileDao implements ProfileDao {
     @Override
     public CompletableFuture<PlayerProfile> findByUsername(String username) {
         return CompletableFuture.supplyAsync(() -> {
-            try(Connection connection = daoFactory.getConnection()) {
+            try(Connection connection = connectionPool.getConnection()) {
                 PreparedStatement statement = connection.prepareStatement("SELECT * FROM ls_players WHERE last_name=?;");
                 statement.setString(1, username);
                 ResultSet result = statement.executeQuery();
@@ -68,7 +68,7 @@ public class JdbcProfileDao implements ProfileDao {
     @Override
     public CompletableFuture<List<PlayerProfile>> findAll() {
         return CompletableFuture.supplyAsync(() -> {
-            try(Connection connection = daoFactory.getConnection()) {
+            try(Connection connection = connectionPool.getConnection()) {
                 PreparedStatement statement = connection.prepareStatement("SELECT * FROM ls_players;");
                 List<PlayerProfile> profiles = new ArrayList<>();
 
@@ -86,7 +86,7 @@ public class JdbcProfileDao implements ProfileDao {
     @Override
     public CompletableFuture<Iterator<PlayerProfile>> iterateAll() {
         return CompletableFuture.supplyAsync(() -> {
-            try(Connection connection = daoFactory.getConnection()) {
+            try(Connection connection = connectionPool.getConnection()) {
                 PreparedStatement statement = connection.prepareStatement("SELECT * FROM ls_players;");
 
                 ResultSet rows = statement.executeQuery();
@@ -118,7 +118,7 @@ public class JdbcProfileDao implements ProfileDao {
     @Override
     public CompletableFuture<Integer> insertProfile(PlayerProfile profile) {
         return CompletableFuture.supplyAsync(() -> {
-            try(Connection connection = daoFactory.getConnection()) {
+            try(Connection connection = connectionPool.getConnection()) {
                 PreparedStatement statement = connection.prepareStatement(
                         "INSERT INTO ls_players(uuid_mode,unique_user_id,last_name,ip_address,password,hashing_algorithm,last_login,registration_date,optlock) VALUES(?,?,?,?,?,?,?,?,?);",
                         new String[] { "id" }
@@ -147,7 +147,7 @@ public class JdbcProfileDao implements ProfileDao {
     @Override
     public CompletableFuture<Boolean> deleteProfile(PlayerProfile profile) {
         return CompletableFuture.supplyAsync(() -> {
-            try(Connection connection = daoFactory.getConnection()) {
+            try(Connection connection = connectionPool.getConnection()) {
                 PreparedStatement statement = connection.prepareStatement("DELETE FROM ls_players WHERE id=?;");
                 statement.setInt(1, profile.getId());
                 return statement.execute();
@@ -160,7 +160,7 @@ public class JdbcProfileDao implements ProfileDao {
     @Override
     public CompletableFuture<Boolean> updateProfile(PlayerProfile profile) {
         return CompletableFuture.supplyAsync(() -> {
-            try(Connection connection = daoFactory.getConnection()) {
+            try(Connection connection = connectionPool.getConnection()) {
                 PreparedStatement statement = connection.prepareStatement("UPDATE SET last_name=?,ip_address=?,password=?,hashing_algorithm=?,last_login=?,optlock=? WHERE id=?;");
                 statement.setString(1, profile.getLastName());
                 statement.setString(2, profile.getIpAddress());
@@ -188,6 +188,7 @@ public class JdbcProfileDao implements ProfileDao {
         profile.setLastLogin(row.getTimestamp("last_login"));
         profile.setRegistrationDate(row.getDate("registration_date"));
         profile.setVersion(row.getLong("optlock"));
+
         // TODO: Set relations
 
         return profile;
