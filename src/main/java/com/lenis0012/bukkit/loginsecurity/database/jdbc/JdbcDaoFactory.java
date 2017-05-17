@@ -19,6 +19,7 @@
 package com.lenis0012.bukkit.loginsecurity.database.jdbc;
 
 import com.lenis0012.bukkit.loginsecurity.database.DaoFactory;
+import com.lenis0012.bukkit.loginsecurity.database.InventoryDao;
 import com.lenis0012.bukkit.loginsecurity.database.LocationDao;
 import com.lenis0012.bukkit.loginsecurity.database.ProfileDao;
 
@@ -30,6 +31,7 @@ public class JdbcDaoFactory implements DaoFactory {
 
     private JdbcProfileDao profileDao;
     JdbcLocationDao locationDao;
+    JdbcInventoryDao inventoryDao;
 
     public JdbcDaoFactory(Logger logger, JdbcConnectionPool connectionPool) {
         this.logger = logger;
@@ -50,5 +52,13 @@ public class JdbcDaoFactory implements DaoFactory {
             this.locationDao = new JdbcLocationDao(connectionPool, logger);
         }
         return locationDao;
+    }
+
+    @Override
+    public InventoryDao getInventoryDao() {
+        if(inventoryDao == null) {
+            inventoryDao = new JdbcInventoryDao(connectionPool, logger);
+        }
+        return inventoryDao;
     }
 }

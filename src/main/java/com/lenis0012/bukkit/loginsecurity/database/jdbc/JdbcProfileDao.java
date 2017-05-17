@@ -218,7 +218,7 @@ public class JdbcProfileDao implements ProfileDao {
             try(Connection connection = connectionPool.getConnection()) {
                 PreparedStatement statement = connection.prepareStatement("DELETE FROM ls_players WHERE id=?;");
                 statement.setInt(1, profile.getId());
-                return statement.execute();
+                return statement.executeUpdate() > 0;
             } catch (SQLException e) {
                 throw new RuntimeException("Failed to find profile by uuid in JDBC", e);
             }
@@ -248,19 +248,20 @@ public class JdbcProfileDao implements ProfileDao {
         PlayerProfile profile = new PlayerProfile();
 
         // Read object
-        profile.setId(row.getInt("id"));
-        profile.setUniqueIdMode(UserIdMode.fromId(row.getString("uuid_mode")));
-        profile.setUniqueUserId(row.getString("unique_user_id"));
-        profile.setLastName(row.getString("last_name"));
-        profile.setIpAddress(row.getString("ip_address"));
-        profile.setPassword(row.getString("password"));
-        profile.setHashingAlgorithm(row.getInt("hashing_algorithm"));
-        profile.setLastLogin(row.getTimestamp("last_login"));
-        profile.setRegistrationDate(row.getDate("registration_date"));
-        profile.setVersion(row.getLong("optlock"));
+        profile.setId(row.getInt("player.id"));
+        profile.setUniqueIdMode(UserIdMode.fromId(row.getString("player.uuid_mode")));
+        profile.setUniqueUserId(row.getString("player.unique_user_id"));
+        profile.setLastName(row.getString("player.last_name"));
+        profile.setIpAddress(row.getString("player.ip_address"));
+        profile.setPassword(row.getString("player.password"));
+        profile.setHashingAlgorithm(row.getInt("player.hashing_algorithm"));
+        profile.setLastLogin(row.getTimestamp("player.last_login"));
+        profile.setRegistrationDate(row.getDate("player.registration_date"));
+        profile.setVersion(row.getLong("player.optlock"));
 
         // Read embedded objects
         profile.setLoginLocation(daoFactory.locationDao.process(row));
+        profile.setInventory(daoFactory.inventoryDao.process(row));
 
         return profile;
     }

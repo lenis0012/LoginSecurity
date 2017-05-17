@@ -18,8 +18,8 @@
 
 package com.lenis0012.bukkit.loginsecurity.database.jdbc;
 
-import com.lenis0012.bukkit.loginsecurity.database.LocationDao;
-import com.lenis0012.bukkit.loginsecurity.storage.PlayerLocation;
+import com.lenis0012.bukkit.loginsecurity.database.InventoryDao;
+import com.lenis0012.bukkit.loginsecurity.storage.PlayerInventory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -29,22 +29,22 @@ import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class JdbcLocationDao implements LocationDao {
+public class JdbcInventoryDao implements InventoryDao {
     private final JdbcConnectionPool connectionPool;
     private final Logger logger;
 
-    public JdbcLocationDao(JdbcConnectionPool connectionPool, Logger logger) {
+    public JdbcInventoryDao(JdbcConnectionPool connectionPool, Logger logger) {
         this.connectionPool = connectionPool;
         this.logger = logger;
     }
 
     @Override
-    public CompletableFuture<PlayerLocation> findById(int id) {
+    public CompletableFuture<PlayerInventory> findById(int id) {
         return CompletableFuture.supplyAsync(() -> {
             try(Connection connection =  connectionPool.getConnection()) {
                 PreparedStatement statement = connection.prepareStatement("SELECT * " +
-                        "FROM ls_locations AS location " +
-                        "WHERE location.id = ?;"
+                        "FROM ls_inventories AS inventory " +
+                        "WHERE inventory.id = ?;"
                 );
                 statement.setInt(1, id);
                 return process(statement.executeQuery());
@@ -56,21 +56,20 @@ public class JdbcLocationDao implements LocationDao {
     }
 
     @Override
-    public CompletableFuture<Integer> insertLocation(PlayerLocation location) {
+    public CompletableFuture<Integer> insertInventory(PlayerInventory inventory) {
         return CompletableFuture.supplyAsync(() -> {
             try(Connection connection =  connectionPool.getConnection()) {
-                PreparedStatement statement = connection.prepareStatement("INSERT INTO ls_locations (world, x, y, z, yaw, pitch) " +
+                PreparedStatement statement = connection.prepareStatement("INSERT INTO ls_inventories (helmet, chestplate, leggings, boots, off_hand, contents) " +
                         "VALUES (?,?,?,?,?,?);",
                         new String[] { "id" }
                 );
 
-                statement.setString(1, location.getWorld());
-                statement.setDouble(2, location.getX());
-                statement.setDouble(3, location.getY());
-                statement.setDouble(4, location.getZ());
-                statement.setInt(5, location.getYaw());
-                statement.setInt(6, location.getPitch());
-
+                statement.setString(1, inventory.getHelmet());
+                statement.setString(2, inventory.getChestplate());
+                statement.setString(3, inventory.getLeggings());
+                statement.setString(4, inventory.getBoots());
+                statement.setString(5, inventory.getOffHand());
+                statement.setString(6, inventory.getContents());
                 ResultSet keys = statement.getGeneratedKeys();
                 if(!keys.next()) {
                     throw new RuntimeException("No keys were returned after insert");
@@ -84,11 +83,11 @@ public class JdbcLocationDao implements LocationDao {
     }
 
     @Override
-    public CompletableFuture<Boolean> deleteLocation(PlayerLocation location) {
+    public CompletableFuture<Boolean> deleteInventory(PlayerInventory inventory) {
         return CompletableFuture.supplyAsync(() -> {
             try(Connection connection =  connectionPool.getConnection()) {
-                PreparedStatement statement = connection.prepareStatement("DELETE FROM ls_locations WHERE id = ?;");
-                statement.setInt(1, location.getId());
+                PreparedStatement statement = connection.prepareStatement("DELETE FROM ls_inventories WHERE id = ?;");
+                statement.setInt(1, inventory.getId());
                 return statement.executeUpdate() > 0;
             } catch (SQLException e) {
                 throw new RuntimeException("Failed to find profile by id in JDBC", e);
@@ -97,20 +96,20 @@ public class JdbcLocationDao implements LocationDao {
     }
 
     @Override
-    public CompletableFuture<Boolean> updateLocation(PlayerLocation location) {
+    public CompletableFuture<Boolean> updateInventory(PlayerInventory inventory) {
         return CompletableFuture.supplyAsync(() -> {
             try(Connection connection =  connectionPool.getConnection()) {
-                PreparedStatement statement = connection.prepareStatement("UPDATE ls_locations " +
-                        "SET world=?,x=?,y=?,z=?,yaw=?,pitch=? " +
+                PreparedStatement statement = connection.prepareStatement("UPDATE ls_inventories " +
+                        "SET helmet=?,chestplate=?,leggings=?,boots=?,off_hand=?,contents=? " +
                         "WHERE id = ?;"
                 );
-                statement.setString(1, location.getWorld());
-                statement.setDouble(2, location.getX());
-                statement.setDouble(3, location.getY());
-                statement.setDouble(4, location.getZ());
-                statement.setInt(5, location.getYaw());
-                statement.setInt(6, location.getPitch());
-                statement.setInt(7, location.getId());
+                statement.setString(1, inventory.getHelmet());
+                statement.setString(2, inventory.getChestplate());
+                statement.setString(3, inventory.getLeggings());
+                statement.setString(4, inventory.getBoots());
+                statement.setString(5, inventory.getOffHand());
+                statement.setString(6, inventory.getContents());
+                statement.setInt(7, inventory.getId());
                 return statement.executeUpdate() > 0;
             } catch (SQLException e) {
                 throw new RuntimeException("Failed to find profile by id in JDBC", e);
@@ -118,20 +117,20 @@ public class JdbcLocationDao implements LocationDao {
         });
     }
 
-    PlayerLocation process(ResultSet row) throws SQLException {
-        if(row.getObject("location.id") == null) {
-            // Does not have a location
+    PlayerInventory process(ResultSet row) throws SQLException {
+        if(row.getObject("inventory.id") == null) {
+            // Inventory doesn't exist
             return null;
         }
 
-        PlayerLocation location = new PlayerLocation();
-        location.setId(row.getInt("location.id"));
-        location.setWorld(row.getString("location.world"));
-        location.setX(row.getDouble("location.x"));
-        location.setY(row.getDouble("location.y"));
-        location.setZ(row.getDouble("location.z"));
-        location.setYaw(row.getInt("location.yaw"));
-        location.setPitch(row.getInt("location.pitch"));
-        return location;
+        PlayerInventory inventory = new PlayerInventory();
+        inventory.setId(row.getInt("inventory.id"));
+        inventory.setHelmet(row.getString("inventory.helmet"));
+        inventory.setChestplate(row.getString("inventory.chestplate"));
+        inventory.setLeggings(row.getString("inventory.leggings"));
+        inventory.setBoots(row.getString("inventory.boots"));
+        inventory.setOffHand(row.getString("inventory.off_hand"));
+        inventory.setContents(row.getString("inventory.contents"));
+        return inventory;
     }
 }
