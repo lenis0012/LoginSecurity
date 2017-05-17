@@ -5,6 +5,7 @@ The most secure and advanced Minecraft login solution on the planet.
 
 Links:
 ======
+- [Jenkins](http://ci.lenis0012.com/job/LoginSecurity/)
 - [SpigotMC](https://www.spigotmc.org/resources/loginsecurity.19362/)
 - [Bukkit](http://dev.bukkit.org/bukkit-plugins/loginsecurity/)
 - [Curse](http://mods.curse.com/bukkit-plugins/minecraft/loginsecurity)
