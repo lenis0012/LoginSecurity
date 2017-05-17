@@ -135,18 +135,7 @@ public class LoginSecurity extends PluginHolder {
     }
 
     @Override
-    public List<Class<?>> getDatabaseClasses() {
-        List<Class<?>> list = Lists.newArrayList();
-        list.add(Migration.class);
-        list.add(PlayerProfile.class);
-        list.add(ActionEntry.class);
-        list.add(PlayerLocation.class);
-        list.add(PlayerInventory.class);
-        return list;
-    }
-
-    @Override
     public EbeanServer getDatabase() {
-        return getModule(StorageModule.class).getDatabase();
+        return super.getDatabase();
     }
 }

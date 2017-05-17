@@ -48,6 +48,7 @@ public class JdbcConnectionPool {
     private final ConnectionPoolDataSource dataSource;
     private final ConnectionEventListener eventListener;
     private final Semaphore semaphore;
+    private final int timeout;
 
     // Connections in this that are currently in use or idle
     private final Set<PooledConnection> activeConnections = ConcurrentHashMap.newKeySet();
@@ -60,12 +61,22 @@ public class JdbcConnectionPool {
 
     /**
      * Create a new connection pool.
-     *
-     * @param dataSource The datasource which allocates connections.
+     *  @param dataSource The datasource which allocates connections.
      * @param maxConnections The maximum amount of connections which may be consumed at once.
      */
     public JdbcConnectionPool(ConnectionPoolDataSource dataSource, int maxConnections) {
+        this(dataSource, maxConnections, 0);
+    }
+
+    /**
+     * Create a new connection pool.
+     *  @param dataSource The datasource which allocates connections.
+     * @param maxConnections The maximum amount of connections which may be consumed at once.
+     * @param timeout The timeout for the connection validation query, 0 to disable timeout
+     */
+    public JdbcConnectionPool(ConnectionPoolDataSource dataSource, int maxConnections, int timeout) {
         this.dataSource = dataSource;
+        this.timeout = timeout;
         this.eventListener = new JdbcConnectionEventListener(this);
 
         // Using a fair semaphore to make sure that sql queries are executed in the right order
@@ -102,8 +113,10 @@ public class JdbcConnectionPool {
             while((pooledConnection = recycledConnections.poll()) != null && validate) {
                 try {
                     Connection connection = pooledConnection.getConnection();
-                    if (connection.isValid(1000)) {
-                        break;
+                    if (connection.isValid(timeout)) {
+                        activeConnections.add(pooledConnection);
+                        connectionsProvided.incrementAndGet();
+                        return connection;
                     } else {
                         closePooledConnection(pooledConnection);
                     }
@@ -113,9 +126,7 @@ public class JdbcConnectionPool {
             }
 
             // If we couldn't get a valid recycled connection, create a new one
-            if(pooledConnection == null) {
-                pooledConnection = createConnection();
-            }
+            pooledConnection = createConnection();
 
             // Mark connection as claimed and return
             activeConnections.add(pooledConnection);

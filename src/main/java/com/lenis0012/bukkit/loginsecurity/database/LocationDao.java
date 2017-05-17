@@ -18,21 +18,16 @@
 
 package com.lenis0012.bukkit.loginsecurity.database;
 
-public interface DaoFactory {
+import com.lenis0012.bukkit.loginsecurity.storage.PlayerLocation;
 
-    /**
-     * Get profile data access object.
-     * It handles profile storage.
-     *
-     * @return Profile DAO
-     */
-    ProfileDao getProfileDao();
+import java.util.concurrent.CompletableFuture;
 
-    /**
-     * Get the location data access object.
-     * It handles location storage.
-     *
-     * @return Location DAO
-     */
-    LocationDao getLocationDao();
+public interface LocationDao {
+    CompletableFuture<PlayerLocation> findById(int id);
+
+    CompletableFuture<Integer> insertLocation(PlayerLocation location);
+
+    CompletableFuture<Boolean> deleteLocation(PlayerLocation location);
+
+    CompletableFuture<Boolean> updateLocation(PlayerLocation location);
 }

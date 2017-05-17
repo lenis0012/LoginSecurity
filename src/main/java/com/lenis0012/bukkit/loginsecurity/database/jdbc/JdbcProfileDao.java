@@ -21,8 +21,12 @@ package com.lenis0012.bukkit.loginsecurity.database.jdbc;
 import com.lenis0012.bukkit.loginsecurity.database.ProfileDao;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 import com.lenis0012.bukkit.loginsecurity.util.UserIdMode;
+//import com.mysql.jdbc.ResultSetMetaData;
+//import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 
 import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -33,19 +37,46 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class JdbcProfileDao implements ProfileDao {
+    private final JdbcDaoFactory daoFactory;
     private final JdbcConnectionPool connectionPool;
     private final Logger logger;
 
-    JdbcProfileDao(JdbcConnectionPool connectionPool, Logger logger) {
+    JdbcProfileDao(JdbcDaoFactory daoFactory, JdbcConnectionPool connectionPool, Logger logger) {
+        this.daoFactory = daoFactory;
         this.connectionPool = connectionPool;
         this.logger = logger;
     }
+
+//    public static void main(String[] args) throws Exception {
+//        MysqlDataSource dataSource = new MysqlDataSource();
+////        dataSource.setUrl("jdbc:mysql://127.0.0.1:3306/minecraft");
+//        dataSource.setServerName("127.0.0.1");
+//        dataSource.setDatabaseName("minecraft");
+//        dataSource.setUser("root");
+//
+//        try(Connection connection = dataSource.getConnection()) {
+//            PreparedStatement ps = connection.prepareStatement("SELECT * FROM ls_players AS player LEFT JOIN ls_inventories AS inventory ON player.inventory_id = inventory.id WHERE player.id = 1;");
+//            ResultSet result = ps.executeQuery();
+//            System.out.println(result.next());
+//            System.out.println(result.getString("inventory.id"));
+//
+//            com.mysql.jdbc.ResultSetMetaData metaData = (ResultSetMetaData) result.getMetaData();
+//            for(int col = 1; col <= metaData.getColumnCount(); col++) {
+//                System.out.println(metaData.getColumnLabel(col) + "=" + result.getObject(col));
+//            }
+//        }
+//    }
 
     @Override
     public CompletableFuture<PlayerProfile> findById(int id) {
         return CompletableFuture.supplyAsync(() -> {
             try(Connection connection =  connectionPool.getConnection()) {
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM ls_players WHERE id=?;");
+                PreparedStatement statement = connection.prepareStatement("SELECT * " +
+                        "FROM ls_players AS player " +
+                        "LEFT JOIN ls_locations AS location ON player.location_id = location.id " +
+                        "LEFT JOIN ls_inventories AS inventory ON player.inventory_id = inventory.id " +
+                        "WHERE player.id = ?;"
+                );
                 statement.setInt(1, id);
                 return process(statement.executeQuery());
             } catch (SQLException e) {
@@ -59,7 +90,12 @@ public class JdbcProfileDao implements ProfileDao {
     public CompletableFuture<PlayerProfile> findByUniqueUserId(UUID uniqueUserId) {
         return CompletableFuture.supplyAsync(() -> {
             try(Connection connection = connectionPool.getConnection()) {
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM ls_players WHERE unique_user_id=?;");
+                PreparedStatement statement = connection.prepareStatement("SELECT * " +
+                        "FROM ls_players AS player " +
+                        "LEFT JOIN ls_locations AS location ON player.location_id = location.id " +
+                        "LEFT JOIN ls_inventories AS inventory ON player.inventory_id = inventory.id " +
+                        "WHERE player.unique_user_id=?;"
+                );
                 statement.setString(1, uniqueUserId.toString());
                 ResultSet result = statement.executeQuery();
                 return result.next() ? process(result) : null;
@@ -73,7 +109,13 @@ public class JdbcProfileDao implements ProfileDao {
     public CompletableFuture<PlayerProfile> findByUsername(String username) {
         return CompletableFuture.supplyAsync(() -> {
             try(Connection connection = connectionPool.getConnection()) {
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM ls_players WHERE last_name=?;");
+//                PreparedStatement statement = connection.prepareStatement("SELECT * FROM ls_players AS player WHERE player.last_name=?;");
+                PreparedStatement statement = connection.prepareStatement("SELECT * " +
+                        "FROM ls_players AS player " +
+                        "LEFT JOIN ls_locations AS location ON player.location_id = location.id " +
+                        "LEFT JOIN ls_inventories AS inventory ON player.inventory_id = inventory.id " +
+                        "WHERE player.last_name=?;"
+                );
                 statement.setString(1, username);
                 ResultSet result = statement.executeQuery();
                 return result.next() ? process(result) : null;
@@ -87,7 +129,11 @@ public class JdbcProfileDao implements ProfileDao {
     public CompletableFuture<List<PlayerProfile>> findAll() {
         return CompletableFuture.supplyAsync(() -> {
             try(Connection connection = connectionPool.getConnection()) {
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM ls_players;");
+                PreparedStatement statement = connection.prepareStatement("SELECT *  " +
+                        "FROM ls_players AS player " +
+                        "LEFT JOIN ls_locations AS location ON player.location_id = location.id " +
+                        "LEFT JOIN ls_inventories AS inventory ON player.inventory_id = inventory.id;"
+                );
                 List<PlayerProfile> profiles = new ArrayList<>();
 
                 ResultSet rows = statement.executeQuery();
@@ -105,7 +151,11 @@ public class JdbcProfileDao implements ProfileDao {
     public CompletableFuture<Iterator<PlayerProfile>> iterateAll() {
         return CompletableFuture.supplyAsync(() -> {
             try(Connection connection = connectionPool.getConnection()) {
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM ls_players;");
+                PreparedStatement statement = connection.prepareStatement("SELECT *  " +
+                        "FROM ls_players AS player " +
+                        "LEFT JOIN ls_locations AS location ON player.location_id = location.id " +
+                        "LEFT JOIN ls_inventories AS inventory ON player.inventory_id = inventory.id;"
+                );
 
                 ResultSet rows = statement.executeQuery();
                 return new Iterator<PlayerProfile>() {
@@ -196,6 +246,8 @@ public class JdbcProfileDao implements ProfileDao {
 
     private PlayerProfile process(ResultSet row) throws SQLException {
         PlayerProfile profile = new PlayerProfile();
+
+        // Read object
         profile.setId(row.getInt("id"));
         profile.setUniqueIdMode(UserIdMode.fromId(row.getString("uuid_mode")));
         profile.setUniqueUserId(row.getString("unique_user_id"));
@@ -207,7 +259,8 @@ public class JdbcProfileDao implements ProfileDao {
         profile.setRegistrationDate(row.getDate("registration_date"));
         profile.setVersion(row.getLong("optlock"));
 
-        // TODO: Set relations
+        // Read embedded objects
+        profile.setLoginLocation(daoFactory.locationDao.process(row));
 
         return profile;
     }
