@@ -22,7 +22,7 @@ public enum Algorithm {
      */
     BCRYPT(false, 7, new BCrypt()), // 7 Because BCrypt is the only legacy algorithm that is still supported
     SCRYPT(false, 21, new SCrypt()),
-    ARGON2(false, 22, new Argon2()),
+//    ARGON2(false, 22, new Argon2()),
     PBKDF2(false, 23, new PBKDF2()),
     SHA3_256(false, 24, new SHA3(256)),
     WHIRLPOOL(false, 25, new Whirlpool()),

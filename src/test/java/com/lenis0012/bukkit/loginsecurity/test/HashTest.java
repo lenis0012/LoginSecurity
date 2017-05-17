@@ -16,11 +16,10 @@ public class HashTest {
 
         for(Algorithm algorithm : Algorithm.values()) {
             if(algorithm.isDeprecated()) continue;
-            if(algorithm == Algorithm.ARGON2) continue;
             String hashed = algorithm.hash(rightPassword);
             Assert.assertNotEquals("Algorithm " + algorithm.toString() + " did nothing", rightPassword, hashed);
-            Assert.assertTrue("Algorithm " + algorithm.toString() + " checked wrongly", algorithm.check(rightPassword, hashed));
-            Assert.assertFalse("Algorithm " + algorithm.toString() + " check poorly", algorithm.check(wrongPassword, hashed));
+            Assert.assertTrue("Algorithm " + algorithm.toString() + " didn't match hash", algorithm.check(rightPassword, hashed));
+            Assert.assertFalse("Algorithm " + algorithm.toString() + " matched hash with differing casing", algorithm.check(wrongPassword, hashed));
         }
     }
 }
