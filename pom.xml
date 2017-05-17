@@ -108,6 +108,18 @@
         </dependency>
         <!-- Used libraries -->
         <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.16.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.42</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.16.6</version>
@@ -172,7 +184,6 @@
                         <configuration>
                             <artifactSet>
                                 <includes>
-                                    <include>io.ebean:ebean</include>
                                     <include>com.lenis0012.bukkit:lenisutils</include>
                                     <include>com.lenis0012.updater:updater-api</include>
                                     <include>org.bouncycastle:bcprov-jdk15on</include>
