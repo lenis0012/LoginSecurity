@@ -30,6 +30,7 @@ public class JdbcDaoFactory implements DaoFactory {
     private final JdbcConnectionPool connectionPool;
 
     private JdbcProfileDao profileDao;
+    private JdbcMigrationDao migrationDao;
     JdbcLocationDao locationDao;
     JdbcInventoryDao inventoryDao;
 
@@ -60,5 +61,12 @@ public class JdbcDaoFactory implements DaoFactory {
             inventoryDao = new JdbcInventoryDao(connectionPool, logger);
         }
         return inventoryDao;
+    }
+
+    public JdbcMigrationDao getMigrationDao() {
+        if(migrationDao == null) {
+            this.migrationDao = new JdbcMigrationDao(connectionPool, logger);
+        }
+        return migrationDao;
     }
 }
