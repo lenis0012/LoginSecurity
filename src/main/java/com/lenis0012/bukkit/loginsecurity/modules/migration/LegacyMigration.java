@@ -47,25 +47,27 @@ public class LegacyMigration extends AbstractMigration {
     public boolean executeAutomatically() {
         final PluginHolder plugin = LoginSecurity.getInstance();
         final StorageModule storage = plugin.getModule(StorageModule.class);
-        if(storage.isRunningMySQL()) {
-            final EbeanServer database = storage.getDatabase();
-            Transaction transaction = database.beginTransaction();
-            try {
-                Connection connection = transaction.getConnection();
-                Statement statement = connection.createStatement();
-                final ResultSet result = statement.executeQuery("SELECT COUNT(*) FROM users;");
-                if(result.next() && result.getInt(1) > 0) {
-                    this.userIdExists = columnExists(connection, "unique_user_id");
-                    return columnExists(connection, "ip") && columnExists(connection, "encryption"); // make sure this is our database.
-                } else {
-                    return false;
-                }
-            } catch(SQLException e) {
-//                plugin.getLogger().log(Level.WARNING, "Couldn't check mysql database", e);
-                return false;
-            } finally {
-                database.endTransaction();
-            }
+        if(true) { //if(storage.isRunningMySQL()) {
+            // TODO: Rewrite
+            return false;
+//            final EbeanServer database = storage.getDatabase();
+//            Transaction transaction = database.beginTransaction();
+//            try {
+//                Connection connection = transaction.getConnection();
+//                Statement statement = connection.createStatement();
+//                final ResultSet result = statement.executeQuery("SELECT COUNT(*) FROM users;");
+//                if(result.next() && result.getInt(1) > 0) {
+//                    this.userIdExists = columnExists(connection, "unique_user_id");
+//                    return columnExists(connection, "ip") && columnExists(connection, "encryption"); // make sure this is our database.
+//                } else {
+//                    return false;
+//                }
+//            } catch(SQLException e) {
+////                plugin.getLogger().log(Level.WARNING, "Couldn't check mysql database", e);
+//                return false;
+//            } finally {
+//                database.endTransaction();
+//            }
         } else {
             final File file = new File(plugin.getDataFolder(), "users.db");
             return file.exists();
@@ -87,7 +89,7 @@ public class LegacyMigration extends AbstractMigration {
 
         String url = "jdbc:sqlite:" + file.getPath();
         String driver = "org.sqlite.JDBC";
-        if(storage.isRunningMySQL()) {
+        if(true) { // if(storage.isRunningMySQL()) {
             // Run using ebean
             Transaction transaction = database.beginTransaction();
             Set<PlayerProfile> profiles;

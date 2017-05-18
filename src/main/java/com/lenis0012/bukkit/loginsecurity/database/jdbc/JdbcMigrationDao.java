@@ -50,7 +50,7 @@ public class JdbcMigrationDao {
             }
             return list;
         } catch(SQLException e) {
-            throw new RuntimeException("Error occurred while finding migration list", e);
+            return new ArrayList<>();
         }
     }
 

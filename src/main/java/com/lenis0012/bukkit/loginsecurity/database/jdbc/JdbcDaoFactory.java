@@ -22,21 +22,25 @@ import com.lenis0012.bukkit.loginsecurity.database.DaoFactory;
 import com.lenis0012.bukkit.loginsecurity.database.InventoryDao;
 import com.lenis0012.bukkit.loginsecurity.database.LocationDao;
 import com.lenis0012.bukkit.loginsecurity.database.ProfileDao;
+import com.lenis0012.bukkit.loginsecurity.database.jdbc.platform.JdbcPlatform;
+import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.logging.Logger;
 
 public class JdbcDaoFactory implements DaoFactory {
     private final Logger logger;
     private final JdbcConnectionPool connectionPool;
+    private final String platformName;
 
     private JdbcProfileDao profileDao;
     private JdbcMigrationDao migrationDao;
     JdbcLocationDao locationDao;
     JdbcInventoryDao inventoryDao;
 
-    public JdbcDaoFactory(Logger logger, JdbcConnectionPool connectionPool) {
+    public JdbcDaoFactory(Logger logger, JdbcConnectionPool connectionPool, String platformName) {
         this.logger = logger;
         this.connectionPool = connectionPool;
+        this.platformName = platformName;
     }
 
     @Override
@@ -68,5 +72,14 @@ public class JdbcDaoFactory implements DaoFactory {
             this.migrationDao = new JdbcMigrationDao(connectionPool, logger);
         }
         return migrationDao;
+    }
+
+    public String getPlatformName() {
+        return platformName;
+    }
+
+    public static JdbcDaoFactory build(Logger logger, ConfigurationSection configuration, JdbcPlatform platform) {
+        JdbcConnectionPool connectionPool = new JdbcConnectionPool(platform.configure(configuration), platform.getPingTimeout(configuration));
+        return new JdbcDaoFactory(logger, connectionPool, configuration.getName());
     }
 }

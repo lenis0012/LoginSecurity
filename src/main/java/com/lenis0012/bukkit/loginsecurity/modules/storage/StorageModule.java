@@ -18,31 +18,21 @@
 
 package com.lenis0012.bukkit.loginsecurity.modules.storage;
 
-import com.avaje.ebean.EbeanServer;
-import com.avaje.ebean.EbeanServerFactory;
-import com.avaje.ebean.LogLevel;
-import com.avaje.ebean.config.DataSourceConfig;
-import com.avaje.ebean.config.ServerConfig;
-import com.avaje.ebean.config.dbplatform.SQLitePlatform;
-import com.avaje.ebeaninternal.api.SpiEbeanServer;
-import com.avaje.ebeaninternal.server.ddl.DdlGenerator;
-import com.avaje.ebeaninternal.server.lib.sql.TransactionIsolation;
 import com.google.common.collect.Lists;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
+import com.lenis0012.bukkit.loginsecurity.database.jdbc.JdbcDaoFactory;
+import com.lenis0012.bukkit.loginsecurity.database.jdbc.platform.JdbcPlatform;
+import com.lenis0012.bukkit.loginsecurity.database.jdbc.platform.MysqlPlatform;
+import com.lenis0012.bukkit.loginsecurity.database.jdbc.platform.SqlitePlatform;
 import com.lenis0012.bukkit.loginsecurity.storage.Migration;
-import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
-import com.lenis0012.bukkit.loginsecurity.util.ProfileUtil;
-import com.lenis0012.bukkit.loginsecurity.util.UserIdMode;
 import com.lenis0012.pluginutils.Module;
 import com.lenis0012.pluginutils.modules.configuration.Configuration;
-import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import javax.persistence.PersistenceException;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.sql.Timestamp;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
@@ -50,9 +40,9 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class StorageModule extends Module<LoginSecurity> implements Comparator<String> {
-    private EbeanServer database;
     private boolean mysql;
     private List<String> migrations;
 
@@ -63,69 +53,20 @@ public class StorageModule extends Module<LoginSecurity> implements Comparator<S
     @Override
     public void enable() {
         // Load config
-        File file = new File(plugin.getDataFolder(), "database.yml");
+        File file = new File(plugin.getDataFolder(), "database-settings.yml");
         if(!file.exists()) {
             copyFile(plugin.getResource("database.yml"), file);
         }
         Configuration config = new Configuration(file);
         config.reload(true);
 
-        // Check config for mysql settings
-        FileConfiguration conf = plugin.getConfig();
-        if(conf.contains("MySQL")) {
-            // Rewrite mysql settings
-            config.set("mysql.enabled", conf.getBoolean("MySQL.use"));
-            String host = conf.getString("MySQL.host", "localhost") + ":" + conf.getInt("MySQL.port", 3306);
-            config.set("mysql.host", host);
-            config.set("mysql.username", conf.getString("MySQL.username"));
-            config.set("mysql.password", config.getString("MySQL.password"));
-            config.set("mysql.database", config.getString("MySQL.database"));
-            config.save();
+        // Check config for legacy settings
+        new LegacySettings(plugin).convert(config);
 
-            // Cleanup old config
-            conf.set("MySQL", null);
-            conf.set("settings", null);
-            plugin.saveConfig();
-        }
-
-        // Server settings
-        ServerConfig server = new ServerConfig();
-        server.setDefaultServer(false);
-        server.setRegister(false);
-        server.setClasses(plugin.getDatabaseClasses());
-        server.setName("LoginSecurityDB");
-        server.setLoggingLevel(LogLevel.NONE);
-        server.setEnhanceLogLevel(0);
-
-        // Datasource settings
-        DataSourceConfig source = new DataSourceConfig();
-        final int isolation = TransactionIsolation.getLevel(config.getString("isolation"));
-        this.mysql = config.getBoolean("mysql.enabled");
-        source.setDriver(mysql ? "com.mysql.jdbc.Driver" : "org.sqlite.JDBC");
-        source.setIsolationLevel(isolation);
-        source.setHeartbeatSql("select 1");
-        if(mysql) {
-            source.setUrl(String.format("jdbc:mysql://%s/%s", config.getString("mysql.host"), config.getString("mysql.database")));
-            source.setUsername(config.getString("mysql.username"));
-            source.setPassword(config.getString("mysql.password"));
-            System.out.println("MYSQL");
-        } else {
-            server.setDatabasePlatform(new SQLitePlatform());
-            server.getDatabasePlatform().getDbDdlSyntax().setIdentity("");
-            String path = plugin.getDataFolder().getPath().replaceAll("\\\\", "/");
-            source.setUrl("jdbc:sqlite:" + path + "/LoginSecurity.db");
-            source.setUsername("trump");
-            source.setPassword("donald");
-        }
-        server.setDataSourceConfig(source);
-
-        // Create server
-        plugin.getLogger().log(Level.INFO, "Connection to database....");
-        ClassLoader previous = Thread.currentThread().getContextClassLoader();
-        Thread.currentThread().setContextClassLoader(getClassLoader());
-        this.database = EbeanServerFactory.create(server);
-        database.getAdminLogging().setLogLevel(LogLevel.NONE);
-        Thread.currentThread().setContextClassLoader(previous);
+        // Select platform and create DAO factory
+        JdbcPlatform platform = getJdbcPlatform(config);
+        ConfigurationSection section = config.getConfigurationSection("configuration." + config.getString("platform", "sqlite"));
+        JdbcDaoFactory daoFactory = JdbcDaoFactory.build(logger(), section, platform);
 
         // List migrations
         this.migrations = Lists.newArrayList();
@@ -141,10 +82,10 @@ public class StorageModule extends Module<LoginSecurity> implements Comparator<S
         } catch(IOException e) {
             plugin.getLogger().log(Level.SEVERE, "Failed to scan migration scripts!");
         }
-        Collections.sort(migrations, this);
+        migrations.sort(this);
 
         // Apply missing migrations
-        applyMissingUpgrades();
+        applyMissingUpgrades(daoFactory);
     }
 
     /**
@@ -154,55 +95,62 @@ public class StorageModule extends Module<LoginSecurity> implements Comparator<S
      * It is also recommended to run when the database is modified and might be on an earlier version.
      * Ex. Legacy migrations upgrade database to v1.
      */
-    public void applyMissingUpgrades() {
+    public void applyMissingUpgrades(JdbcDaoFactory daoFactory) {
         plugin.getLogger().log(Level.INFO, "Checking database version...");
-        boolean installed = isInstalled();
-        String platform = mysql ? "mysql" : "sqlite";
-        SpiEbeanServer ebean = (SpiEbeanServer) database;
-        DdlGenerator generator = ebean.getDdlGenerator();
+        List<String> installedMigrations = daoFactory.getMigrationDao().findAll().stream().map(Migration::getVersion).collect(Collectors.toList());
+
         int updatesRan = 0;
         for(String migration : migrations) {
             String[] parts = migration.split(Pattern.quote("__"));
             String version = parts[0];
             String name = parts[1].replace("_", " ");
             name = name.substring(0, name.length() - ".sql".length()); // Remove extension
-            if(!installed || database.find(Migration.class).where().ieq("version", version).findRowCount() == 0) {
+            if(!installedMigrations.contains(version)) {
                 plugin.getLogger().log(Level.INFO, "Applying database upgrade " + version + ": " + name);
-                String content = getContent("sql/" + platform + "/" + migration);
+                String content = getContent("sql/" + daoFactory.getPlatformName() + "/" + migration);
                 if(!content.isEmpty()) {
-                    generator.runScript(false, content);
+                    // TODO: Run raw script data
                 }
-                database.save(new Migration(version, name, new Timestamp(System.currentTimeMillis())));
+                daoFactory.getMigrationDao().insertMigration(new Migration(version, name, new Timestamp(System.currentTimeMillis())));
                 updatesRan++;
             }
         }
         plugin.getLogger().log(Level.INFO, "Applied " + updatesRan + " missing database upgrades.");
 
         // Fix profile uuids
-        List<PlayerProfile> profiles = database.find(PlayerProfile.class).where().isNull("uuid_mode").findList();
-        profiles.addAll(database.find(PlayerProfile.class).where().eq("uuid_mode", UserIdMode.UNKNOWN).findList());
-        if(!profiles.isEmpty()) {
-            plugin.getLogger().log(Level.INFO, "Refactoring UUID for " + profiles.size() + " profiles...");
-            UserIdMode mode = ProfileUtil.getUserIdMode();
-            for(PlayerProfile profile : profiles) {
-                profile.setUniqueUserId(mode.getUserId(profile));
-                profile.setUniqueIdMode(mode);
-            }
-            database.save(profiles);
-            plugin.getLogger().log(Level.INFO, "Successfully updated UUIDs!");
-        }
-    }
-
-    public EbeanServer getDatabase() {
-        return database;
-    }
-
-    public boolean isRunningMySQL() {
-        return mysql;
+//        List<PlayerProfile> profiles = database.find(PlayerProfile.class).where().isNull("uuid_mode").findList();
+//        profiles.addAll(database.find(PlayerProfile.class).where().eq("uuid_mode", UserIdMode.UNKNOWN).findList());
+//        if(!profiles.isEmpty()) {
+//            plugin.getLogger().log(Level.INFO, "Refactoring UUID for " + profiles.size() + " profiles...");
+//            UserIdMode mode = ProfileUtil.getUserIdMode();
+//            for(PlayerProfile profile : profiles) {
+//                profile.setUniqueUserId(mode.getUserId(profile));
+//                profile.setUniqueIdMode(mode);
+//            }
+//            database.save(profiles);
+//            plugin.getLogger().log(Level.INFO, "Successfully updated UUIDs!");
+//        }
     }
 
     @Override
     public void disable() {
+    }
+
+    private JdbcPlatform getJdbcPlatform(Configuration configuration) {
+        switch(configuration.getString("platform", "sqlite").toLowerCase()) {
+            case "sqlite":
+                logger().log(Level.INFO, "Selecting database platform: sqlite");
+                return new SqlitePlatform();
+            case "mysql":
+                logger().log(Level.INFO, "Selecting database platform: mysql");
+                return new MysqlPlatform();
+            default:
+                logger().log(Level.WARNING, "Unknown database platform \"" +
+                        configuration.getString("platform") + "\", defaulting to sqlite.");
+                configuration.set("platform", "sqlite");
+                configuration.save();
+                return new SqlitePlatform();
+        }
     }
 
     private String getContent(String resource) {
@@ -218,15 +166,6 @@ public class StorageModule extends Module<LoginSecurity> implements Comparator<S
             return builder.toString();
         } catch(Exception e) {
             throw new RuntimeException("Couldn't read resource content", e);
-        }
-    }
-
-    private boolean isInstalled() {
-        try {
-            database.find(Migration.class).findRowCount();
-            return true;
-        } catch(PersistenceException e) {
-            return false;
         }
     }
 
