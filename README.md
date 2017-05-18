@@ -8,6 +8,7 @@ Links:
 - [Development Builds](http://ci.lenis0012.com/job/LoginSecurity/)
 - [SpigotMC](https://www.spigotmc.org/resources/loginsecurity.19362/)
 - [Bukkit](http://dev.bukkit.org/bukkit-plugins/loginsecurity/)
+- [Curse](https://mods.curse.com/bukkit-plugins/minecraft/loginsecurity)
 - [Translations](https://github.com/lenis0012/Translations)
 
 Features:
