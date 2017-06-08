@@ -1,13 +1,11 @@
 {
-  "version": "LoginSecurity v2.1.6",
+  "version": "LoginSecurity v2.1.7",
   "data":
   [
     [
       "---[ Changelog ]---",
       "",
-      "- Compile for 1.11",
-      "",
-      "- Fix NPC related error"
+      "- Hotfix for 1.12 support",
     ],
     [
       "====[ DONATE ]====",
