@@ -60,7 +60,7 @@ public class SessionManager {
     }
 
     public final PlayerSession getOfflineSession(final String playerName) {
-        final EbeanServer database = LoginSecurity.getInstance().getDatabase();
+        final EbeanServer database = LoginSecurity.getDatabase();
         PlayerProfile profile = database.find(PlayerProfile.class).where().ieq("last_name", playerName).findUnique();
         if(profile == null) {
             OfflinePlayer offline = Bukkit.getOfflinePlayer(playerName);
@@ -79,7 +79,7 @@ public class SessionManager {
     }
 
     private final PlayerSession newSession(final UUID playerId) {
-        final EbeanServer database = LoginSecurity.getInstance().getDatabase();
+        final EbeanServer database = LoginSecurity.getDatabase();
         PlayerProfile profile = database.find(PlayerProfile.class).where().ieq("unique_user_id", playerId.toString()).findUnique();
         AuthMode authMode = AuthMode.UNAUTHENTICATED;
         if(profile == null) {

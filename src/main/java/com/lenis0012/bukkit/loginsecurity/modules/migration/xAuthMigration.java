@@ -41,7 +41,7 @@ public class xAuthMigration extends AbstractMigration {
     @Override
     public boolean execute(String[] params) {
         PluginHolder plugin = LoginSecurity.getInstance();
-        final EbeanServer database = plugin.getDatabase();
+        final EbeanServer database = LoginSecurity.getDatabase();
         final Logger logger = plugin.getLogger();
         final String dbFile = plugin.getDataFolder().getPath() + File.separator + "xAuth.h2.db";
         final String platform = params.length > 0 ? params[0].toLowerCase() : "h2";

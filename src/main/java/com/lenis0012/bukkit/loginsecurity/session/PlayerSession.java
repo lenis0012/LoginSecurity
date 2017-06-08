@@ -45,7 +45,7 @@ public class PlayerSession {
         LoginSecurity.getExecutorService().execute(new Runnable() {
             @Override
             public void run() {
-                LoginSecurity.getInstance().getDatabase().save(profile);
+                LoginSecurity.getDatabase().save(profile);
             }
         });
     }
@@ -54,7 +54,7 @@ public class PlayerSession {
      * Refreshes player's profile.
      */
     public void refreshProfile() throws ProfileRefreshException {
-        final EbeanServer database = LoginSecurity.getInstance().getDatabase();
+        final EbeanServer database = LoginSecurity.getDatabase();
         PlayerProfile newProfile = database.find(PlayerProfile.class).where().ieq("unique_user_id", profile.getUniqueUserId()).findUnique();
 
         if(newProfile != null && !isRegistered()) {

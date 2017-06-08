@@ -40,7 +40,7 @@ public class AuthmeMigration extends AbstractMigration {
     @Override
     public boolean execute(String[] params) {
         PluginHolder plugin = LoginSecurity.getInstance();
-        final EbeanServer database = plugin.getDatabase();
+        final EbeanServer database = LoginSecurity.getDatabase();
         final Logger logger = plugin.getLogger();
         final String dbFile = plugin.getDataFolder().getPath() + File.separator + "authme.db";
         final String platform = params.length > 0 ? params[0].toLowerCase() : "sqlite";

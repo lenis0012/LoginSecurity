@@ -62,7 +62,7 @@ public class LegacyMigration extends AbstractMigration {
     @Override
     public boolean execute(String[] params) {
         final PluginHolder plugin = LoginSecurity.getInstance();
-        final EbeanServer database = plugin.getDatabase();
+        final EbeanServer database = LoginSecurity.getDatabase();
         final StorageModule storage = plugin.getModule(StorageModule.class);
         final File file = new File(plugin.getDataFolder(), "users.db");
         final Logger logger = plugin.getLogger();

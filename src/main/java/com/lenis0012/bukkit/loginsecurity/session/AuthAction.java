@@ -38,7 +38,7 @@ public abstract class AuthAction {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                LoginSecurity.getInstance().getDatabase().save(model);
+                LoginSecurity.getDatabase().save(model);
             }
         };
         LoginSecurity.getExecutorService().execute(runnable);

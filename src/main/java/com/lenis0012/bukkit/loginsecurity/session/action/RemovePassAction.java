@@ -14,7 +14,7 @@ public class RemovePassAction extends AuthAction {
         if(!session.isRegistered()) {
             throw new IllegalStateException("User is not registered!");
         }
-        LoginSecurity.getInstance().getDatabase().delete(session.getProfile());
+        LoginSecurity.getDatabase().delete(session.getProfile());
         session.resetProfile();
         return LoginSecurity.getConfiguration().isPasswordRequired() ? AuthMode.UNREGISTERED : AuthMode.AUTHENTICATED;
     }

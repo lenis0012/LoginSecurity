@@ -72,6 +72,10 @@ public class LoginSecurity extends PluginHolder {
         return getInstance().getModule(LanguageModule.class).translate(key);
     }
 
+    public static EbeanServer getDatabase() {
+        return ((LoginSecurity) getInstance()).getEbeanServer();
+    }
+
     private LoginSecurityConfig config;
     private SessionManager sessionManager;
 
@@ -116,7 +120,6 @@ public class LoginSecurity extends PluginHolder {
         return config;
     }
 
-    @Override
     public List<Class<?>> getDatabaseClasses() {
         List<Class<?>> list = Lists.newArrayList();
         list.add(Migration.class);
@@ -127,8 +130,7 @@ public class LoginSecurity extends PluginHolder {
         return list;
     }
 
-    @Override
-    public EbeanServer getDatabase() {
+    public EbeanServer getEbeanServer() {
         return getModule(StorageModule.class).getDatabase();
     }
 }
