@@ -44,16 +44,16 @@ public class PlayerLocation {
     }
 
     public Location asLocation() {
-        if(world == null) {
+        if(getWorld() == null) {
             return null;
         }
 
-        World bukkitWorld = Bukkit.getWorld(world);
+        World bukkitWorld = Bukkit.getWorld(getWorld());
         if(bukkitWorld == null) {
             return null;
         }
 
-        return new Location(bukkitWorld, x, y, z, yaw, pitch);
+        return new Location(bukkitWorld, getX(), getY(), getZ(), getYaw(), getPitch());
     }
 
     public int getId() {
