@@ -26,7 +26,6 @@ import com.lenis0012.pluginutils.modules.configuration.mapping.ConfigKey;
 import com.lenis0012.pluginutils.modules.configuration.mapping.ConfigMapper;
 import lombok.Getter;
 
-@Getter
 @ConfigMapper(fileName = "config.yml", header = {
         "LoginSecurity configuration.",
         "Some information is provided in the form of comments",
@@ -134,5 +133,85 @@ public class LoginSecurityConfig extends AbstractConfig {
 
     public Algorithm getHashingAlgorithm() {
         return Algorithm.valueOf(hashingAlgorithm.toUpperCase());
+    }
+
+    public boolean isPasswordRequired() {
+        return passwordRequired;
+    }
+
+    public boolean isRegisterCaptcha() {
+        return registerCaptcha;
+    }
+
+    public int getMaxLoginTries() {
+        return maxLoginTries;
+    }
+
+    public int getPasswordMinLength() {
+        return passwordMinLength;
+    }
+
+    public int getPasswordMaxLength() {
+        return passwordMaxLength;
+    }
+
+    public boolean isBlindness() {
+        return blindness;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public boolean isHideInventory() {
+        return hideInventory;
+    }
+
+    public boolean isFilterSpecialChars() {
+        return filterSpecialChars;
+    }
+
+    public int getUsernameMinLength() {
+        return usernameMinLength;
+    }
+
+    public int getUsernameMaxLength() {
+        return usernameMaxLength;
+    }
+
+    public boolean isUseCommandShortcut() {
+        return useCommandShortcut;
+    }
+
+    public String getLoginCommandShortcut() {
+        return loginCommandShortcut;
+    }
+
+    public String getRegisterCommandShortcut() {
+        return registerCommandShortcut;
+    }
+
+    public boolean isUpdaterEnabled() {
+        return updaterEnabled;
+    }
+
+    public String getUpdaterChannel() {
+        return updaterChannel;
+    }
+
+    public int getSessionTimeout() {
+        return sessionTimeout;
+    }
+
+    public int getLoginTimeout() {
+        return loginTimeout;
+    }
+
+    public int getLoginMessageDelay() {
+        return loginMessageDelay;
+    }
+
+    public String getLanguage() {
+        return language;
     }
 }
