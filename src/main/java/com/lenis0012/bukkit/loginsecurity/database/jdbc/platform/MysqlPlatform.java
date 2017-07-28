@@ -20,7 +20,6 @@ package com.lenis0012.bukkit.loginsecurity.database.jdbc.platform;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 
 import javax.sql.ConnectionPoolDataSource;
 
@@ -34,6 +33,17 @@ public class MysqlPlatform implements JdbcPlatform {
         dataSource.setDatabaseName(configuration.getString("database", "minecraft"));
         dataSource.setUser(configuration.getString("user", "root"));
         dataSource.setPassword(configuration.getString("password", ""));
+
+        // Optimizations (mainly caching)
+        dataSource.setCachePreparedStatements(true);
+        dataSource.setUseServerPrepStmts(true);
+        dataSource.setUseLocalSessionState(true);
+        dataSource.setUseLocalTransactionState(true);
+        dataSource.setRewriteBatchedStatements(true);
+        dataSource.setCacheResultSetMetadata(true);
+        dataSource.setCacheServerConfiguration(true);
+        dataSource.setElideSetAutoCommits(true);
+        dataSource.setMaintainTimeStats(false);
 
         return dataSource;
     }

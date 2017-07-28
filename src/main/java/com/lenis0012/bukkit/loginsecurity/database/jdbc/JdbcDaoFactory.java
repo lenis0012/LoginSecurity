@@ -25,6 +25,10 @@ import com.lenis0012.bukkit.loginsecurity.database.ProfileDao;
 import com.lenis0012.bukkit.loginsecurity.database.jdbc.platform.JdbcPlatform;
 import org.bukkit.configuration.ConfigurationSection;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class JdbcDaoFactory implements DaoFactory {
@@ -72,6 +76,17 @@ public class JdbcDaoFactory implements DaoFactory {
             this.migrationDao = new JdbcMigrationDao(connectionPool, logger);
         }
         return migrationDao;
+    }
+
+    public boolean runSql(String sql) {
+        try(Connection connection = connectionPool.getConnection()) {
+            Statement statement = connection.createStatement();
+            statement.execute(sql);
+            return true;
+        } catch(SQLException e) {
+            logger.log(Level.SEVERE, "Failed to run migration", e);
+            return false;
+        }
     }
 
     public String getPlatformName() {

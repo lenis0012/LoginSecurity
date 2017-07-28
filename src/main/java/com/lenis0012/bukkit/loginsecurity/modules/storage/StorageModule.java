@@ -109,7 +109,7 @@ public class StorageModule extends Module<LoginSecurity> implements Comparator<S
                 plugin.getLogger().log(Level.INFO, "Applying database upgrade " + version + ": " + name);
                 String content = getContent("sql/" + daoFactory.getPlatformName() + "/" + migration);
                 if(!content.isEmpty()) {
-                    // TODO: Run raw script data
+                    daoFactory.runSql(content);
                 }
                 daoFactory.getMigrationDao().insertMigration(new Migration(version, name, new Timestamp(System.currentTimeMillis())));
                 updatesRan++;

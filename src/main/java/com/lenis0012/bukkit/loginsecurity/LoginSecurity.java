@@ -119,7 +119,8 @@ public class LoginSecurity extends PluginHolder {
                 MigrationModule.class,
                 GeneralModule.class,
                 ThreadingModule.class,
-                CaptchaManager.class);
+                CaptchaManager.class
+        );
     }
 
     @Override
