@@ -48,7 +48,8 @@ public class ChangePassAction extends AuthAction {
         final String hash = algorithm.hash(newPassword);
         profile.setPassword(hash);
         profile.setHashingAlgorithm(algorithm.getId());
-        save(profile);
+//        save(profile);
+        session.saveProfile();
         return AuthMode.AUTHENTICATED;
     }
 }

@@ -49,7 +49,8 @@ public class RegisterAction extends AuthAction {
         profile.setPassword(hash);
         profile.setHashingAlgorithm(algorithm.getId());
         rehabPlayer(session);
-        save(profile);
+//        save(profile);
+        session.saveProfileAsync();
         return AuthMode.AUTHENTICATED;
     }
 }

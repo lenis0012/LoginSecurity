@@ -60,20 +60,24 @@ public class PlayerSession {
         if(!isRegistered()) {
             throw new IllegalStateException("Can't save profile when not registered!");
         }
-        LoginSecurity.getExecutorService().execute(new Runnable() {
-            @Override
-            public void run() {
-                LoginSecurity.getInstance().getDatabase().save(profile);
-            }
-        });
+        LoginSecurity.getExecutorService().execute(this::saveProfile);
+    }
+
+    public void saveProfile() {
+        if(!isRegistered()) {
+            throw new IllegalStateException("Can't save profile when not registered!");
+        }
+
+        LoginSecurity.dao().getProfileDao().updateProfile(profile);
     }
 
     /**
      * Refreshes player's profile.
      */
     public void refreshProfile() throws ProfileRefreshException {
-        final EbeanServer database = LoginSecurity.getInstance().getDatabase();
-        PlayerProfile newProfile = database.find(PlayerProfile.class).where().ieq("unique_user_id", profile.getUniqueUserId()).findUnique();
+//        final EbeanServer database = LoginSecurity.getInstance().getDatabase();
+//        PlayerProfile newProfile = database.find(PlayerProfile.class).where().ieq("unique_user_id", profile.getUniqueUserId()).findUnique();
+        PlayerProfile newProfile = LoginSecurity.dao().getProfileDao().findByUniqueUserId(profile.getUserId());
 
         if(newProfile != null && !isRegistered()) {
             throw new ProfileRefreshException("Profile was registered while in database!");

@@ -59,7 +59,6 @@ public class xAuthMigration extends AbstractMigration {
     @Override
     public boolean execute(String[] params) {
         PluginHolder plugin = LoginSecurity.getInstance();
-        final EbeanServer database = plugin.getDatabase();
         final Logger logger = plugin.getLogger();
         final String dbFile = plugin.getDataFolder().getPath() + File.separator + "xAuth.h2.db";
         final String platform = params.length > 0 ? params[0].toLowerCase() : "h2";
@@ -93,7 +92,7 @@ public class xAuthMigration extends AbstractMigration {
             count(statement, "accounts");
             Set<PlayerProfile> profiles = loadProfiles(statement, "accounts");
             loadUserIds(profiles);
-            saveProfiles(profiles, database);
+            saveProfiles(profiles);
 
             // Complete
             log("Completed!");

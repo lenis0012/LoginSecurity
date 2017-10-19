@@ -62,40 +62,43 @@ public abstract class AbstractMigration {
         throw new IllegalStateException("Didn't override getProfile!");
     }
 
-    protected void saveProfiles(Set<PlayerProfile> profiles, EbeanServer database) {
+    protected void saveProfiles(Set<PlayerProfile> profiles) {
         log("All entries were loaded, now saving in to new database...");
-        Transaction transaction = null;
         this.entriesCompleted = 0;
-        try {
-            transaction = database.beginTransaction();
-            transaction.setBatchMode(true);
-            transaction.setBatchSize(ACCOUNTS_BATCH_SIZE);
-            for(PlayerProfile profile : profiles) {
-                PlayerProfile current = database.find(PlayerProfile.class).where().ieq("unique_user_id", profile.getUniqueUserId()).findUnique();
-                if(current != null) {
-                    database.delete(current);
-                }
-                database.save(profile);
-                if(++entriesCompleted % ACCOUNTS_BATCH_SIZE == 0) {
-                    database.commitTransaction();
-                    if(entriesCompleted != entriesTotal) {
-                        transaction = database.beginTransaction();
-                        transaction.setBatchMode(true);
-                        transaction.setBatchSize(ACCOUNTS_BATCH_SIZE);
-                    }
-                }
 
-                // status update
-                progressUpdate("Inserting accounts in to database");
-            }
-            if(++entriesCompleted % ACCOUNTS_BATCH_SIZE != 0) {
-                database.commitTransaction();
-            }
-        } catch(PersistenceException e) {
-            if(transaction != null) {
-                database.endTransaction();
-            }
+        for(PlayerProfile profile : profiles) {
+            LoginSecurity.dao().getProfileDao().insertProfile(profile);
+            entriesCompleted++;
+            progressUpdate("Inserting accounts in to database");
+
+            // TODO: Check for duplicates and improve performance
         }
+//        try {
+////            transaction = database.beginTransaction();
+////            transaction.setBatchMode(true);
+////            transaction.setBatchSize(ACCOUNTS_BATCH_SIZE);
+//            for(PlayerProfile profile : profiles) {
+//                PlayerProfile current = database.find(PlayerProfile.class).where().ieq("unique_user_id", profile.getUniqueUserId()).findUnique();
+//                if(current != null) {
+//                    database.delete(current);
+//                }
+//                database.save(profile);
+//                if(++entriesCompleted % ACCOUNTS_BATCH_SIZE == 0) {
+//                    database.commitTransaction();
+//                    if(entriesCompleted != entriesTotal) {
+//                        transaction = database.beginTransaction();
+//                        transaction.setBatchMode(true);
+//                        transaction.setBatchSize(ACCOUNTS_BATCH_SIZE);
+//                    }
+//                }
+//
+//                // status update
+//                progressUpdate("Inserting accounts in to database");
+//            }
+//            if(++entriesCompleted % ACCOUNTS_BATCH_SIZE != 0) {
+//                database.commitTransaction();
+//            }
+//        }
     }
 
     protected void loadUserIds(Set<PlayerProfile> profiles) {

@@ -23,6 +23,7 @@ import com.lenis0012.bukkit.loginsecurity.util.UserIdMode;
 import javax.persistence.*;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.UUID;
 
 @Entity
 @Table(name = "ls_players")
@@ -33,7 +34,7 @@ public class PlayerProfile {
     private int id;
 
     @Column(unique = true, length = 128)
-    private String uniqueUserId;
+    private UUID uniqueUserId;
 
     @Column(name = "uuid_mode")
     private UserIdMode uniqueIdMode = UserIdMode.UNKNOWN;
@@ -76,12 +77,22 @@ public class PlayerProfile {
         this.id = id;
     }
 
-    public String getUniqueUserId() {
+    public UUID getUserId() {
         return uniqueUserId;
     }
 
-    public void setUniqueUserId(String uniqueUserId) {
+    public void setUniqueUserId(UUID uniqueUserId) {
         this.uniqueUserId = uniqueUserId;
+    }
+
+    @Deprecated
+    public String getUniqueUserId() {
+        return uniqueUserId.toString();
+    }
+
+    @Deprecated
+    public void setUniqueUserId(String uniqueUserId) {
+        this.uniqueUserId = UUID.fromString(uniqueUserId);
     }
 
     public String getLastName() {

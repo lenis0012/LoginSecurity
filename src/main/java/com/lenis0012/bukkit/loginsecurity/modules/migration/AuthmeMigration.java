@@ -18,20 +18,13 @@
 
 package com.lenis0012.bukkit.loginsecurity.modules.migration;
 
-import com.avaje.ebean.EbeanServer;
-import com.avaje.ebean.Transaction;
-import com.google.common.collect.Sets;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.hashing.Algorithm;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
-import com.lenis0012.bukkit.loginsecurity.util.ProfileUtil;
 import com.lenis0012.pluginutils.PluginHolder;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 
 import java.io.File;
 import java.sql.*;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -58,7 +51,7 @@ public class AuthmeMigration extends AbstractMigration {
     @Override
     public boolean execute(String[] params) {
         PluginHolder plugin = LoginSecurity.getInstance();
-        final EbeanServer database = plugin.getDatabase();
+//        final EbeanServer database = plugin.getDatabase();
         final Logger logger = plugin.getLogger();
         final String dbFile = plugin.getDataFolder().getPath() + File.separator + "authme.db";
         final String platform = params.length > 0 ? params[0].toLowerCase() : "sqlite";
@@ -88,7 +81,7 @@ public class AuthmeMigration extends AbstractMigration {
             count(statement, "authme");
             Set<PlayerProfile> profiles = loadProfiles(statement, "authme");
             loadUserIds(profiles);
-            saveProfiles(profiles, database);
+            saveProfiles(profiles);
 
             // Complete
             log("Completed!");

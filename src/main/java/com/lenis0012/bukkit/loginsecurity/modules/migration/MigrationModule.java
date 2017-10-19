@@ -35,7 +35,7 @@ public class MigrationModule extends Module<LoginSecurity> {
     public void enable() {
         // Create all migrations
         final AbstractMigration[] values = new AbstractMigration[] {
-                new LegacyMigration(),
+//                new LegacyMigration(),
                 new AuthmeMigration(),
                 new xAuthMigration()
         };

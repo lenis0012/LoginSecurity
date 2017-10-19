@@ -90,6 +90,10 @@ public class LoginSecurity extends PluginHolder {
         return getInstance().getModule(LanguageModule.class).translate(key);
     }
 
+    public static DaoFactory dao() {
+        return ((LoginSecurity) getInstance()).daoFactory;
+    }
+
     private LoginSecurityConfig config;
     private SessionManager sessionManager;
     private DaoFactory daoFactory;
@@ -106,12 +110,12 @@ public class LoginSecurity extends PluginHolder {
         config.reload();
         config.save();
 
-        // Load session manager
-        this.sessionManager = new SessionManager(database);
-
         // Load database
         Configuration databaseConfig = module.getConfiguration("database.yml");
         this.daoFactory = JdbcDaoFactory.build(getLogger(), databaseConfig.getConfigurationSection("sqlite"),  new SqlitePlatform());
+
+        // Load session manager
+        this.sessionManager = new SessionManager(daoFactory);
 
         // Filter log
         org.apache.logging.log4j.core.Logger consoleLogger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
@@ -138,9 +142,5 @@ public class LoginSecurity extends PluginHolder {
 
     public LoginSecurityConfig config() {
         return config;
-    }
-
-    public DaoFactory dao() {
-        return daoFactory;
     }
 }
