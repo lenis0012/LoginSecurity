@@ -39,83 +39,75 @@ public class JdbcLocationDao implements LocationDao {
     }
 
     @Override
-    public CompletableFuture<PlayerLocation> findById(int id) {
-        return CompletableFuture.supplyAsync(() -> {
-            try(Connection connection =  connectionPool.getConnection()) {
-                PreparedStatement statement = connection.prepareStatement("SELECT * " +
-                        "FROM ls_locations AS location " +
-                        "WHERE location.id = ?;"
-                );
-                statement.setInt(1, id);
-                return process(statement.executeQuery());
-            } catch (SQLException e) {
-                logger.log(Level.WARNING, "Failed to find profile by id in JDBC", e);
-            }
-            return null;
-        });
+    public PlayerLocation findById(int id) {
+        try(Connection connection =  connectionPool.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("SELECT * " +
+                    "FROM ls_locations AS location " +
+                    "WHERE location.id = ?;"
+            );
+            statement.setInt(1, id);
+            return process(statement.executeQuery());
+        } catch (SQLException e) {
+            logger.log(Level.WARNING, "Failed to find profile by id in JDBC", e);
+        }
+        return null;
     }
 
     @Override
-    public CompletableFuture<Integer> insertLocation(PlayerLocation location) {
-        return CompletableFuture.supplyAsync(() -> {
-            try(Connection connection =  connectionPool.getConnection()) {
-                PreparedStatement statement = connection.prepareStatement("INSERT INTO ls_locations (world, x, y, z, yaw, pitch) " +
-                        "VALUES (?,?,?,?,?,?);",
-                        new String[] { "id" }
-                );
+    public int insertLocation(PlayerLocation location) {
+        try(Connection connection =  connectionPool.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO ls_locations (world, x, y, z, yaw, pitch) " +
+                    "VALUES (?,?,?,?,?,?);",
+                    new String[] { "id" }
+            );
 
-                statement.setString(1, location.getWorld());
-                statement.setDouble(2, location.getX());
-                statement.setDouble(3, location.getY());
-                statement.setDouble(4, location.getZ());
-                statement.setInt(5, location.getYaw());
-                statement.setInt(6, location.getPitch());
+            statement.setString(1, location.getWorld());
+            statement.setDouble(2, location.getX());
+            statement.setDouble(3, location.getY());
+            statement.setDouble(4, location.getZ());
+            statement.setInt(5, location.getYaw());
+            statement.setInt(6, location.getPitch());
 
-                ResultSet keys = statement.getGeneratedKeys();
-                if(!keys.next()) {
-                    throw new RuntimeException("No keys were returned after insert");
-                }
-
-                return keys.getInt("id");
-            } catch (SQLException e) {
-                throw new RuntimeException("Failed to find profile by id in JDBC", e);
+            ResultSet keys = statement.getGeneratedKeys();
+            if(!keys.next()) {
+                throw new RuntimeException("No keys were returned after insert");
             }
-        });
+
+            return keys.getInt("id");
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to find profile by id in JDBC", e);
+        }
     }
 
     @Override
-    public CompletableFuture<Boolean> deleteLocation(PlayerLocation location) {
-        return CompletableFuture.supplyAsync(() -> {
-            try(Connection connection =  connectionPool.getConnection()) {
-                PreparedStatement statement = connection.prepareStatement("DELETE FROM ls_locations WHERE id = ?;");
-                statement.setInt(1, location.getId());
-                return statement.executeUpdate() > 0;
-            } catch (SQLException e) {
-                throw new RuntimeException("Failed to find profile by id in JDBC", e);
-            }
-        });
+    public boolean deleteLocation(PlayerLocation location) {
+        try(Connection connection =  connectionPool.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("DELETE FROM ls_locations WHERE id = ?;");
+            statement.setInt(1, location.getId());
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to find profile by id in JDBC", e);
+        }
     }
 
     @Override
-    public CompletableFuture<Boolean> updateLocation(PlayerLocation location) {
-        return CompletableFuture.supplyAsync(() -> {
-            try(Connection connection =  connectionPool.getConnection()) {
-                PreparedStatement statement = connection.prepareStatement("UPDATE ls_locations " +
-                        "SET world=?,x=?,y=?,z=?,yaw=?,pitch=? " +
-                        "WHERE id = ?;"
-                );
-                statement.setString(1, location.getWorld());
-                statement.setDouble(2, location.getX());
-                statement.setDouble(3, location.getY());
-                statement.setDouble(4, location.getZ());
-                statement.setInt(5, location.getYaw());
-                statement.setInt(6, location.getPitch());
-                statement.setInt(7, location.getId());
-                return statement.executeUpdate() > 0;
-            } catch (SQLException e) {
-                throw new RuntimeException("Failed to find profile by id in JDBC", e);
-            }
-        });
+    public boolean updateLocation(PlayerLocation location) {
+        try(Connection connection =  connectionPool.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("UPDATE ls_locations " +
+                    "SET world=?,x=?,y=?,z=?,yaw=?,pitch=? " +
+                    "WHERE id = ?;"
+            );
+            statement.setString(1, location.getWorld());
+            statement.setDouble(2, location.getX());
+            statement.setDouble(3, location.getY());
+            statement.setDouble(4, location.getZ());
+            statement.setInt(5, location.getYaw());
+            statement.setInt(6, location.getPitch());
+            statement.setInt(7, location.getId());
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to find profile by id in JDBC", e);
+        }
     }
 
     PlayerLocation process(ResultSet row) throws SQLException {

@@ -24,11 +24,11 @@ import com.lenis0012.bukkit.loginsecurity.storage.PlayerLocation;
 import java.util.concurrent.CompletableFuture;
 
 public interface InventoryDao {
-    CompletableFuture<PlayerInventory> findById(int id);
+    PlayerInventory findById(int id);
 
-    CompletableFuture<Integer> insertInventory(PlayerInventory inventory);
+    int insertInventory(PlayerInventory inventory);
 
-    CompletableFuture<Boolean> deleteInventory(PlayerInventory inventory);
+    boolean deleteInventory(PlayerInventory inventory);
 
-    CompletableFuture<Boolean> updateInventory(PlayerInventory inventory);
+    boolean updateInventory(PlayerInventory inventory);
 }

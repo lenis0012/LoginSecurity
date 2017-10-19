@@ -23,11 +23,11 @@ import com.lenis0012.bukkit.loginsecurity.storage.PlayerLocation;
 import java.util.concurrent.CompletableFuture;
 
 public interface LocationDao {
-    CompletableFuture<PlayerLocation> findById(int id);
+    PlayerLocation findById(int id);
 
-    CompletableFuture<Integer> insertLocation(PlayerLocation location);
+    int insertLocation(PlayerLocation location);
 
-    CompletableFuture<Boolean> deleteLocation(PlayerLocation location);
+    boolean deleteLocation(PlayerLocation location);
 
-    CompletableFuture<Boolean> updateLocation(PlayerLocation location);
+    boolean updateLocation(PlayerLocation location);
 }

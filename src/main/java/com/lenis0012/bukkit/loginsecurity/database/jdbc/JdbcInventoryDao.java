@@ -39,82 +39,74 @@ public class JdbcInventoryDao implements InventoryDao {
     }
 
     @Override
-    public CompletableFuture<PlayerInventory> findById(int id) {
-        return CompletableFuture.supplyAsync(() -> {
-            try(Connection connection =  connectionPool.getConnection()) {
-                PreparedStatement statement = connection.prepareStatement("SELECT * " +
-                        "FROM ls_inventories AS inventory " +
-                        "WHERE inventory.id = ?;"
-                );
-                statement.setInt(1, id);
-                return process(statement.executeQuery());
-            } catch (SQLException e) {
-                logger.log(Level.WARNING, "Failed to find profile by id in JDBC", e);
-            }
-            return null;
-        });
+    public PlayerInventory findById(int id) {
+        try(Connection connection =  connectionPool.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("SELECT * " +
+                    "FROM ls_inventories AS inventory " +
+                    "WHERE inventory.id = ?;"
+            );
+            statement.setInt(1, id);
+            return process(statement.executeQuery());
+        } catch (SQLException e) {
+            logger.log(Level.WARNING, "Failed to find profile by id in JDBC", e);
+        }
+        return null;
     }
 
     @Override
-    public CompletableFuture<Integer> insertInventory(PlayerInventory inventory) {
-        return CompletableFuture.supplyAsync(() -> {
-            try(Connection connection =  connectionPool.getConnection()) {
-                PreparedStatement statement = connection.prepareStatement("INSERT INTO ls_inventories (helmet, chestplate, leggings, boots, off_hand, contents) " +
-                        "VALUES (?,?,?,?,?,?);",
-                        new String[] { "id" }
-                );
+    public int insertInventory(PlayerInventory inventory) {
+        try(Connection connection =  connectionPool.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("INSERT INTO ls_inventories (helmet, chestplate, leggings, boots, off_hand, contents) " +
+                    "VALUES (?,?,?,?,?,?);",
+                    new String[] { "id" }
+            );
 
-                statement.setString(1, inventory.getHelmet());
-                statement.setString(2, inventory.getChestplate());
-                statement.setString(3, inventory.getLeggings());
-                statement.setString(4, inventory.getBoots());
-                statement.setString(5, inventory.getOffHand());
-                statement.setString(6, inventory.getContents());
-                ResultSet keys = statement.getGeneratedKeys();
-                if(!keys.next()) {
-                    throw new RuntimeException("No keys were returned after insert");
-                }
-
-                return keys.getInt("id");
-            } catch (SQLException e) {
-                throw new RuntimeException("Failed to find profile by id in JDBC", e);
+            statement.setString(1, inventory.getHelmet());
+            statement.setString(2, inventory.getChestplate());
+            statement.setString(3, inventory.getLeggings());
+            statement.setString(4, inventory.getBoots());
+            statement.setString(5, inventory.getOffHand());
+            statement.setString(6, inventory.getContents());
+            ResultSet keys = statement.getGeneratedKeys();
+            if(!keys.next()) {
+                throw new RuntimeException("No keys were returned after insert");
             }
-        });
+
+            return keys.getInt("id");
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to find profile by id in JDBC", e);
+        }
     }
 
     @Override
-    public CompletableFuture<Boolean> deleteInventory(PlayerInventory inventory) {
-        return CompletableFuture.supplyAsync(() -> {
-            try(Connection connection =  connectionPool.getConnection()) {
-                PreparedStatement statement = connection.prepareStatement("DELETE FROM ls_inventories WHERE id = ?;");
-                statement.setInt(1, inventory.getId());
-                return statement.executeUpdate() > 0;
-            } catch (SQLException e) {
-                throw new RuntimeException("Failed to find profile by id in JDBC", e);
-            }
-        });
+    public boolean deleteInventory(PlayerInventory inventory) {
+        try(Connection connection =  connectionPool.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("DELETE FROM ls_inventories WHERE id = ?;");
+            statement.setInt(1, inventory.getId());
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to find profile by id in JDBC", e);
+        }
     }
 
     @Override
-    public CompletableFuture<Boolean> updateInventory(PlayerInventory inventory) {
-        return CompletableFuture.supplyAsync(() -> {
-            try(Connection connection =  connectionPool.getConnection()) {
-                PreparedStatement statement = connection.prepareStatement("UPDATE ls_inventories " +
-                        "SET helmet=?,chestplate=?,leggings=?,boots=?,off_hand=?,contents=? " +
-                        "WHERE id = ?;"
-                );
-                statement.setString(1, inventory.getHelmet());
-                statement.setString(2, inventory.getChestplate());
-                statement.setString(3, inventory.getLeggings());
-                statement.setString(4, inventory.getBoots());
-                statement.setString(5, inventory.getOffHand());
-                statement.setString(6, inventory.getContents());
-                statement.setInt(7, inventory.getId());
-                return statement.executeUpdate() > 0;
-            } catch (SQLException e) {
-                throw new RuntimeException("Failed to find profile by id in JDBC", e);
-            }
-        });
+    public boolean updateInventory(PlayerInventory inventory) {
+        try(Connection connection =  connectionPool.getConnection()) {
+            PreparedStatement statement = connection.prepareStatement("UPDATE ls_inventories " +
+                    "SET helmet=?,chestplate=?,leggings=?,boots=?,off_hand=?,contents=? " +
+                    "WHERE id = ?;"
+            );
+            statement.setString(1, inventory.getHelmet());
+            statement.setString(2, inventory.getChestplate());
+            statement.setString(3, inventory.getLeggings());
+            statement.setString(4, inventory.getBoots());
+            statement.setString(5, inventory.getOffHand());
+            statement.setString(6, inventory.getContents());
+            statement.setInt(7, inventory.getId());
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to find profile by id in JDBC", e);
+        }
     }
 
     PlayerInventory process(ResultSet row) throws SQLException {

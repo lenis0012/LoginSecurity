@@ -18,8 +18,9 @@
 
 package com.lenis0012.bukkit.loginsecurity;
 
-import com.avaje.ebean.EbeanServer;
-import com.google.common.collect.Lists;
+import com.lenis0012.bukkit.loginsecurity.database.DaoFactory;
+import com.lenis0012.bukkit.loginsecurity.database.jdbc.JdbcDaoFactory;
+import com.lenis0012.bukkit.loginsecurity.database.jdbc.platform.SqlitePlatform;
 import com.lenis0012.bukkit.loginsecurity.modules.captcha.CaptchaManager;
 import com.lenis0012.bukkit.loginsecurity.modules.general.GeneralModule;
 import com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys;
@@ -29,13 +30,12 @@ import com.lenis0012.bukkit.loginsecurity.modules.migration.MigrationModule;
 import com.lenis0012.bukkit.loginsecurity.modules.storage.StorageModule;
 import com.lenis0012.bukkit.loginsecurity.modules.threading.ThreadingModule;
 import com.lenis0012.bukkit.loginsecurity.session.SessionManager;
-import com.lenis0012.bukkit.loginsecurity.storage.*;
 import com.lenis0012.bukkit.loginsecurity.util.LoggingFilter;
 import com.lenis0012.pluginutils.PluginHolder;
+import com.lenis0012.pluginutils.modules.configuration.Configuration;
 import com.lenis0012.pluginutils.modules.configuration.ConfigurationModule;
 import org.apache.logging.log4j.LogManager;
 
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -92,6 +92,7 @@ public class LoginSecurity extends PluginHolder {
 
     private LoginSecurityConfig config;
     private SessionManager sessionManager;
+    private DaoFactory daoFactory;
 
     public LoginSecurity() {
         super(ConfigurationModule.class);
@@ -106,7 +107,11 @@ public class LoginSecurity extends PluginHolder {
         config.save();
 
         // Load session manager
-        this.sessionManager = new SessionManager();
+        this.sessionManager = new SessionManager(database);
+
+        // Load database
+        Configuration databaseConfig = module.getConfiguration("database.yml");
+        this.daoFactory = JdbcDaoFactory.build(getLogger(), databaseConfig.getConfigurationSection("sqlite"),  new SqlitePlatform());
 
         // Filter log
         org.apache.logging.log4j.core.Logger consoleLogger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
@@ -135,8 +140,7 @@ public class LoginSecurity extends PluginHolder {
         return config;
     }
 
-    @Override
-    public EbeanServer getDatabase() {
-        return super.getDatabase();
+    public DaoFactory dao() {
+        return daoFactory;
     }
 }

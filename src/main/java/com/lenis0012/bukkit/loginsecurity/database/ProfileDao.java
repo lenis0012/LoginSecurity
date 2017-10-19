@@ -26,19 +26,19 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public interface ProfileDao {
-    CompletableFuture<PlayerProfile> findById(int id);
+    PlayerProfile findById(int id);
 
-    CompletableFuture<PlayerProfile> findByUniqueUserId(UUID uniqueUserId);
+    PlayerProfile findByUniqueUserId(UUID uniqueUserId);
 
-    CompletableFuture<PlayerProfile> findByUsername(String username);
+    PlayerProfile findByUsername(String username);
 
-    CompletableFuture<List<PlayerProfile>> findAll();
+    List<PlayerProfile> findAll();
 
-    CompletableFuture<Iterator<PlayerProfile>> iterateAll();
+    Iterator<PlayerProfile> iterateAll();
 
-    CompletableFuture<Integer> insertProfile(PlayerProfile profile);
+    int insertProfile(PlayerProfile profile);
 
-    CompletableFuture<Boolean> deleteProfile(PlayerProfile profile);
+    boolean deleteProfile(PlayerProfile profile);
 
-    CompletableFuture<Boolean> updateProfile(PlayerProfile profile);
+    boolean updateProfile(PlayerProfile profile);
 }

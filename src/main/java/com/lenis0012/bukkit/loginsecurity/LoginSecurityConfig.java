@@ -24,7 +24,6 @@ import com.lenis0012.pluginutils.modules.configuration.ConfigurationModule;
 import com.lenis0012.pluginutils.modules.configuration.mapping.ConfigHeader;
 import com.lenis0012.pluginutils.modules.configuration.mapping.ConfigKey;
 import com.lenis0012.pluginutils.modules.configuration.mapping.ConfigMapper;
-import lombok.Getter;
 
 @ConfigMapper(fileName = "config.yml", header = {
         "LoginSecurity configuration.",

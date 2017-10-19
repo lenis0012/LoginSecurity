@@ -18,12 +18,9 @@
 
 package com.lenis0012.bukkit.loginsecurity.storage;
 
-import lombok.Data;
-
 import javax.persistence.*;
 import java.sql.Timestamp;
 
-@Data
 @Entity
 @Table(name = "ls_actions")
 public class ActionEntry {
