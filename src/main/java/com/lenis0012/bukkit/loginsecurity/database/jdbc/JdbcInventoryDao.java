@@ -42,8 +42,8 @@ public class JdbcInventoryDao implements InventoryDao {
     public PlayerInventory findById(int id) {
         try(Connection connection =  connectionPool.getConnection()) {
             PreparedStatement statement = connection.prepareStatement("SELECT * " +
-                    "FROM ls_inventories AS inventory " +
-                    "WHERE inventory.id = ?;"
+                    "FROM ls_inventories " +
+                    "WHERE id = ?;"
             );
             statement.setInt(1, id);
             return process(statement.executeQuery());
@@ -110,19 +110,19 @@ public class JdbcInventoryDao implements InventoryDao {
     }
 
     PlayerInventory process(ResultSet row) throws SQLException {
-        if(row.getObject("inventory.id") == null) {
+        if(row.getObject("inventory_id") == null) {
             // Inventory doesn't exist
             return null;
         }
 
         PlayerInventory inventory = new PlayerInventory();
-        inventory.setId(row.getInt("inventory.id"));
-        inventory.setHelmet(row.getString("inventory.helmet"));
-        inventory.setChestplate(row.getString("inventory.chestplate"));
-        inventory.setLeggings(row.getString("inventory.leggings"));
-        inventory.setBoots(row.getString("inventory.boots"));
-        inventory.setOffHand(row.getString("inventory.off_hand"));
-        inventory.setContents(row.getString("inventory.contents"));
+        inventory.setId(row.getInt("inventory_id"));
+        inventory.setHelmet(row.getString("helmet"));
+        inventory.setChestplate(row.getString("chestplate"));
+        inventory.setLeggings(row.getString("leggings"));
+        inventory.setBoots(row.getString("boots"));
+        inventory.setOffHand(row.getString("off_hand"));
+        inventory.setContents(row.getString("contents"));
         return inventory;
     }
 }

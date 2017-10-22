@@ -110,10 +110,10 @@ public class JdbcConnectionPool {
 
             // Try to recycle a connection
             PooledConnection pooledConnection;
-            while((pooledConnection = recycledConnections.poll()) != null && validate) {
+            while((pooledConnection = recycledConnections.poll()) != null) {
                 try {
                     Connection connection = pooledConnection.getConnection();
-                    if (connection.isValid(timeout)) {
+                    if (!validate || connection.isValid(timeout)) {
                         activeConnections.add(pooledConnection);
                         connectionsProvided.incrementAndGet();
                         return connection;

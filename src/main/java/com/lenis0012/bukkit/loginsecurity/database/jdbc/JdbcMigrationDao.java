@@ -20,10 +20,7 @@ package com.lenis0012.bukkit.loginsecurity.database.jdbc;
 
 import com.lenis0012.bukkit.loginsecurity.storage.Migration;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -58,18 +55,19 @@ public class JdbcMigrationDao {
         try(Connection connection = connectionPool.getConnection()) {
             PreparedStatement statement = connection.prepareStatement("INSERT INTO ls_upgrades (version, description, applied_at) " +
                     "VALUES (?,?,?);",
-                    new String[] { "id" }
+                    Statement.RETURN_GENERATED_KEYS
             );
             statement.setString(1, migration.getVersion());
             statement.setString(2, migration.getName());
             statement.setTimestamp(3, migration.getAppliedAt());
+            statement.executeUpdate();
 
             ResultSet keys = statement.getGeneratedKeys();
             if(!keys.next()) {
                 throw new RuntimeException("Migration insert didn't return any keys");
             }
 
-            return keys.getInt("id");
+            return keys.getInt(1);
         } catch(SQLException e) {
             throw new RuntimeException("Error occurred while finding migration list", e);
         }

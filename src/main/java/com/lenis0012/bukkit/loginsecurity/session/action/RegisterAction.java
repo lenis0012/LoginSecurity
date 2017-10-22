@@ -49,8 +49,7 @@ public class RegisterAction extends AuthAction {
         profile.setPassword(hash);
         profile.setHashingAlgorithm(algorithm.getId());
         rehabPlayer(session);
-//        save(profile);
-        session.saveProfileAsync();
+        LoginSecurity.dao().getProfileDao().insertProfile(profile);
         return AuthMode.AUTHENTICATED;
     }
 }

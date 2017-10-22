@@ -70,7 +70,10 @@ public class JdbcProfileDao implements ProfileDao {
     @Override
     public PlayerProfile findById(int id) {
         try(Connection connection =  connectionPool.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("SELECT * " +
+            PreparedStatement statement = connection.prepareStatement("SELECT " +
+                    "player.id AS player_id, player.unique_user_id, player.uuid_mode, player.last_name, player.ip_address, player.password, player.hashing_algorithm, player.last_login, player.registration_date, player.optlock," +
+                    "location.id AS location_id, location.world, location.x, location.y, location.z, location.yaw, location.pitch," +
+                    "inventory.id AS inventory_id, inventory.helmet, inventory.chestplate, inventory.leggings, inventory.boots, inventory.off_hand, inventory.contents " +
                     "FROM ls_players AS player " +
                     "LEFT JOIN ls_locations AS location ON player.location_id = location.id " +
                     "LEFT JOIN ls_inventories AS inventory ON player.inventory_id = inventory.id " +
@@ -87,7 +90,10 @@ public class JdbcProfileDao implements ProfileDao {
     @Override
     public PlayerProfile findByUniqueUserId(UUID uniqueUserId) {
         try(Connection connection = connectionPool.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("SELECT * " +
+            PreparedStatement statement = connection.prepareStatement("SELECT " +
+                    "player.id AS player_id, player.unique_user_id, player.uuid_mode, player.last_name, player.ip_address, player.password, player.hashing_algorithm, player.last_login, player.registration_date, player.optlock," +
+                    "location.id AS location_id, location.world, location.x, location.y, location.z, location.yaw, location.pitch," +
+                    "inventory.id AS inventory_id, inventory.helmet, inventory.chestplate, inventory.leggings, inventory.boots, inventory.off_hand, inventory.contents " +
                     "FROM ls_players AS player " +
                     "LEFT JOIN ls_locations AS location ON player.location_id = location.id " +
                     "LEFT JOIN ls_inventories AS inventory ON player.inventory_id = inventory.id " +
@@ -104,7 +110,10 @@ public class JdbcProfileDao implements ProfileDao {
     @Override
     public PlayerProfile findByUsername(String username) {
         try(Connection connection = connectionPool.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("SELECT * " +
+            PreparedStatement statement = connection.prepareStatement("SELECT " +
+                    "player.id AS player_id, player.unique_user_id, player.uuid_mode, player.last_name, player.ip_address, player.password, player.hashing_algorithm, player.last_login, player.registration_date, player.optlock," +
+                    "location.id AS location_id, location.world, location.x, location.y, location.z, location.yaw, location.pitch," +
+                    "inventory.id AS inventory_id, inventory.helmet, inventory.chestplate, inventory.leggings, inventory.boots, inventory.off_hand, inventory.contents " +
                     "FROM ls_players AS player " +
                     "LEFT JOIN ls_locations AS location ON player.location_id = location.id " +
                     "LEFT JOIN ls_inventories AS inventory ON player.inventory_id = inventory.id " +
@@ -121,7 +130,10 @@ public class JdbcProfileDao implements ProfileDao {
     @Override
     public List<PlayerProfile> findAll() {
         try(Connection connection = connectionPool.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("SELECT *  " +
+            PreparedStatement statement = connection.prepareStatement("SELECT " +
+                    "player.id AS player_id, player.unique_user_id, player.uuid_mode, player.last_name, player.ip_address, player.password, player.hashing_algorithm, player.last_login, player.registration_date, player.optlock," +
+                    "location.id AS location_id, location.world, location.x, location.y, location.z, location.yaw, location.pitch," +
+                    "inventory.id AS inventory_id, inventory.helmet, inventory.chestplate, inventory.leggings, inventory.boots, inventory.off_hand, inventory.contents " +
                     "FROM ls_players AS player " +
                     "LEFT JOIN ls_locations AS location ON player.location_id = location.id " +
                     "LEFT JOIN ls_inventories AS inventory ON player.inventory_id = inventory.id;"
@@ -177,7 +189,7 @@ public class JdbcProfileDao implements ProfileDao {
         try(Connection connection = connectionPool.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(
                     "INSERT INTO ls_players(uuid_mode,unique_user_id,last_name,ip_address,password,hashing_algorithm,last_login,registration_date,optlock) VALUES(?,?,?,?,?,?,?,?,?);",
-                    new String[] { "id" }
+                    Statement.RETURN_GENERATED_KEYS
             );
             statement.setString(1, profile.getUniqueIdMode().getId());
             statement.setString(2, profile.getUniqueUserId());
@@ -188,12 +200,16 @@ public class JdbcProfileDao implements ProfileDao {
             statement.setTimestamp(7, Timestamp.from(Instant.now()));
             statement.setDate(8, new Date(System.currentTimeMillis()));
             statement.setLong(9, 1);
+            statement.executeUpdate();
+
             ResultSet keys = statement.getGeneratedKeys();
             if(!keys.next()) {
                 throw new RuntimeException("No keys were returned after insert");
             }
 
-            return keys.getInt("id");
+            int id = keys.getInt(1);
+            profile.setId(id);
+            return id;
         } catch (SQLException e) {
             throw new RuntimeException("Failed to find profile by uuid in JDBC", e);
         }
@@ -231,16 +247,16 @@ public class JdbcProfileDao implements ProfileDao {
         PlayerProfile profile = new PlayerProfile();
 
         // Read object
-        profile.setId(row.getInt("player.id"));
-        profile.setUniqueIdMode(UserIdMode.fromId(row.getString("player.uuid_mode")));
-        profile.setUniqueUserId(row.getString("player.unique_user_id"));
-        profile.setLastName(row.getString("player.last_name"));
-        profile.setIpAddress(row.getString("player.ip_address"));
-        profile.setPassword(row.getString("player.password"));
-        profile.setHashingAlgorithm(row.getInt("player.hashing_algorithm"));
-        profile.setLastLogin(row.getTimestamp("player.last_login"));
-        profile.setRegistrationDate(row.getDate("player.registration_date"));
-        profile.setVersion(row.getLong("player.optlock"));
+        profile.setId(row.getInt("player_id"));
+        profile.setUniqueIdMode(UserIdMode.fromId(row.getString("uuid_mode")));
+        profile.setUniqueUserId(row.getString("unique_user_id"));
+        profile.setLastName(row.getString("last_name"));
+        profile.setIpAddress(row.getString("ip_address"));
+        profile.setPassword(row.getString("password"));
+        profile.setHashingAlgorithm(row.getInt("hashing_algorithm"));
+        profile.setLastLogin(row.getTimestamp("last_login"));
+        profile.setRegistrationDate(row.getDate("registration_date"));
+        profile.setVersion(row.getLong("optlock"));
 
         // Read embedded objects
         profile.setLoginLocation(daoFactory.locationDao.process(row));

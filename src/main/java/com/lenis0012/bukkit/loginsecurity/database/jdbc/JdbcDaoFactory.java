@@ -28,8 +28,10 @@ import org.bukkit.configuration.ConfigurationSection;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 public class JdbcDaoFactory implements DaoFactory {
     private final Logger logger;
@@ -38,13 +40,18 @@ public class JdbcDaoFactory implements DaoFactory {
 
     private JdbcProfileDao profileDao;
     private JdbcMigrationDao migrationDao;
-    JdbcLocationDao locationDao;
-    JdbcInventoryDao inventoryDao;
+    protected JdbcLocationDao locationDao;
+    protected JdbcInventoryDao inventoryDao;
 
     public JdbcDaoFactory(Logger logger, JdbcConnectionPool connectionPool, String platformName) {
         this.logger = logger;
         this.connectionPool = connectionPool;
         this.platformName = platformName;
+
+        this.profileDao = new JdbcProfileDao(this, connectionPool, logger);
+        this.locationDao = new JdbcLocationDao(connectionPool, logger);
+        this.inventoryDao = new JdbcInventoryDao(connectionPool, logger);
+        this.migrationDao = new JdbcMigrationDao(connectionPool, logger);
     }
 
     @Override
@@ -80,8 +87,14 @@ public class JdbcDaoFactory implements DaoFactory {
 
     public boolean runSql(String sql) {
         try(Connection connection = connectionPool.getConnection()) {
+            connection.setAutoCommit(false);
             Statement statement = connection.createStatement();
-            statement.execute(sql);
+
+            for(String command : sql.split(Pattern.quote(";"))) {
+                statement.executeUpdate(command);
+            }
+
+            connection.commit();
             return true;
         } catch(SQLException e) {
             logger.log(Level.SEVERE, "Failed to run migration", e);

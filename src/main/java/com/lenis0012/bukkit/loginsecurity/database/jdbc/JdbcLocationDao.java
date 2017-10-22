@@ -42,8 +42,8 @@ public class JdbcLocationDao implements LocationDao {
     public PlayerLocation findById(int id) {
         try(Connection connection =  connectionPool.getConnection()) {
             PreparedStatement statement = connection.prepareStatement("SELECT * " +
-                    "FROM ls_locations AS location " +
-                    "WHERE location.id = ?;"
+                    "FROM ls_locations " +
+                    "WHERE id = ?;"
             );
             statement.setInt(1, id);
             return process(statement.executeQuery());
@@ -111,19 +111,19 @@ public class JdbcLocationDao implements LocationDao {
     }
 
     PlayerLocation process(ResultSet row) throws SQLException {
-        if(row.getObject("location.id") == null) {
+        if(row.getObject("location_id") == null) {
             // Does not have a location
             return null;
         }
 
         PlayerLocation location = new PlayerLocation();
-        location.setId(row.getInt("location.id"));
-        location.setWorld(row.getString("location.world"));
-        location.setX(row.getDouble("location.x"));
-        location.setY(row.getDouble("location.y"));
-        location.setZ(row.getDouble("location.z"));
-        location.setYaw(row.getInt("location.yaw"));
-        location.setPitch(row.getInt("location.pitch"));
+        location.setId(row.getInt("location_id"));
+        location.setWorld(row.getString("world"));
+        location.setX(row.getDouble("x"));
+        location.setY(row.getDouble("y"));
+        location.setZ(row.getDouble("z"));
+        location.setYaw(row.getInt("yaw"));
+        location.setPitch(row.getInt("pitch"));
         return location;
     }
 }
