@@ -83,6 +83,7 @@ public class LegacySettings {
             destination.set("configuration.mysql.user", conf.getString("mysql.username", "root"));
             destination.set("configuration.mysql.password", conf.getString("mysql.password", ""));
         }
+        destination.save();
 
         int i = 0;
         while(++i < 12) {

@@ -37,10 +37,8 @@ import java.util.concurrent.TimeUnit;
 public class SessionManager {
     private final Map<UUID, PlayerSession> activeSessions = Maps.newConcurrentMap();
     private final LoadingCache<UUID, PlayerSession> preloadCache;
-    private final DaoFactory database;
 
-    public SessionManager(DaoFactory database) {
-        this.database = database;
+    public SessionManager() {
         this.preloadCache = CacheBuilder.newBuilder().expireAfterWrite(30L, TimeUnit.SECONDS).build(new CacheLoader<UUID, PlayerSession>() {
             @Override
             public PlayerSession load(UUID uuid) throws Exception {
@@ -78,7 +76,7 @@ public class SessionManager {
 
     public final PlayerSession getOfflineSession(final String playerName) {
 //        PlayerProfile profile = database.find(PlayerProfile.class).where().ieq("last_name", playerName).findUnique();
-        PlayerProfile profile = database.getProfileDao().findByUsername(playerName);
+        PlayerProfile profile = LoginSecurity.dao().getProfileDao().findByUsername(playerName);
         if(profile == null) {
             OfflinePlayer offline = Bukkit.getOfflinePlayer(playerName);
             if(offline == null || offline.getUniqueId() == null) {
@@ -97,7 +95,7 @@ public class SessionManager {
 
     private final PlayerSession newSession(final UUID playerId) {
 //        PlayerProfile profile = database.find(PlayerProfile.class).where().ieq("unique_user_id", playerId.toString()).findUnique();
-        PlayerProfile profile = database.getProfileDao().findByUniqueUserId(playerId);
+        PlayerProfile profile = LoginSecurity.dao().getProfileDao().findByUniqueUserId(playerId);
         AuthMode authMode = AuthMode.UNAUTHENTICATED;
         if(profile == null) {
             // New user...

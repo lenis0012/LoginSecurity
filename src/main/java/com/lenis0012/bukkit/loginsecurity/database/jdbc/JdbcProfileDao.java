@@ -213,7 +213,7 @@ public class JdbcProfileDao implements ProfileDao {
     @Override
     public boolean updateProfile(PlayerProfile profile) {
         try(Connection connection = connectionPool.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("UPDATE SET last_name=?,ip_address=?,password=?,hashing_algorithm=?,last_login=?,optlock=? WHERE id=?;");
+            PreparedStatement statement = connection.prepareStatement("UPDATE ls_players SET last_name=?,ip_address=?,password=?,hashing_algorithm=?,last_login=?,optlock=? WHERE id=?;");
             statement.setString(1, profile.getLastName());
             statement.setString(2, profile.getIpAddress());
             statement.setString(3, profile.getPassword());

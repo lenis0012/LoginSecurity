@@ -52,12 +52,12 @@ public class ThreadingModule extends Module<LoginSecurity> implements Listener {
 
     @Override
     public void enable() {
-        reload();
-
         // threads
         (this.timeout = new TimeoutTask(plugin)).runTaskTimer(plugin, 20L, 20L);
         (this.message = new MessageTask(plugin)).runTaskTimer(plugin, 20L, 20L);
         register(this);
+
+        reload();
     }
 
     @Override

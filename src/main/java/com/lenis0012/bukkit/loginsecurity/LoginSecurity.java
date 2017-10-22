@@ -19,7 +19,6 @@
 package com.lenis0012.bukkit.loginsecurity;
 
 import com.lenis0012.bukkit.loginsecurity.database.DaoFactory;
-import com.lenis0012.bukkit.loginsecurity.database.jdbc.JdbcDaoFactory;
 import com.lenis0012.bukkit.loginsecurity.database.jdbc.platform.SqlitePlatform;
 import com.lenis0012.bukkit.loginsecurity.modules.captcha.CaptchaManager;
 import com.lenis0012.bukkit.loginsecurity.modules.general.GeneralModule;
@@ -91,7 +90,7 @@ public class LoginSecurity extends PluginHolder {
     }
 
     public static DaoFactory dao() {
-        return ((LoginSecurity) getInstance()).daoFactory;
+        return getInstance().getModule(StorageModule.class).getDaoFactory();
     }
 
     private LoginSecurityConfig config;
@@ -110,12 +109,8 @@ public class LoginSecurity extends PluginHolder {
         config.reload();
         config.save();
 
-        // Load database
-        Configuration databaseConfig = module.getConfiguration("database.yml");
-        this.daoFactory = JdbcDaoFactory.build(getLogger(), databaseConfig.getConfigurationSection("sqlite"),  new SqlitePlatform());
-
         // Load session manager
-        this.sessionManager = new SessionManager(daoFactory);
+        this.sessionManager = new SessionManager();
 
         // Filter log
         org.apache.logging.log4j.core.Logger consoleLogger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();

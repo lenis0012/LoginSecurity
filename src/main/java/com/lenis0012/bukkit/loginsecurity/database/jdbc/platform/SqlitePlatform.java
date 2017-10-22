@@ -33,7 +33,8 @@ public class SqlitePlatform implements JdbcPlatform {
         SQLiteConnectionPoolDataSource dataSource = new SQLiteConnectionPoolDataSource();
 
         String path = new File(LoginSecurity.getInstance().getDataFolder(), "LoginSecurity.db").getPath();
-        dataSource.setDatabaseName(path.replace(File.separator, "/"));
+        dataSource.setUrl("jdbc:sqlite:" + path);
+//        dataSource.setDatabaseName(path.replace(File.separator, "/"));
 
         return dataSource;
     }

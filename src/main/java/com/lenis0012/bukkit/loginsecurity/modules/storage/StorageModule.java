@@ -43,8 +43,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class StorageModule extends Module<LoginSecurity> implements Comparator<String> {
-    private boolean mysql;
     private List<String> migrations;
+    private JdbcDaoFactory daoFactory;
 
     public StorageModule(LoginSecurity plugin) {
         super(plugin);
@@ -66,7 +66,7 @@ public class StorageModule extends Module<LoginSecurity> implements Comparator<S
         // Select platform and create DAO factory
         JdbcPlatform platform = getJdbcPlatform(config);
         ConfigurationSection section = config.getConfigurationSection("configuration." + config.getString("platform", "sqlite"));
-        JdbcDaoFactory daoFactory = JdbcDaoFactory.build(logger(), section, platform);
+        this.daoFactory = JdbcDaoFactory.build(logger(), section, platform);
 
         // List migrations
         this.migrations = Lists.newArrayList();
@@ -95,7 +95,7 @@ public class StorageModule extends Module<LoginSecurity> implements Comparator<S
      * It is also recommended to run when the database is modified and might be on an earlier version.
      * Ex. Legacy migrations upgrade database to v1.
      */
-    public void applyMissingUpgrades(JdbcDaoFactory daoFactory) {
+    public void applyMissingUpgrades(com.lenis0012.bukkit.loginsecurity.database.jdbc.JdbcDaoFactory daoFactory) {
         plugin.getLogger().log(Level.INFO, "Checking database version...");
         List<String> installedMigrations = daoFactory.getMigrationDao().findAll().stream().map(Migration::getVersion).collect(Collectors.toList());
 
@@ -202,6 +202,10 @@ public class StorageModule extends Module<LoginSecurity> implements Comparator<S
         } catch(IOException e) {
             plugin.getLogger().log(Level.WARNING, "Failed to copy resource", e);
         }
+    }
+
+    public JdbcDaoFactory getDaoFactory() {
+        return daoFactory;
     }
 
     @Override

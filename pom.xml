@@ -169,15 +169,15 @@
                         <goals>
                             <goal>shade</goal>
                         </goals>
-                        <configuration>
-                            <artifactSet>
-                                <includes>
-                                    <include>com.lenis0012.bukkit:lenisutils</include>
-                                    <include>com.lenis0012.updater:updater-api</include>
-                                    <include>org.bouncycastle:bcprov-jdk15on</include>
-                                </includes>
-                            </artifactSet>
-                        </configuration>
+                        <!--<configuration>-->
+                            <!--<artifactSet>-->
+                                <!--<includes>-->
+                                    <!--<include>com.lenis0012.bukkit:lenisutils</include>-->
+                                    <!--<include>com.lenis0012.updater:updater-api</include>-->
+                                    <!--<include>org.bouncycastle:bcprov-jdk15on</include>-->
+                                <!--</includes>-->
+                            <!--</artifactSet>-->
+                        <!--</configuration>-->
                     </execution>
                 </executions>
                 <configuration>
