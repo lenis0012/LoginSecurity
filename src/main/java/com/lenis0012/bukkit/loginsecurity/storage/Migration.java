@@ -18,24 +18,15 @@
 
 package com.lenis0012.bukkit.loginsecurity.storage;
 
-import javax.persistence.*;
 import java.sql.Timestamp;
 
-@Entity
-@Table(name = "ls_upgrades")
 public class Migration {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
     private int id;
 
-    @Column(unique = true, updatable = false)
     private String version;
 
-    @Column(name = "description")
     private String name;
 
-    @Column(columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private Timestamp appliedAt;
 
     public int getId() {

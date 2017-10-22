@@ -22,32 +22,19 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-import javax.persistence.*;
-
-@Entity
-@Table(name = "ls_locations")
 public class PlayerLocation {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(updatable = false, unique = true)
     private int id;
 
-    @Column
     private String world;
 
-    @Column
     private double x;
 
-    @Column
     private double y;
 
-    @Column
     private double z;
 
-    @Column
     private int yaw;
 
-    @Column
     private int pitch;
 
     public PlayerLocation() {}
