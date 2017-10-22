@@ -91,7 +91,7 @@ public class CommandAdmin extends Command {
             SubCommand info = entry.getValue().getAnnotation(SubCommand.class);
             String usage = info.usage().isEmpty() ? "" : translate(info.usage()).toString();
             String desc = info.description().startsWith("NoTrans:") ? info.description().substring("NoTrans:".length()) : translate(info.description()).toString();
-            reply("&b/" + name + usage + " &7- &f" + desc);
+            reply("&b/lac " + name + " " + usage + " &7- &f" + desc);
         }
     }
 
@@ -112,12 +112,8 @@ public class CommandAdmin extends Command {
         }
 
         final Player admin = player;
-        session.performActionAsync(new RemovePassAction(AuthService.ADMIN, admin), new ActionCallback() {
-            @Override
-            public void call(ActionResponse response) {
-                reply(admin, true, translate(LAC_RESET_PLAYER));
-            }
-        });
+        session.performActionAsync(new RemovePassAction(AuthService.ADMIN, admin),
+                response -> reply(admin, true, translate(LAC_RESET_PLAYER)));
     }
 
     @SubCommand(description = "lacImport", usage = "lacImportArgs", minArgs = 1)
@@ -157,36 +153,30 @@ public class CommandAdmin extends Command {
         }
 
         reply(true, "Downloading " + version.getName() + "...");
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-            @Override
-            public void run() {
-                String message = updater.downloadVersion();
-                final String response = message == null ? "&aUpdate successful, will be active on reboot." : "&c&lError: &c" + message;
-                Bukkit.getScheduler().runTask(plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        reply(response);
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            String message = updater.downloadVersion();
+            final String response = message == null ? "&aUpdate successful, will be active on reboot." : "&c&lError: &c" + message;
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                reply(response);
 //                        if(!Settings.ENABLE_CHANGELOG.value()) {
 //                            return;
 //                        }
 
-                        ItemStack changelog = updater.getChangelog();
-                        if(changelog == null) {
-                            reply("&cChangelog isn't available for this version.");
-                            return;
-                        }
+                ItemStack changelog = updater.getChangelog();
+                if(changelog == null) {
+                    reply("&cChangelog isn't available for this version.");
+                    return;
+                }
 
-                        ItemStack inHand = player.getItemInHand();
-                        player.setItemInHand(changelog);
-                        if(inHand != null) {
-                            player.getInventory().addItem(inHand);
-                        }
+                ItemStack inHand = player.getItemInHand();
+                player.setItemInHand(changelog);
+                if(inHand != null) {
+                    player.getInventory().addItem(inHand);
+                }
 
-                        reply("&llenis> &bCheck my changelog out! (I put it in your hand)");
-                        player.updateInventory();
-                    }
-                });
-            }
+                reply("&llenis> &bCheck my changelog out! (I put it in your hand)");
+                player.updateInventory();
+            });
         });
     }
 }

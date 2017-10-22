@@ -158,17 +158,9 @@ public class PlayerSession {
      * @param callback To run when action has been performed.
      */
     public void performActionAsync(final AuthAction action, final ActionCallback callback) {
-        LoginSecurity.getExecutorService().execute(new Runnable() {
-            @Override
-            public void run() {
-                final ActionResponse response = performAction(action);
-                Bukkit.getScheduler().runTask(LoginSecurity.getInstance(), new Runnable() {
-                    @Override
-                    public void run() {
-                        callback.call(response);
-                    }
-                });
-            }
+        LoginSecurity.getExecutorService().execute(() -> {
+            final ActionResponse response = performAction(action);
+            Bukkit.getScheduler().runTask(LoginSecurity.getInstance(), () -> callback.call(response));
         });
     }
 

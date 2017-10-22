@@ -22,6 +22,8 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurityConfig;
+import com.lenis0012.bukkit.loginsecurity.events.AuthModeChangedEvent;
+import com.lenis0012.bukkit.loginsecurity.session.AuthMode;
 import com.lenis0012.bukkit.loginsecurity.session.AuthService;
 import com.lenis0012.bukkit.loginsecurity.session.PlayerSession;
 import com.lenis0012.bukkit.loginsecurity.session.action.LoginAction;
@@ -109,5 +111,13 @@ public class ThreadingModule extends Module<LoginSecurity> implements Listener {
         final int seconds = (int) ((System.currentTimeMillis() - lastLogout) / 1000L);
         session.performAction(new LoginAction(AuthService.SESSION, plugin));
         player.sendMessage(translate(SESSION_CONTINUE).param("sec", seconds).toString());
+    }
+
+    @EventHandler
+    public void onAuthModeChanged(AuthModeChangedEvent event) {
+        if(event.getCurrentMode() != AuthMode.AUTHENTICATED) {
+            // User was logged out.
+            MetaData.set(event.getSession().getPlayer(), "ls_login_time", System.currentTimeMillis());
+        }
     }
 }

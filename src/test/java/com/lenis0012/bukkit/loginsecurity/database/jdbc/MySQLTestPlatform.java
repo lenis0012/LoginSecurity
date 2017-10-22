@@ -16,19 +16,20 @@
  * limitations under the License.
  */
 
-package com.lenis0012.bukkit.loginsecurity.database.jdbc.platform;
+package com.lenis0012.bukkit.loginsecurity.database.jdbc;
 
+import com.lenis0012.bukkit.loginsecurity.database.jdbc.platform.JdbcPlatform;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.sqlite.javax.SQLiteConnectionPoolDataSource;
+import org.h2.jdbcx.JdbcDataSource;
 
 import javax.sql.ConnectionPoolDataSource;
 
-public class TestPlatform implements JdbcPlatform {
+public class MySQLTestPlatform implements JdbcPlatform {
+
     @Override
     public ConnectionPoolDataSource configure(ConfigurationSection configuration) {
-        SQLiteConnectionPoolDataSource dataSource = new SQLiteConnectionPoolDataSource();
-        dataSource.setDatabaseName(":memory:");
+        JdbcDataSource dataSource = new JdbcDataSource();
+        dataSource.setURL("jdbc:h2:mem:loginsecurity;MODE=MYSQL");
         return dataSource;
     }
 
