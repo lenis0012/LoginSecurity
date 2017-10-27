@@ -19,13 +19,13 @@
 package com.lenis0012.bukkit.loginsecurity.database.jdbc;
 
 import com.lenis0012.bukkit.loginsecurity.database.jdbc.platform.JdbcPlatform;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.sqlite.javax.SQLiteConnectionPoolDataSource;
 
 import javax.sql.ConnectionPoolDataSource;
 
-public class SQLiteTestPlatform implements JdbcPlatform {
+import org.bukkit.configuration.ConfigurationSection;
+import org.sqlite.javax.SQLiteConnectionPoolDataSource;
+
+public class SQLiteTestPlatform extends JdbcPlatform {
     @Override
     public ConnectionPoolDataSource configure(ConfigurationSection configuration) {
         SQLiteConnectionPoolDataSource dataSource = new SQLiteConnectionPoolDataSource();
@@ -36,5 +36,10 @@ public class SQLiteTestPlatform implements JdbcPlatform {
     @Override
     public int getPingTimeout(ConfigurationSection configuration) {
         return 10;
+    }
+
+    @Override
+    public int getMaximumPoolSize(ConfigurationSection configuration) {
+        return 1;
     }
 }

@@ -31,6 +31,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
+import javax.sql.ConnectionPoolDataSource;
+
 import org.bukkit.configuration.ConfigurationSection;
 
 public class JdbcDaoFactory implements DaoFactory {
@@ -107,7 +109,11 @@ public class JdbcDaoFactory implements DaoFactory {
     }
 
     public static JdbcDaoFactory build(Logger logger, ConfigurationSection configuration, JdbcPlatform platform) {
-        JdbcConnectionPool connectionPool = new JdbcConnectionPool(platform.configure(configuration), 10, platform.getPingTimeout(configuration));
+        int pingTimeout = platform.getPingTimeout(configuration);
+        ConnectionPoolDataSource dataSource = platform.configure(configuration);
+        int maxConnections = platform.getMaximumPoolSize(configuration);
+
+        JdbcConnectionPool connectionPool = new JdbcConnectionPool(dataSource, maxConnections, pingTimeout);
         return new JdbcDaoFactory(logger, connectionPool, configuration.getName());
     }
 }
