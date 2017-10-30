@@ -18,14 +18,19 @@
 
 package com.lenis0012.bukkit.loginsecurity.database.jdbc.platform;
 
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
-
 import javax.sql.ConnectionPoolDataSource;
 
-public interface JdbcPlatform {
+import org.bukkit.configuration.ConfigurationSection;
 
-    ConnectionPoolDataSource configure(ConfigurationSection configuration);
+public abstract class JdbcPlatform {
 
-    int getPingTimeout(ConfigurationSection configuration);
+    public abstract ConnectionPoolDataSource configure(ConfigurationSection configuration);
+
+    public int getPingTimeout(ConfigurationSection configuration) {
+        return configuration.getInt("ping-timeout", 10);
+    }
+
+    public int getMaximumPoolSize(ConfigurationSection configuration) {
+        return configuration.getInt("pool-size", 25);
+    }
 }

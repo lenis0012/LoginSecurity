@@ -19,11 +19,12 @@
 package com.lenis0012.bukkit.loginsecurity.database.jdbc.platform;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
-import org.bukkit.configuration.ConfigurationSection;
 
 import javax.sql.ConnectionPoolDataSource;
 
-public class MysqlPlatform implements JdbcPlatform {
+import org.bukkit.configuration.ConfigurationSection;
+
+public class MysqlPlatform extends JdbcPlatform {
 
     @Override
     public ConnectionPoolDataSource configure(ConfigurationSection configuration) {
@@ -46,10 +47,5 @@ public class MysqlPlatform implements JdbcPlatform {
         dataSource.setMaintainTimeStats(false);
 
         return dataSource;
-    }
-
-    @Override
-    public int getPingTimeout(ConfigurationSection configuration) {
-        return configuration.getInt("ping-timeout", 10);
     }
 }

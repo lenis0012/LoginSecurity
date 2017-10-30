@@ -19,12 +19,13 @@
 package com.lenis0012.bukkit.loginsecurity.database.jdbc;
 
 import com.lenis0012.bukkit.loginsecurity.database.jdbc.platform.JdbcPlatform;
-import org.bukkit.configuration.ConfigurationSection;
-import org.h2.jdbcx.JdbcDataSource;
 
 import javax.sql.ConnectionPoolDataSource;
 
-public class MySQLTestPlatform implements JdbcPlatform {
+import org.bukkit.configuration.ConfigurationSection;
+import org.h2.jdbcx.JdbcDataSource;
+
+public class MySQLTestPlatform extends JdbcPlatform {
 
     @Override
     public ConnectionPoolDataSource configure(ConfigurationSection configuration) {

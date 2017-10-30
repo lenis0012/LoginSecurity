@@ -21,3 +21,4 @@ configuration:
     user: 'root'
     password: ''
     ping-timeout: 10
+    pool-size: 25
