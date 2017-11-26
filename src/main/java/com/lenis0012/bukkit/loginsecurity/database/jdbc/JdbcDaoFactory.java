@@ -23,15 +23,17 @@ import com.lenis0012.bukkit.loginsecurity.database.InventoryDao;
 import com.lenis0012.bukkit.loginsecurity.database.LocationDao;
 import com.lenis0012.bukkit.loginsecurity.database.ProfileDao;
 import com.lenis0012.bukkit.loginsecurity.database.jdbc.platform.JdbcPlatform;
-import org.bukkit.configuration.ConfigurationSection;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+
+import javax.sql.ConnectionPoolDataSource;
+
+import org.bukkit.configuration.ConfigurationSection;
 
 public class JdbcDaoFactory implements DaoFactory {
     private final Logger logger;
@@ -107,7 +109,11 @@ public class JdbcDaoFactory implements DaoFactory {
     }
 
     public static JdbcDaoFactory build(Logger logger, ConfigurationSection configuration, JdbcPlatform platform) {
-        JdbcConnectionPool connectionPool = new JdbcConnectionPool(platform.configure(configuration), platform.getPingTimeout(configuration));
+        int pingTimeout = platform.getPingTimeout(configuration);
+        ConnectionPoolDataSource dataSource = platform.configure(configuration);
+        int maxConnections = platform.getMaximumPoolSize(configuration);
+
+        JdbcConnectionPool connectionPool = new JdbcConnectionPool(dataSource, maxConnections, pingTimeout);
         return new JdbcDaoFactory(logger, connectionPool, configuration.getName());
     }
 }

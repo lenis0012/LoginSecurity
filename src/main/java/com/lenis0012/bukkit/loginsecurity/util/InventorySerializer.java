@@ -20,15 +20,16 @@ package com.lenis0012.bukkit.loginsecurity.util;
 
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerInventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.io.BukkitObjectInputStream;
-import org.bukkit.util.io.BukkitObjectOutputStream;
 
-import javax.xml.bind.DatatypeConverter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Base64;
 import java.util.logging.Level;
+
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.io.BukkitObjectInputStream;
+import org.bukkit.util.io.BukkitObjectOutputStream;
 
 /**
  * Serializes inventories into database objects.
@@ -60,7 +61,7 @@ public class InventorySerializer {
             baos = new ByteArrayOutputStream();
             BukkitObjectOutputStream output = new BukkitObjectOutputStream(baos);
             output.writeObject(item);
-            return DatatypeConverter.printBase64Binary(baos.toByteArray());
+            return Base64.getEncoder().encodeToString(baos.toByteArray());
         } catch(IOException e) {
             LoginSecurity.getInstance().getLogger().log(Level.SEVERE, "Failed to serialize item", e);
             return null;
@@ -77,7 +78,7 @@ public class InventorySerializer {
         if(item == null) return null;
         BukkitObjectInputStream input = null;
         try {
-            byte[] bytes = DatatypeConverter.parseBase64Binary(item);
+            byte[] bytes = Base64.getDecoder().decode(item);
             input = new BukkitObjectInputStream(new ByteArrayInputStream(bytes));
             return input.readObject();
         } catch(Exception e) {
