@@ -18,7 +18,7 @@
 
 package com.lenis0012.bukkit.loginsecurity.storage;
 
-public class PlayerInventory {
+public class PlayerInventory extends AbstractEntity {
     private int id;
 
     private String helmet;
@@ -46,6 +46,7 @@ public class PlayerInventory {
     }
 
     public void setHelmet(String helmet) {
+        markChanged();
         this.helmet = helmet;
     }
 
@@ -54,6 +55,7 @@ public class PlayerInventory {
     }
 
     public void setChestplate(String chestplate) {
+        markChanged();
         this.chestplate = chestplate;
     }
 
@@ -62,6 +64,7 @@ public class PlayerInventory {
     }
 
     public void setLeggings(String leggings) {
+        markChanged();
         this.leggings = leggings;
     }
 
@@ -70,6 +73,7 @@ public class PlayerInventory {
     }
 
     public void setBoots(String boots) {
+        markChanged();
         this.boots = boots;
     }
 
@@ -78,6 +82,7 @@ public class PlayerInventory {
     }
 
     public void setOffHand(String offHand) {
+        markChanged();
         this.offHand = offHand;
     }
 
@@ -86,6 +91,7 @@ public class PlayerInventory {
     }
 
     public void setContents(String contents) {
+        markChanged();
         this.contents = contents;
     }
 }

@@ -19,6 +19,7 @@
 package com.lenis0012.bukkit.loginsecurity.database.jdbc;
 
 import com.lenis0012.bukkit.loginsecurity.database.LocationDao;
+import com.lenis0012.bukkit.loginsecurity.storage.AbstractEntity;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerLocation;
 
 import java.sql.Connection;
@@ -124,6 +125,8 @@ public class JdbcLocationDao implements LocationDao {
         location.setZ(row.getDouble("z"));
         location.setYaw(row.getInt("yaw"));
         location.setPitch(row.getInt("pitch"));
+
+        location.setState(AbstractEntity.State.UNCHANGED);
         return location;
     }
 }

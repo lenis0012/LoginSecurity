@@ -19,6 +19,7 @@
 package com.lenis0012.bukkit.loginsecurity.database.jdbc;
 
 import com.lenis0012.bukkit.loginsecurity.database.ProfileDao;
+import com.lenis0012.bukkit.loginsecurity.storage.AbstractEntity;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 import com.lenis0012.bukkit.loginsecurity.util.UserIdMode;
 //import com.mysql.jdbc.ResultSetMetaData;
@@ -262,6 +263,7 @@ public class JdbcProfileDao implements ProfileDao {
         profile.setLoginLocation(daoFactory.locationDao.process(row));
         profile.setInventory(daoFactory.inventoryDao.process(row));
 
+        profile.setState(AbstractEntity.State.UNCHANGED);
         return profile;
     }
 }

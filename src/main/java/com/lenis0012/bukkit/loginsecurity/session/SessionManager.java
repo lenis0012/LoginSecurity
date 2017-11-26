@@ -75,7 +75,6 @@ public class SessionManager {
     }
 
     public final PlayerSession getOfflineSession(final String playerName) {
-//        PlayerProfile profile = database.find(PlayerProfile.class).where().ieq("last_name", playerName).findUnique();
         PlayerProfile profile = LoginSecurity.dao().getProfileDao().findByUsername(playerName);
         if(profile == null) {
             OfflinePlayer offline = Bukkit.getOfflinePlayer(playerName);
@@ -94,7 +93,6 @@ public class SessionManager {
     }
 
     private final PlayerSession newSession(final UUID playerId) {
-//        PlayerProfile profile = database.find(PlayerProfile.class).where().ieq("unique_user_id", playerId.toString()).findUnique();
         PlayerProfile profile = LoginSecurity.dao().getProfileDao().findByUniqueUserId(playerId);
         AuthMode authMode = AuthMode.UNAUTHENTICATED;
         if(profile == null) {

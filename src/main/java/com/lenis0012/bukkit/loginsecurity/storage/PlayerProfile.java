@@ -24,7 +24,7 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.UUID;
 
-public class PlayerProfile {
+public class PlayerProfile extends AbstractEntity {
     private int id;
 
     private UUID uniqueUserId;
@@ -62,6 +62,7 @@ public class PlayerProfile {
     }
 
     public void setUniqueUserId(UUID uniqueUserId) {
+        markChanged();
         this.uniqueUserId = uniqueUserId;
     }
 
@@ -72,6 +73,7 @@ public class PlayerProfile {
 
     @Deprecated
     public void setUniqueUserId(String uniqueUserId) {
+        markChanged();
         this.uniqueUserId = UUID.fromString(uniqueUserId);
     }
 
@@ -80,6 +82,7 @@ public class PlayerProfile {
     }
 
     public void setLastName(String lastName) {
+        markChanged();
         this.lastName = lastName;
     }
 
@@ -88,6 +91,7 @@ public class PlayerProfile {
     }
 
     public void setIpAddress(String ipAddress) {
+        markChanged();
         this.ipAddress = ipAddress;
     }
 
@@ -96,6 +100,7 @@ public class PlayerProfile {
     }
 
     public void setPassword(String password) {
+        markChanged();
         this.password = password;
     }
 
@@ -104,6 +109,7 @@ public class PlayerProfile {
     }
 
     public void setHashingAlgorithm(int hashingAlgorithm) {
+        markChanged();
         this.hashingAlgorithm = hashingAlgorithm;
     }
 
@@ -112,6 +118,7 @@ public class PlayerProfile {
     }
 
     public void setLastLogin(Timestamp lastLogin) {
+        markChanged();
         this.lastLogin = lastLogin;
     }
 
@@ -136,6 +143,7 @@ public class PlayerProfile {
     }
 
     public void setRegistrationDate(Date registrationDate) {
+        markChanged();
         this.registrationDate = registrationDate;
     }
 
@@ -144,6 +152,7 @@ public class PlayerProfile {
     }
 
     public void setVersion(long version) {
+        markChanged();
         this.version = version;
     }
 
@@ -152,6 +161,7 @@ public class PlayerProfile {
     }
 
     public void setUniqueIdMode(UserIdMode uniqueIdMode) {
+        markChanged();
         this.uniqueIdMode = uniqueIdMode;
     }
 }

@@ -18,14 +18,13 @@
 
 package com.lenis0012.bukkit.loginsecurity.session;
 
-import com.avaje.ebean.EbeanServer;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
-import com.lenis0012.bukkit.loginsecurity.LoginSecurityConfig;
 import com.lenis0012.bukkit.loginsecurity.events.AuthActionEvent;
 import com.lenis0012.bukkit.loginsecurity.events.AuthModeChangedEvent;
 import com.lenis0012.bukkit.loginsecurity.session.action.ActionCallback;
 import com.lenis0012.bukkit.loginsecurity.session.action.ActionResponse;
 import com.lenis0012.bukkit.loginsecurity.session.exceptions.ProfileRefreshException;
+import com.lenis0012.bukkit.loginsecurity.storage.AbstractEntity;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -68,7 +67,31 @@ public class PlayerSession {
             throw new IllegalStateException("Can't save profile when not registered!");
         }
 
-        LoginSecurity.dao().getProfileDao().updateProfile(profile);
+        if(profile.getState() == AbstractEntity.State.CHANGED) {
+            LoginSecurity.dao().getProfileDao().updateProfile(profile);
+        }
+
+        if(profile.getLoginLocation() != null) {
+            switch (profile.getLoginLocation().getState()) {
+                case NEW:
+                    LoginSecurity.dao().getLocationDao().insertLocation(profile.getLoginLocation());
+                    break;
+                case CHANGED:
+                    LoginSecurity.dao().getLocationDao().updateLocation(profile.getLoginLocation());
+                    break;
+            }
+        }
+
+        if(profile.getInventory() != null) {
+            switch (profile.getInventory().getState()) {
+                case NEW:
+                    LoginSecurity.dao().getInventoryDao().insertInventory(profile.getInventory());
+                    break;
+                case CHANGED:
+                    LoginSecurity.dao().getInventoryDao().updateInventory(profile.getInventory());
+                    break;
+            }
+        }
     }
 
     /**

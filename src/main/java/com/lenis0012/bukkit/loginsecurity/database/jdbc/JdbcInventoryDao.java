@@ -19,6 +19,7 @@
 package com.lenis0012.bukkit.loginsecurity.database.jdbc;
 
 import com.lenis0012.bukkit.loginsecurity.database.InventoryDao;
+import com.lenis0012.bukkit.loginsecurity.storage.AbstractEntity;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerInventory;
 
 import java.sql.Connection;
@@ -123,6 +124,8 @@ public class JdbcInventoryDao implements InventoryDao {
         inventory.setBoots(row.getString("boots"));
         inventory.setOffHand(row.getString("off_hand"));
         inventory.setContents(row.getString("contents"));
+
+        inventory.setState(AbstractEntity.State.UNCHANGED);
         return inventory;
     }
 }

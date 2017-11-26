@@ -22,7 +22,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-public class PlayerLocation {
+public class PlayerLocation extends AbstractEntity {
     private int id;
 
     private String world;
@@ -74,6 +74,7 @@ public class PlayerLocation {
     }
 
     public void setWorld(String world) {
+        markChanged();
         this.world = world;
     }
 
@@ -82,6 +83,7 @@ public class PlayerLocation {
     }
 
     public void setX(double x) {
+        markChanged();
         this.x = x;
     }
 
@@ -90,6 +92,7 @@ public class PlayerLocation {
     }
 
     public void setY(double y) {
+        markChanged();
         this.y = y;
     }
 
@@ -98,6 +101,7 @@ public class PlayerLocation {
     }
 
     public void setZ(double z) {
+        markChanged();
         this.z = z;
     }
 
@@ -106,6 +110,7 @@ public class PlayerLocation {
     }
 
     public void setYaw(int yaw) {
+        markChanged();
         this.yaw = yaw;
     }
 
@@ -114,6 +119,7 @@ public class PlayerLocation {
     }
 
     public void setPitch(int pitch) {
+        markChanged();
         this.pitch = pitch;
     }
 }
