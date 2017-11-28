@@ -127,6 +127,7 @@ public class PlayerProfile extends AbstractEntity {
     }
 
     public void setLoginLocation(PlayerLocation loginLocation) {
+        markChanged();
         this.loginLocation = loginLocation;
     }
 
@@ -135,6 +136,7 @@ public class PlayerProfile extends AbstractEntity {
     }
 
     public void setInventory(PlayerInventory inventory) {
+        markChanged();
         this.inventory = inventory;
     }
 

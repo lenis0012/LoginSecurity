@@ -22,10 +22,7 @@ import com.lenis0012.bukkit.loginsecurity.database.LocationDao;
 import com.lenis0012.bukkit.loginsecurity.storage.AbstractEntity;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerLocation;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -59,7 +56,7 @@ public class JdbcLocationDao implements LocationDao {
         try(Connection connection =  connectionPool.getConnection()) {
             PreparedStatement statement = connection.prepareStatement("INSERT INTO ls_locations (world, x, y, z, yaw, pitch) " +
                     "VALUES (?,?,?,?,?,?);",
-                    new String[] { "id" }
+                    Statement.RETURN_GENERATED_KEYS
             );
 
             statement.setString(1, location.getWorld());
@@ -68,13 +65,16 @@ public class JdbcLocationDao implements LocationDao {
             statement.setDouble(4, location.getZ());
             statement.setInt(5, location.getYaw());
             statement.setInt(6, location.getPitch());
+            statement.executeUpdate();
 
             ResultSet keys = statement.getGeneratedKeys();
             if(!keys.next()) {
                 throw new RuntimeException("No keys were returned after insert");
             }
 
-            return keys.getInt("id");
+            int id = keys.getInt(1);
+            location.setId(id);
+            return id;
         } catch (SQLException e) {
             throw new RuntimeException("Failed to find profile by id in JDBC", e);
         }

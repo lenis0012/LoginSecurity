@@ -22,10 +22,7 @@ import com.lenis0012.bukkit.loginsecurity.database.InventoryDao;
 import com.lenis0012.bukkit.loginsecurity.storage.AbstractEntity;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerInventory;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -59,7 +56,7 @@ public class JdbcInventoryDao implements InventoryDao {
         try(Connection connection =  connectionPool.getConnection()) {
             PreparedStatement statement = connection.prepareStatement("INSERT INTO ls_inventories (helmet, chestplate, leggings, boots, off_hand, contents) " +
                     "VALUES (?,?,?,?,?,?);",
-                    new String[] { "id" }
+                    Statement.RETURN_GENERATED_KEYS
             );
 
             statement.setString(1, inventory.getHelmet());
@@ -68,12 +65,16 @@ public class JdbcInventoryDao implements InventoryDao {
             statement.setString(4, inventory.getBoots());
             statement.setString(5, inventory.getOffHand());
             statement.setString(6, inventory.getContents());
+            statement.executeUpdate();
+
             ResultSet keys = statement.getGeneratedKeys();
             if(!keys.next()) {
                 throw new RuntimeException("No keys were returned after insert");
             }
 
-            return keys.getInt("id");
+            int id = keys.getInt(1);
+            inventory.setId(id);
+            return id;
         } catch (SQLException e) {
             throw new RuntimeException("Failed to find profile by id in JDBC", e);
         }

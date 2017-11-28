@@ -67,10 +67,6 @@ public class PlayerSession {
             throw new IllegalStateException("Can't save profile when not registered!");
         }
 
-        if(profile.getState() == AbstractEntity.State.CHANGED) {
-            LoginSecurity.dao().getProfileDao().updateProfile(profile);
-        }
-
         if(profile.getLoginLocation() != null) {
             switch (profile.getLoginLocation().getState()) {
                 case NEW:
@@ -85,12 +81,17 @@ public class PlayerSession {
         if(profile.getInventory() != null) {
             switch (profile.getInventory().getState()) {
                 case NEW:
+                    LoginSecurity.getInstance().getLogger().info("Inserting inventory");
                     LoginSecurity.dao().getInventoryDao().insertInventory(profile.getInventory());
                     break;
                 case CHANGED:
                     LoginSecurity.dao().getInventoryDao().updateInventory(profile.getInventory());
                     break;
             }
+        }
+
+        if(profile.getState() == AbstractEntity.State.CHANGED) {
+            LoginSecurity.dao().getProfileDao().updateProfile(profile);
         }
     }
 

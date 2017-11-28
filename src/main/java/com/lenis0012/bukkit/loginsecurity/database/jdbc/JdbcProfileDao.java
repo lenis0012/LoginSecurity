@@ -189,7 +189,7 @@ public class JdbcProfileDao implements ProfileDao {
     public int insertProfile(PlayerProfile profile) {
         try(Connection connection = connectionPool.getConnection()) {
             PreparedStatement statement = connection.prepareStatement(
-                    "INSERT INTO ls_players(uuid_mode,unique_user_id,last_name,ip_address,password,hashing_algorithm,last_login,registration_date,optlock) VALUES(?,?,?,?,?,?,?,?,?);",
+                    "INSERT INTO ls_players(uuid_mode,unique_user_id,last_name,ip_address,password,hashing_algorithm,location_id,inventory_id,last_login,registration_date,optlock) VALUES(?,?,?,?,?,?,?,?,?,?,?);",
                     Statement.RETURN_GENERATED_KEYS
             );
             statement.setString(1, profile.getUniqueIdMode().getId());
@@ -198,9 +198,11 @@ public class JdbcProfileDao implements ProfileDao {
             statement.setString(4, profile.getIpAddress());
             statement.setString(5, profile.getPassword());
             statement.setInt(6, profile.getHashingAlgorithm());
-            statement.setTimestamp(7, Timestamp.from(Instant.now()));
-            statement.setDate(8, new Date(System.currentTimeMillis()));
-            statement.setLong(9, 1);
+            statement.setObject(7, profile.getLoginLocation() != null ? profile.getLoginLocation().getId() : null, Types.INTEGER);
+            statement.setObject(8, profile.getInventory() != null ? profile.getInventory().getId() : null, Types.INTEGER);
+            statement.setTimestamp(9, Timestamp.from(Instant.now()));
+            statement.setDate(10, new Date(System.currentTimeMillis()));
+            statement.setLong(11, 1);
             statement.executeUpdate();
 
             ResultSet keys = statement.getGeneratedKeys();
@@ -230,14 +232,16 @@ public class JdbcProfileDao implements ProfileDao {
     @Override
     public boolean updateProfile(PlayerProfile profile) {
         try(Connection connection = connectionPool.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("UPDATE ls_players SET last_name=?,ip_address=?,password=?,hashing_algorithm=?,last_login=?,optlock=? WHERE id=?;");
+            PreparedStatement statement = connection.prepareStatement("UPDATE ls_players SET last_name=?,ip_address=?,password=?,hashing_algorithm=?,location_id=?,inventory_id=?,last_login=?,optlock=? WHERE id=?;");
             statement.setString(1, profile.getLastName());
             statement.setString(2, profile.getIpAddress());
             statement.setString(3, profile.getPassword());
             statement.setInt(4, profile.getHashingAlgorithm());
-            statement.setTimestamp(5, Timestamp.from(Instant.now()));
-            statement.setLong(6, profile.getVersion() + 1);
-            statement.setInt(7, profile.getId());
+            statement.setObject(5, profile.getLoginLocation() != null ? profile.getLoginLocation().getId() : null, Types.INTEGER);
+            statement.setObject(6, profile.getInventory() != null ? profile.getInventory().getId() : null, Types.INTEGER);
+            statement.setTimestamp(7, Timestamp.from(Instant.now()));
+            statement.setLong(8, profile.getVersion() + 1);
+            statement.setInt(9, profile.getId());
             return statement.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new RuntimeException("Failed to find profile by uuid in JDBC", e);
