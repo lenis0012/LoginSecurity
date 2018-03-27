@@ -203,10 +203,14 @@ public class PlayerListener implements Listener {
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
         final LoginSecurityConfig config = LoginSecurity.getConfiguration();
         if(config.isUseCommandShortcut()) {
-            if(event.getMessage().startsWith(config.getLoginCommandShortcut() + " ")) {
+            if(event.getMessage().toLowerCase().startsWith(config.getLoginCommandShortcut() + " ")) {
                 event.setMessage("/login " + event.getMessage().substring(config.getLoginCommandShortcut().length() + 1));
-            } else if(event.getMessage().startsWith(config.getRegisterCommandShortcut() + " ")) {
+            } else if(event.getMessage().toLowerCase().startsWith(config.getRegisterCommandShortcut() + " ")) {
                 event.setMessage("/register " + event.getMessage().substring(config.getLoginCommandShortcut().length()  + 1));
+            } else if(event.getMessage().equalsIgnoreCase(config.getLoginCommandShortcut())) {
+                event.setMessage("/login");
+            } else if(event.getMessage().equalsIgnoreCase(config.getRegisterCommandShortcut())) {
+                event.setMessage("/register");
             }
         }
 
