@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/LoginSecurity.iml" filepath="$PROJECT_DIR$/LoginSecurity.iml" />
+      <module fileurl="file://$PROJECT_DIR$/loginsecurity.iml" filepath="$PROJECT_DIR$/loginsecurity.iml" />
     </modules>
   </component>
 </project>

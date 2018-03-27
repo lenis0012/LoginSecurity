@@ -153,10 +153,12 @@ public class PlayerListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onAuthChange(AuthModeChangedEvent event) {
         final PlayerSession session = event.getSession();
-        final Player player = session.getPlayer();
         if(event.getCurrentMode() != AuthMode.AUTHENTICATED) {
             return;
-        } if(!session.isLoggedIn() || !player.hasPermission("loginsecurity.update")) {
+        }
+
+        final Player player = session.getPlayer();
+        if(!session.isLoggedIn() || !player.hasPermission("loginsecurity.update")) {
             return;
         }
 
