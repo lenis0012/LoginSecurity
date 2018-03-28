@@ -206,7 +206,7 @@ public class PlayerListener implements Listener {
             if(event.getMessage().toLowerCase().startsWith(config.getLoginCommandShortcut() + " ")) {
                 event.setMessage("/login " + event.getMessage().substring(config.getLoginCommandShortcut().length() + 1));
             } else if(event.getMessage().toLowerCase().startsWith(config.getRegisterCommandShortcut() + " ")) {
-                event.setMessage("/register " + event.getMessage().substring(config.getLoginCommandShortcut().length()  + 1));
+                event.setMessage("/register " + event.getMessage().substring(config.getRegisterCommandShortcut().length()  + 1));
             } else if(event.getMessage().equalsIgnoreCase(config.getLoginCommandShortcut())) {
                 event.setMessage("/login");
             } else if(event.getMessage().equalsIgnoreCase(config.getRegisterCommandShortcut())) {
