@@ -11,7 +11,7 @@ pipeline {
     }
     stage('Build') {
       steps {
-        withMaven() {
+        withMaven(jdk: 'JDK 8', maven: 'Maven 3', publisherStrategy: 'EXPLICIT') {
           sh 'mvn install'
         }
 
