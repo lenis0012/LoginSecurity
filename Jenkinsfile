@@ -3,7 +3,7 @@ pipeline {
   stages {
     stage('Prepare') {
       steps {
-        withMaven() {
+        withMaven(maven: 'Maven 3', jdk: 'JDK 8', publisherStrategy: 'EXPLICIT') {
           sh 'mvn clean'
         }
 
