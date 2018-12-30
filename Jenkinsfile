@@ -3,12 +3,18 @@ pipeline {
   stages {
     stage('Prepare') {
       steps {
-        sh 'mvn clean'
+        withMaven() {
+          sh 'mvn clean'
+        }
+
       }
     }
     stage('Build') {
       steps {
-        sh 'mvn install'
+        withMaven() {
+          sh 'mvn install'
+        }
+
       }
     }
     stage('Archive') {
