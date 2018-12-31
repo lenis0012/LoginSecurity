@@ -67,6 +67,9 @@ public class CaptchaManager extends Module<LoginSecurity> implements Listener {
         MetaData.set(player, "ls_captcha_callback", callback);
         MetaData.set(player, "ls_captcha_value", randomCaptcha(5));
         player.setItemInHand(item);
+
+        view.setCenterX(player.getLocation().getBlockX());
+        view.setCenterZ(player.getLocation().getBlockZ());
         player.sendMap(view);
     }
 
