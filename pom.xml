@@ -12,7 +12,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.jdkVersion>1.7</project.jdkVersion>
+        <project.jdkVersion>1.8</project.jdkVersion>
     </properties>
 
     <profiles>
@@ -29,7 +29,7 @@
                 <dependency>
                     <groupId>com.lenis0012.updater</groupId>
                     <artifactId>updater-bukkit</artifactId>
-                    <version>1</version>
+                    <version>1.0</version>
                     <scope>compile</scope>
                     <optional>true</optional>
                 </dependency>
@@ -45,7 +45,7 @@
                 <dependency>
                     <groupId>com.lenis0012.updater</groupId>
                     <artifactId>updater-spigot</artifactId>
-                    <version>1</version>
+                    <version>1.0</version>
                     <scope>compile</scope>
                     <optional>true</optional>
                 </dependency>
@@ -96,7 +96,7 @@
         <dependency>
             <groupId>com.lenis0012.bukkit</groupId>
             <artifactId>lenisutils</artifactId>
-            <version>1</version>
+            <version>1.0</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
@@ -141,7 +141,7 @@
         <dependency>
             <groupId>com.lenis0012.updater</groupId>
             <artifactId>updater-api</artifactId>
-            <version>1</version>
+            <version>1.0</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
@@ -263,7 +263,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.1</version>
+                <version>3.1.1</version>
                 <configuration>
                     <archive>
                         <manifestEntries>
@@ -278,7 +278,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.10.4</version>
+                <version>3.0.1</version>
                 <configuration>
                     <reportOutputDirectory>${project.build.directory}</reportOutputDirectory>
                     <destDir>javadocs</destDir>
