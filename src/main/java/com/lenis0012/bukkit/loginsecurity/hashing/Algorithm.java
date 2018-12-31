@@ -2,9 +2,7 @@ package com.lenis0012.bukkit.loginsecurity.hashing;
 
 import com.lenis0012.bukkit.loginsecurity.hashing.active.*;
 import com.lenis0012.bukkit.loginsecurity.hashing.authme.AuthmeSHA;
-import com.lenis0012.bukkit.loginsecurity.hashing.deprecated.MD5;
-import com.lenis0012.bukkit.loginsecurity.hashing.deprecated.PHPBB3;
-import com.lenis0012.bukkit.loginsecurity.hashing.deprecated.SHA2;
+import com.lenis0012.bukkit.loginsecurity.hashing.deprecated.*;
 import com.lenis0012.bukkit.loginsecurity.hashing.xauth.xAuthAlgorithm;
 
 /**
@@ -21,14 +19,18 @@ public enum Algorithm {
      * LoginSecurity active.
      */
     BCRYPT(false, 7, new BCrypt()), // 7 Because BCrypt is the only legacy algorithm that is still supported
-    SCRYPT(false, 21, new SCrypt()),
-    ARGON2(false, 22, new Argon2()),
-    PBKDF2(false, 23, new PBKDF2()),
-    SHA3_256(false, 24, new SHA3(256)),
-    WHIRLPOOL(false, 25, new Whirlpool()),
 
     /**
      * LoginSecurity deprecated.
+     */
+    SCRYPT(true, 21, new SCrypt()),
+    ARGON2(true, 22, new Argon2()),
+    PBKDF2(true, 23, new PBKDF2()),
+    SHA3_256(true, 24, new SHA3(256)),
+    WHIRLPOOL(true, 25, new Whirlpool()),
+
+    /**
+     * LoginSecurity Legacy & Deprecated
      */
     MD5(true, 1, new MD5()),
     SHA(true, 4, new SHA2("SHA")),

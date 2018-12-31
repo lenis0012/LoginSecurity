@@ -1,4 +1,4 @@
-package com.lenis0012.bukkit.loginsecurity.hashing.active;
+package com.lenis0012.bukkit.loginsecurity.hashing.deprecated;
 
 import com.lenis0012.bukkit.loginsecurity.hashing.BasicAlgorithm;
 import de.mkammerer.argon2.Argon2Factory;

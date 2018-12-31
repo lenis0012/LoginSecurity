@@ -38,8 +38,9 @@ public class LoginSecurityConfig extends AbstractConfig {
     @ConfigKey(path="password-max-length")
     private int passwordMaxLength = 32;
     @ConfigHeader({
-            "Available algorithms: BCRYPT, SCRYPT, PBKDF2, SHA3_256, WHIRLPOOL",
-            "Check wiki for additional parameters."
+            "Available algorithms: BCRYPT",
+            "All other options are deprecated and will be removed in the near future.",
+            "If you are using a property different from Bcrypt, please wait a few weeks before upgrading to LoginSecurity 3.x to allow all password to be migrated."
     })
     @ConfigKey(path="password.hashing.algorithm")
     private String hashingAlgorithm = "BCRYPT";
@@ -116,5 +117,9 @@ public class LoginSecurityConfig extends AbstractConfig {
 
     public Algorithm getHashingAlgorithm() {
         return Algorithm.valueOf(hashingAlgorithm.toUpperCase());
+    }
+
+    public void setHashingAlgorithm(Algorithm algorithm) {
+        this.hashingAlgorithm = algorithm.toString().toUpperCase();
     }
 }

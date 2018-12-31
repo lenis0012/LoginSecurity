@@ -6,11 +6,14 @@ import com.lenis0012.bukkit.loginsecurity.hashing.Algorithm;
 import com.lenis0012.bukkit.loginsecurity.session.*;
 import com.lenis0012.bukkit.loginsecurity.session.action.ActionCallback;
 import com.lenis0012.bukkit.loginsecurity.session.action.ActionResponse;
+import com.lenis0012.bukkit.loginsecurity.session.action.ChangePassAction;
 import com.lenis0012.bukkit.loginsecurity.session.action.LoginAction;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 import com.lenis0012.bukkit.loginsecurity.util.MetaData;
 import com.lenis0012.pluginutils.modules.command.Command;
 import org.bukkit.entity.Player;
+
+import java.util.logging.Level;
 
 import static com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys.*;
 import static com.lenis0012.bukkit.loginsecurity.LoginSecurity.translate;
@@ -56,16 +59,18 @@ public class CommandLogin extends Command {
 
         // Perform login
         AuthAction action = new LoginAction(AuthService.PLAYER, player);
-        session.performActionAsync(action, new LoginCallback(this, player));
+        session.performActionAsync(action, new LoginCallback(this, player, algorithm.isDeprecated() ? password : null));
     }
 
     private static final class LoginCallback implements ActionCallback {
         private final CommandLogin command;
         private final Player player;
+        private final String migrate;
 
-        private LoginCallback(CommandLogin command, Player player) {
+        private LoginCallback(CommandLogin command, Player player, String migrate) {
             this.command = command;
             this.player = player;
+            this.migrate = migrate;
         }
 
         @Override
@@ -76,6 +81,14 @@ public class CommandLogin extends Command {
             }
 
             command.reply(player, true, translate(LOGIN_SUCCESS));
+
+            // Re-hash if algorithm deprecated
+            if(migrate != null) {
+                final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
+                LoginSecurity.getInstance().getLogger().log(Level.INFO, "Migrating password for user " + player.getName());
+                ChangePassAction changePassAction = new ChangePassAction(AuthService.PLUGIN, LoginSecurity.getInstance(), migrate);
+                session.performActionAsync(changePassAction, (r) -> LoginSecurity.getInstance().getLogger().log(Level.INFO, "Password migration successfully finished for " + player.getName()));
+            }
         }
     }
 }
