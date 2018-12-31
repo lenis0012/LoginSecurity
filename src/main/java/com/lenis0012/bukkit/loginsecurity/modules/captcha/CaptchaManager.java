@@ -13,14 +13,18 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 
+import java.lang.reflect.Method;
 import java.util.Random;
+import java.util.logging.Level;
 
 public class CaptchaManager extends Module<LoginSecurity> implements Listener {
     private final Random random = new Random();
     private MapView view;
+    private Method setMapIdMethod;
 
     public CaptchaManager(LoginSecurity plugin) {
         super(plugin);
@@ -34,6 +38,11 @@ public class CaptchaManager extends Module<LoginSecurity> implements Listener {
         }
         view.addRenderer(new CaptchaRenderer());
         register(this);
+
+        try {
+            setMapIdMethod = MapMeta.class.getMethod("setMapId", int.class);
+        } catch (Exception e) {
+        }
     }
 
     @Override
@@ -41,8 +50,17 @@ public class CaptchaManager extends Module<LoginSecurity> implements Listener {
     }
 
     public void giveMapItem(Player player, Runnable callback) {
-        ItemStack item = new ItemStack(Material.MAP, 1, view.getId());
+        ItemStack item = new ItemStack(Material.MAP, 1, (short) view.getId());
         ItemMeta meta = item.getItemMeta();
+
+        if(setMapIdMethod != null) {
+            try {
+                setMapIdMethod.invoke(meta, view.getId());
+            } catch (Exception e) {
+                LoginSecurity.getInstance().getLogger().log(Level.WARNING, "Failed to set map", e);
+            }
+        }
+
         meta.setDisplayName("Captcha [Enter In Chat]");
         item.setItemMeta(meta);
         MetaData.set(player, "ls_captcha_callback", callback);
