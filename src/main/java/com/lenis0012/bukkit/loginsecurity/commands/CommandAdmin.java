@@ -14,6 +14,7 @@ import com.lenis0012.pluginutils.modules.command.Command;
 import com.lenis0012.updater.api.Updater;
 import com.lenis0012.updater.api.Version;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -87,13 +88,11 @@ public class CommandAdmin extends Command {
             return;
         }
 
-        final Player admin = player;
-        session.performActionAsync(new RemovePassAction(AuthService.ADMIN, admin), new ActionCallback() {
-            @Override
-            public void call(ActionResponse response) {
-                reply(admin, true, translate(LAC_RESET_PLAYER));
-            }
-        });
+        final CommandSender admin = sender;
+        session.performActionAsync(
+                new RemovePassAction(AuthService.ADMIN, admin),
+                response -> reply(admin, true, translate(LAC_RESET_PLAYER))
+        );
     }
 
     @SubCommand(description = "lacImport", usage = "lacImportArgs", minArgs = 1)
