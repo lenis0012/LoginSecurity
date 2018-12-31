@@ -41,6 +41,7 @@ public class CaptchaManager extends Module<LoginSecurity> implements Listener {
 
         try {
             setMapIdMethod = MapMeta.class.getMethod("setMapId", int.class);
+            LoginSecurity.getInstance().getLogger().log(Level.INFO, "Using 1.13 map captcha renderer");
         } catch (Exception e) {
         }
     }
