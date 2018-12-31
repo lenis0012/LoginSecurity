@@ -1,8 +1,8 @@
 {
   "release": {
-    "name": "LoginSecurity v2.1.7",
+    "name": "LoginSecurity v2.1.8",
     "type": "release",
-    "gameVersion": "1.12",
-    "downloadURL": "http://ci.lenis0012.com/job/LoginSecurity/7/artifact/target/LoginSecurity-2.1.7-Spigot.jar"
+    "gameVersion": "1.13.2",
+    "downloadURL": "http://ci.lenis0012.com/job/LoginSecurity/12/artifact/target/LoginSecurity-2.1.8-Spigot.jar"
   }
 }

@@ -1,11 +1,26 @@
 {
-  "version": "LoginSecurity v2.1.7",
+  "version": "LoginSecurity v2.1.8",
   "data":
   [
     [
       "---[ Changelog ]---",
       "",
-      "- Hotfix for 1.12 support",
+      "- Full support for MC 1.13.2 and Java 9+",
+      "",
+      "- Fixed captcha bug",
+      "",
+      "- Fixed logout instant timeout bug",
+      "",
+      "- Fixed command shortcut for login",
+      "",
+      "- And more..."
+    ],
+    [
+      "!!! IMPORTANT !!!",
+      "",
+      "If you have changed the hashing algorithm setting in the config, everyone's password will be migrated to BCrypt automatically.",
+      "",
+      "If you don't know what this means, you are not affected."
     ],
     [
       "====[ DONATE ]====",
