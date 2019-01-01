@@ -17,6 +17,7 @@ import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Random;
 import java.util.logging.Level;
@@ -25,6 +26,9 @@ public class CaptchaManager extends Module<LoginSecurity> implements Listener {
     private final Random random = new Random();
     private MapView view;
     private Method setMapIdMethod;
+
+    private int mapViewId;
+    private boolean failedToLoadMapView = false;
 
     public CaptchaManager(LoginSecurity plugin) {
         super(plugin);
@@ -39,10 +43,27 @@ public class CaptchaManager extends Module<LoginSecurity> implements Listener {
         view.addRenderer(new CaptchaRenderer());
         register(this);
 
+        // Load set ID method
         try {
             setMapIdMethod = MapMeta.class.getMethod("setMapId", int.class);
-            LoginSecurity.getInstance().getLogger().log(Level.INFO, "Using 1.13 map captcha renderer");
+            LoginSecurity.getInstance().getLogger().log(Level.INFO, "Using 1.12+ map captcha renderer");
         } catch (Exception e) {
+        }
+
+        // Get map view ID
+        try {
+            Method getMapIdMethod = MapView.class.getMethod("getId", int.class);
+            this.mapViewId = (int) getMapIdMethod.invoke(view);
+            LoginSecurity.getInstance().getLogger().log(Level.INFO, "Using 1.12+ map loader");
+        } catch (Exception e) {
+            try {
+                Method getMapIdMethod = MapView.class.getMethod("getId", short.class);
+                this.mapViewId = (int) getMapIdMethod.invoke(view);
+                LoginSecurity.getInstance().getLogger().log(Level.INFO, "Using legacy map loader");
+            } catch (Exception e2) {
+                LoginSecurity.getInstance().getLogger().log(Level.SEVERE, "Failed to create map loader, captcha's will be disabled.", e2);
+                this.failedToLoadMapView = true;
+            }
         }
     }
 
@@ -51,12 +72,18 @@ public class CaptchaManager extends Module<LoginSecurity> implements Listener {
     }
 
     public void giveMapItem(Player player, Runnable callback) {
-        ItemStack item = new ItemStack(Material.MAP, 1, (short) view.getId());
+        if(failedToLoadMapView) {
+            // Map loader could not be created. =(
+            callback.run();
+            return;
+        }
+
+        ItemStack item = new ItemStack(Material.MAP, 1, (short) mapViewId);
         ItemMeta meta = item.getItemMeta();
 
         if(setMapIdMethod != null) {
             try {
-                setMapIdMethod.invoke(meta, view.getId());
+                setMapIdMethod.invoke(meta, mapViewId);
             } catch (Exception e) {
                 LoginSecurity.getInstance().getLogger().log(Level.WARNING, "Failed to set map", e);
             }
