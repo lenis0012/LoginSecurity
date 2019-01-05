@@ -72,9 +72,9 @@ public class CommandAdmin extends Command {
         for(Entry<String, Method> entry : methods.entrySet()) {
             String name = entry.getKey();
             SubCommand info = entry.getValue().getAnnotation(SubCommand.class);
-            String usage = info.usage().isEmpty() ? "" : translate(info.usage()).toString();
+            String usage = info.usage().isEmpty() ? "" : " " + translate(info.usage()).toString();
             String desc = info.description().startsWith("NoTrans:") ? info.description().substring("NoTrans:".length()) : translate(info.description()).toString();
-            reply("&b/lac " + name + " " + usage + " &7- &f" + desc);
+            reply("&b/lac " + name + usage + " &7- &f" + desc);
         }
     }
 
