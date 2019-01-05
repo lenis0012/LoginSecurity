@@ -74,7 +74,7 @@ public class CommandAdmin extends Command {
             SubCommand info = entry.getValue().getAnnotation(SubCommand.class);
             String usage = info.usage().isEmpty() ? "" : translate(info.usage()).toString();
             String desc = info.description().startsWith("NoTrans:") ? info.description().substring("NoTrans:".length()) : translate(info.description()).toString();
-            reply("&b/" + name + usage + " &7- &f" + desc);
+            reply("&b/lac " + name + usage + " &7- &f" + desc);
         }
     }
 
