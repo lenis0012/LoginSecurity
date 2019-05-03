@@ -24,7 +24,6 @@ public enum Algorithm {
      * LoginSecurity deprecated.
      */
     SCRYPT(true, 21, new SCrypt()),
-    ARGON2(true, 22, new Argon2()),
     PBKDF2(true, 23, new PBKDF2()),
     SHA3_256(true, 24, new SHA3(256)),
     WHIRLPOOL(true, 25, new Whirlpool()),

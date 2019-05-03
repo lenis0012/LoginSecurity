@@ -17,8 +17,10 @@ import com.lenis0012.bukkit.loginsecurity.util.LoggingFilter;
 import com.lenis0012.pluginutils.PluginHolder;
 import com.lenis0012.pluginutils.modules.configuration.ConfigurationModule;
 import org.apache.logging.log4j.LogManager;
+import org.bukkit.Bukkit;
 
 import java.util.List;
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -72,6 +74,9 @@ public class LoginSecurity extends PluginHolder {
     public static TranslatedMessage translate(String key) {
         return getInstance().getModule(LanguageModule.class).translate(key);
     }
+
+//    public static Executor SYNC_EXECUTOR = runnable -> Bukkit.getScheduler().runTask(getInstance(), runnable);
+//    public static Executor ASYNC_EXECUTOR = runnable -> Bukkit.getScheduler().runTaskAsynchronously(getInstance(), runnable);
 
     public static EbeanServer getDatabase() {
         return ((LoginSecurity) getInstance()).getEbeanServer();

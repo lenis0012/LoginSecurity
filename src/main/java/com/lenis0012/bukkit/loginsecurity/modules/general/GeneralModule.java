@@ -125,29 +125,26 @@ public class GeneralModule extends Module<LoginSecurity> {
     }
 
     public void checkUpdates(final Player player) {
-        LoginSecurity.getExecutorService().execute(new Runnable() {
-            @Override
-            public void run() {
-                if(!updater.hasUpdate()) {
-                    return;
-                }
-
-                final Version version = updater.getNewVersion();
-                if(version == null || version.getType() == null) {
-                    logger().log(Level.WARNING, "Updater was in unexpected state, please report on https://github.com/lenis0012/LoginSecurity-2/issues");
-                    return;
-                }
-                Bukkit.getScheduler().runTask(plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                                "&bA new &3" + version.getType().toString() + " build for LoginSecurity is available! &3" +
-                                        version.getName() + " &afor &9" + version.getServerVersion()));
-                        player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                                "&bUse &3/lac update &bto download the new version."));
-                    }
-                });
+        LoginSecurity.getExecutorService().execute(() -> {
+            if(!updater.hasUpdate()) {
+                return;
             }
+
+            final Version version = updater.getNewVersion();
+            if(version == null || version.getType() == null) {
+                logger().log(Level.WARNING, "Updater was in unexpected state, please report on https://github.com/lenis0012/LoginSecurity-2/issues");
+                return;
+            }
+            Bukkit.getScheduler().runTask(plugin, new Runnable() {
+                @Override
+                public void run() {
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                            "&bA new &3" + version.getType().toString() + " build for LoginSecurity is available! &3" +
+                                    version.getName() + " &afor &9" + version.getServerVersion()));
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                            "&bUse &3/lac update &bto download the new version."));
+                }
+            });
         });
     }
 }

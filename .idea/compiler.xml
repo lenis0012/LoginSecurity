@@ -6,13 +6,8 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="LoginSecurity" />
         <module name="loginsecurity" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="loginsecurity" target="1.8" />
-      <module name="LoginSecurity" target="1.7" />
-    </bytecodeTargetLevel>
   </component>
 </project>

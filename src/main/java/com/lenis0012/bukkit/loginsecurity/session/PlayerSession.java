@@ -136,17 +136,9 @@ public class PlayerSession {
      * @param callback To run when action has been performed.
      */
     public void performActionAsync(final AuthAction action, final ActionCallback callback) {
-        LoginSecurity.getExecutorService().execute(new Runnable() {
-            @Override
-            public void run() {
-                final ActionResponse response = performAction(action);
-                Bukkit.getScheduler().runTask(LoginSecurity.getInstance(), new Runnable() {
-                    @Override
-                    public void run() {
-                        callback.call(response);
-                    }
-                });
-            }
+        LoginSecurity.getExecutorService().execute(() -> {
+            final ActionResponse response = performAction(action, true);
+            Bukkit.getScheduler().runTask(LoginSecurity.getInstance(), () -> callback.call(response));
         });
     }
 
@@ -156,7 +148,11 @@ public class PlayerSession {
      * @param action to perform
      */
     public ActionResponse performAction(AuthAction action) {
-        AuthActionEvent event = new AuthActionEvent(this, action);
+        return performAction(action, false);
+    }
+
+    private ActionResponse performAction(AuthAction action, boolean isAsync) {
+        AuthActionEvent event = new AuthActionEvent(this, action, isAsync);
         Bukkit.getPluginManager().callEvent(event);
         if(event.isCancelled()) {
             return new ActionResponse(false, event.getCancelledMessage());
@@ -171,7 +167,7 @@ public class PlayerSession {
 
         // If auth mode changed, run event
         if(previous != mode) {
-            AuthModeChangedEvent event1 = new AuthModeChangedEvent(this, previous, mode);
+            AuthModeChangedEvent event1 = new AuthModeChangedEvent(this, previous, mode, isAsync);
             Bukkit.getPluginManager().callEvent(event1);
         }
 

@@ -63,7 +63,7 @@
         <!-- Author's repo -->
         <repository>
             <id>lenis0012-repo</id>
-            <url>http://ci.lenis0012.com/plugin/repository/everything/</url>
+            <url>https://dl.bintray.com/lenis0012/maven-releases/</url>
         </repository>
 
         <!-- Vault repo -->
@@ -84,7 +84,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.13.2-R0.1-SNAPSHOT</version>
+            <version>1.14-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -258,34 +258,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <!-- Jar plugin (add argon2 to class-path) -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.1.1</version>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Built-By>lenis0012</Built-By>
-                            <Class-Path>./LoginSecurity/argon2-jvm-1.1.jar</Class-Path>
-                            <Implementation-Version>${describe}</Implementation-Version>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
-            </plugin>
-            <!-- Javadocs (run with javadoc:javadoc) -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.0.1</version>
-                <configuration>
-                    <reportOutputDirectory>${project.build.directory}</reportOutputDirectory>
-                    <destDir>javadocs</destDir>
-                    <additionalparam>-Xdoclint:none</additionalparam>
-                    <show>public</show>
-                    <failOnError>false</failOnError>
-                </configuration>
             </plugin>
         </plugins>
     </build>
