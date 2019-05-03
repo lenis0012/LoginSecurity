@@ -52,18 +52,15 @@ public class CaptchaManager extends Module<LoginSecurity> implements Listener {
 
         // Get map view ID
         try {
-            Method getMapIdMethod = MapView.class.getMethod("getId", int.class);
-            this.mapViewId = (int) getMapIdMethod.invoke(view);
-            LoginSecurity.getInstance().getLogger().log(Level.INFO, "Using 1.12+ map loader");
-        } catch (Exception e) {
-            try {
-                Method getMapIdMethod = MapView.class.getMethod("getId", short.class);
-                this.mapViewId = (int) getMapIdMethod.invoke(view);
-                LoginSecurity.getInstance().getLogger().log(Level.INFO, "Using legacy map loader");
-            } catch (Exception e2) {
-                LoginSecurity.getInstance().getLogger().log(Level.SEVERE, "Failed to create map loader, captcha's will be disabled.", e2);
-                this.failedToLoadMapView = true;
+            for(Method method : MapView.class.getMethods()) {
+                if(!method.getName().equals("getId")) continue;
+                Object rawMapId = method.invoke(view);
+                if(rawMapId instanceof Integer) this.mapViewId = (int) rawMapId;
+                else if(rawMapId instanceof Short) this.mapViewId = (int) (short) rawMapId;
+                else throw new RuntimeException("Unknown map ID type " + rawMapId.getClass().getName());
             }
+        } catch (Exception e) {
+            LoginSecurity.getInstance().getLogger().log(Level.WARNING, "Failed to load captcha map", e);
         }
     }
 

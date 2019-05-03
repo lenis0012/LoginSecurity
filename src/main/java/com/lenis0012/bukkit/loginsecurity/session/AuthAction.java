@@ -6,6 +6,7 @@ import com.lenis0012.bukkit.loginsecurity.session.exceptions.ProfileRefreshExcep
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerLocation;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 import com.lenis0012.bukkit.loginsecurity.util.InventorySerializer;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
@@ -36,12 +37,7 @@ public abstract class AuthAction {
     public abstract AuthMode run(PlayerSession session, ActionResponse response);
 
     protected void save(final Object model) {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                LoginSecurity.getDatabase().save(model);
-            }
-        };
+        Runnable runnable = () -> LoginSecurity.getDatabase().save(model);
         LoginSecurity.getExecutorService().execute(runnable);
     }
 
@@ -51,29 +47,24 @@ public abstract class AuthAction {
      * @param session Session of the player
      * @return True if profile changed, false otherwise
      */
-    protected boolean rehabPlayer(final PlayerSession session) {
+    protected void rehabPlayer(final PlayerSession session) {
         final Player player = session.getPlayer();
         final PlayerProfile profile = session.getProfile();
-        boolean changed = false;
 
-        player.removePotionEffect(PotionEffectType.BLINDNESS);
+        Bukkit.getScheduler().runTask(LoginSecurity.getInstance(), () -> player.removePotionEffect(PotionEffectType.BLINDNESS));
         if(profile.getInventory() != null) {
             InventorySerializer.deserializeInventory(profile.getInventory(), player.getInventory());
             profile.setInventory(null);
-            changed = true;
         }
 
         if(profile.getLoginLocation() != null) {
-            PlayerLocation loginLocation = profile.getLoginLocation();
+            final PlayerLocation loginLocation = profile.getLoginLocation();
             loginLocation.getWorld(); // hotfix: Populate method
-            Location location = loginLocation.asLocation();
+            final Location location = loginLocation.asLocation();
             if(location != null) {
-                player.teleport(location);
+                Bukkit.getScheduler().runTask(LoginSecurity.getInstance(), () -> player.teleport(location));
             }
             profile.setLoginLocation(null);
-            changed = true;
         }
-
-        return changed;
     }
 }

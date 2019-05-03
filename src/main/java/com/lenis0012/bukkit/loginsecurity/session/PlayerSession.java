@@ -77,7 +77,9 @@ public class PlayerSession {
      * Reset the player's profile to a blank profile.
      */
     public void resetProfile() {
+        String lastName = profile.getLastName();
         this.profile = LoginSecurity.getSessionManager().createBlankProfile(UUID.fromString(profile.getUniqueUserId()));
+        profile.setLastName(lastName);
     }
 
     /**
