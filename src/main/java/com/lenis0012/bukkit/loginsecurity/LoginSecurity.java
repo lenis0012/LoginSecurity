@@ -17,10 +17,8 @@ import com.lenis0012.bukkit.loginsecurity.util.LoggingFilter;
 import com.lenis0012.pluginutils.PluginHolder;
 import com.lenis0012.pluginutils.modules.configuration.ConfigurationModule;
 import org.apache.logging.log4j.LogManager;
-import org.bukkit.Bukkit;
 
 import java.util.List;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;

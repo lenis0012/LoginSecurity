@@ -10,6 +10,7 @@ import com.lenis0012.bukkit.loginsecurity.session.action.LoginAction;
 import com.lenis0012.bukkit.loginsecurity.util.MetaData;
 import com.lenis0012.bukkit.loginsecurity.util.ProfileUtil;
 import com.lenis0012.pluginutils.Module;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -40,6 +41,8 @@ public class ThreadingModule extends Module<LoginSecurity> implements Listener {
         (this.timeout = new TimeoutTask(plugin)).runTaskTimer(plugin, 20L, 20L);
         (this.message = new MessageTask(plugin)).runTaskTimer(plugin, 20L, 20L);
         register(this);
+
+        Bukkit.getOnlinePlayers().forEach(player -> MetaData.set(player, "ls_login_time", System.currentTimeMillis()));
     }
 
     @Override

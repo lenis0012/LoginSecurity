@@ -1,0 +1,119 @@
+package com.lenis0012.bukkit.loginsecurity.database.datasource;
+
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitTask;
+
+import javax.sql.ConnectionEvent;
+import javax.sql.ConnectionEventListener;
+import javax.sql.ConnectionPoolDataSource;
+import javax.sql.PooledConnection;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
+
+public class SingleConnectionDataSource extends DataSourceAdapter implements ConnectionEventListener, Runnable {
+    private final Plugin plugin;
+    private final ConnectionPoolDataSource dataSource;
+    private final ReentrantLock lock;
+
+    private final int timeout;
+    private final long maxLifetime;
+
+    private volatile PooledConnection pooledConnection;
+    private BukkitTask recreateTask;
+    private boolean closing = false;
+
+    public SingleConnectionDataSource(Plugin plugin, ConnectionPoolDataSource dataSource) throws SQLException {
+        this(plugin, dataSource, 5000, TimeUnit.SECONDS.toMillis(30));
+    }
+
+    public SingleConnectionDataSource(Plugin plugin, ConnectionPoolDataSource dataSource, int timeout, long maxLifetime) throws SQLException {
+        this.plugin = plugin;
+        this.dataSource = dataSource;
+        this.lock = new ReentrantLock(true);
+
+        this.maxLifetime = maxLifetime;
+        this.timeout = timeout;
+
+        createConnection();
+    }
+
+    @Override
+    public Connection getConnection() throws SQLException {
+        lock.lock();
+        try {
+            if(pooledConnection != null) {
+                final Connection connection = pooledConnection.getConnection();
+                if(!connection.isClosed()) {
+                    if(!connection.isValid(timeout)) {
+                        tryClose(pooledConnection);
+                    } else {
+                        return connection;
+                    }
+                }
+            }
+
+            createConnection();
+            return pooledConnection.getConnection();
+        } catch (Throwable t) {
+            lock.unlock();
+            throw t;
+        }
+    }
+
+    private void createConnection() throws SQLException {
+        if(recreateTask != null) recreateTask.cancel();
+        this.pooledConnection = dataSource.getPooledConnection();
+        pooledConnection.addConnectionEventListener(this);
+        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, this, maxLifetime / 50);
+    }
+
+    @Override
+    public void run() {
+        this.recreateTask = null;
+        lock.lock();
+        try {
+            tryClose(pooledConnection);
+            createConnection();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private void tryClose(PooledConnection connection) {
+        try {
+            connection.close();
+        } catch (SQLException e) {
+        }
+    }
+
+    public void shutdown() throws SQLException {
+        this.closing = true;
+        lock.lock();
+
+        if(pooledConnection != null) {
+            final Connection connection = pooledConnection.getConnection();
+            if(!connection.isClosed()) {
+                connection.close();
+            }
+        }
+    }
+
+    @Override
+    public void connectionClosed(ConnectionEvent event) {
+        lock.unlock();
+    }
+
+    @Override
+    public void connectionErrorOccurred(ConnectionEvent event) {
+        PooledConnection brokenConnection = this.pooledConnection;
+        this.pooledConnection = null;
+        lock.unlock();
+
+        tryClose(brokenConnection);
+    }
+}
