@@ -8,7 +8,7 @@
     <artifactId>loginsecurity</artifactId>
     <version>3.0.0-SNAPSHOT</version>
     <name>LoginSecurity</name>
-    <url>http://dev.bukkit.org/server-mods/loginsecurity/</url>
+    <url>https://www.spigotmc.org/resources/loginsecurity.19362/</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
