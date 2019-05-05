@@ -44,7 +44,7 @@ public class PlayerSession {
         if(!isRegistered()) {
             throw new IllegalStateException("Can't save profile when not registered!");
         }
-        LoginSecurity.getDatastore().getProfileRepository().insert(profile, result -> {
+        LoginSecurity.getDatastore().getProfileRepository().update(profile, result -> {
             if(!result.isSuccess()) LoginSecurity.getInstance().getLogger().log(Level.SEVERE, "Failed to save user profile", result.getError());
         });
     }
