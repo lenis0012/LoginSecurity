@@ -129,18 +129,13 @@ public class PlayerListener implements Listener {
             final PlayerInventory inventory = player.getInventory();
             final com.lenis0012.bukkit.loginsecurity.storage.PlayerInventory serializedInventory =
                     InventorySerializer.serializeInventory(inventory);
-            Bukkit.getScheduler().runTaskAsynchronously(LoginSecurity.getInstance(), () -> {
-                try {
-                    LoginSecurity.getDatastore().getInventoryRepository().insertBlocking(serializedInventory);
-                    profile.setInventoryId(serializedInventory.getId());
-                    LoginSecurity.getDatastore().getProfileRepository().updateBlocking(profile);
-                } catch (SQLException e) {
-                    LoginSecurity.getInstance().getLogger().log(Level.SEVERE, "Failed to store user inventory", e);
-                    Bukkit.getScheduler().runTask(LoginSecurity.getInstance(),
-                            () -> InventorySerializer.deserializeInventory(serializedInventory, player.getInventory()));
+            inventory.clear();
+            LoginSecurity.getDatastore().getInventoryRepository().insert(profile, serializedInventory, result -> {
+                if(!result.isSuccess()) {
+                    LoginSecurity.getInstance().getLogger().log(Level.SEVERE, "Failed to save player inventory", result.getError());
+                    InventorySerializer.deserializeInventory(serializedInventory, inventory);
                 }
             });
-            inventory.clear();
         }
 
         // Reset location

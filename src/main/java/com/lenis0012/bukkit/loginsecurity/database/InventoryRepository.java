@@ -2,12 +2,14 @@ package com.lenis0012.bukkit.loginsecurity.database;
 
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerInventory;
+import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 import org.bukkit.Bukkit;
 
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.logging.Level;
 
 public class InventoryRepository {
     private final LoginSecurity loginSecurity;
@@ -18,10 +20,10 @@ public class InventoryRepository {
         this.dataSource = dataSource;
     }
 
-    public void insert(PlayerInventory inventory, Consumer<AsyncResult<PlayerInventory>> callback) {
+    public void insert(PlayerProfile profile, PlayerInventory inventory, Consumer<AsyncResult<PlayerInventory>> callback) {
         Bukkit.getScheduler().runTaskAsynchronously(loginSecurity, () -> {
             try {
-                insertBlocking(inventory);
+                insertBlocking(profile, inventory);
                 resolveResult(callback, inventory);
             } catch (SQLException e) {
                 resolveError(callback, e);
@@ -29,7 +31,7 @@ public class InventoryRepository {
         });
     }
 
-    public void insertBlocking(PlayerInventory inventory) throws SQLException {
+    public void insertBlocking(PlayerProfile profile, PlayerInventory inventory) throws SQLException {
         try(Connection connection = dataSource.getConnection()) {
             try(PreparedStatement statement = connection.prepareStatement(
                     "INSERT INTO ls_inventories(helmet, chestplate, leggings, boots, off_hand, contents) VALUES (?,?,?,?,?,?);",
@@ -48,6 +50,16 @@ public class InventoryRepository {
                         throw new RuntimeException("No keys were returned after insert");
                     }
                     inventory.setId(keys.getInt(1));
+                }
+            }
+            profile.setInventoryId(inventory.getId());
+            try(PreparedStatement statement = connection.prepareStatement(
+                    "UPDATE ls_players SET inventory_id=? WHERE id=?;")) {
+                statement.setInt(1, inventory.getId());
+                statement.setInt(2, profile.getId());
+                if(statement.executeUpdate() < 1) {
+                    loginSecurity.getLogger().log(Level.WARNING, "Failed to set location id in profile");
+                    throw new SQLException("Failed set location id in profile");
                 }
             }
         }

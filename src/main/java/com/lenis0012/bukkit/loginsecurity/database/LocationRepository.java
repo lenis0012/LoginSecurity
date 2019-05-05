@@ -53,11 +53,11 @@ public class LocationRepository {
             }
             profile.setLoginLocationId(location.getId());
             try(PreparedStatement statement = connection.prepareStatement(
-                    "UPDATE ls_players SET location_id=? WHERE id=?")) {
+                    "UPDATE ls_players SET location_id=? WHERE id=?;")) {
                 statement.setInt(1, location.getId());
                 statement.setInt(2, profile.getId());
                 if(statement.executeUpdate() < 1) {
-                    loginSecurity.getLogger().log(Level.WARNING, "Failed to set location id in profile");
+                    loginSecurity.getLogger().log(Level.WARNING, "Failed to set inventory id in profile");
                     throw new SQLException("Failed set location id in profile");
                 }
             }
