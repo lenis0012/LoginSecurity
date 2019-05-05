@@ -59,17 +59,21 @@ public class SessionManager {
     }
 
     public final PlayerSession getOfflineSession(final String playerName) {
-        final EbeanServer database = LoginSecurity.getDatabase();
-        PlayerProfile profile = database.find(PlayerProfile.class).where().ieq("last_name", playerName).findUnique();
-        if(profile == null) {
-            OfflinePlayer offline = Bukkit.getOfflinePlayer(playerName);
-            if(offline == null || offline.getUniqueId() == null) {
-                return null;
-            }
+        try {
+            PlayerProfile profile = LoginSecurity.getDatastore().getProfileRepository().findByLastNameBlocking(playerName);
+            if(profile == null) {
+                OfflinePlayer offline = Bukkit.getOfflinePlayer(playerName);
+                if(offline == null || offline.getUniqueId() == null) {
+                    return null;
+                }
 
-            return getOfflineSession(ProfileUtil.getUUID(playerName, offline.getUniqueId()));
+                return getOfflineSession(ProfileUtil.getUUID(playerName, offline.getUniqueId()));
+            }
+            return new PlayerSession(profile, AuthMode.UNAUTHENTICATED);
+        } catch (SQLException e) {
+            LoginSecurity.getInstance().getLogger().log(Level.SEVERE, "Failed to load profile", e);
+            return null;
         }
-        return new PlayerSession(profile, AuthMode.UNAUTHENTICATED);
     }
 
     public void onPlayerLogout(final Player player) {

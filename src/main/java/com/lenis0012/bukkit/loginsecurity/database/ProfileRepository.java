@@ -132,21 +132,52 @@ public class ProfileRepository {
                         return null;
                     }
 
-                    PlayerProfile profile = new PlayerProfile();
-                    profile.setId(result.getInt("id"));
-                    profile.setUniqueIdMode(UserIdMode.fromId(result.getString("uuid_mode")));
-                    profile.setUniqueUserId(result.getString("unique_user_id"));
-                    profile.setLastName(result.getString("last_name"));
-                    profile.setIpAddress(result.getString("ip_address"));
-                    profile.setPassword(result.getString("password"));
-                    profile.setHashingAlgorithm(result.getInt("hashing_algorithm"));
-                    profile.setLastLogin(result.getTimestamp("last_login"));
-                    profile.setRegistrationDate(result.getDate("registration_date"));
-                    profile.setVersion(result.getLong("optlock"));
-                    return profile;
+                    return parseResultSet(result);
                 }
             }
         }
+    }
+
+    public void findByLastName(String lastName, Consumer<AsyncResult<PlayerProfile>> callback) {
+        Bukkit.getScheduler().runTaskAsynchronously(loginSecurity, () -> {
+            try {
+                final PlayerProfile profile = findByLastNameBlocking(lastName);
+                resolveResult(callback, profile);
+            } catch (SQLException e) {
+                resolveError(callback, e);
+            }
+        });
+    }
+
+    public PlayerProfile findByLastNameBlocking(String lastName) throws SQLException {
+        try(Connection connection = dataSource.getConnection()) {
+            try(PreparedStatement statement = connection.prepareStatement(
+                    "SELECT * FROM ls_players WHERE last_name=?;")) {
+                statement.setString(1, lastName);
+                try(ResultSet result = statement.executeQuery()) {
+                    if(!result.next()) {
+                        return null;
+                    }
+
+                    return parseResultSet(result);
+                }
+            }
+        }
+    }
+
+    private PlayerProfile parseResultSet(ResultSet result) throws SQLException {
+        PlayerProfile profile = new PlayerProfile();
+        profile.setId(result.getInt("id"));
+        profile.setUniqueIdMode(UserIdMode.fromId(result.getString("uuid_mode")));
+        profile.setUniqueUserId(result.getString("unique_user_id"));
+        profile.setLastName(result.getString("last_name"));
+        profile.setIpAddress(result.getString("ip_address"));
+        profile.setPassword(result.getString("password"));
+        profile.setHashingAlgorithm(result.getInt("hashing_algorithm"));
+        profile.setLastLogin(result.getTimestamp("last_login"));
+        profile.setRegistrationDate(result.getDate("registration_date"));
+        profile.setVersion(result.getLong("optlock"));
+        return profile;
     }
 
     private <T> void resolveResult(Consumer<AsyncResult<T>> callback, T result) {
