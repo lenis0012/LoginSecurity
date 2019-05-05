@@ -1,8 +1,6 @@
 package com.lenis0012.bukkit.loginsecurity.session;
 
-import com.avaje.ebean.EbeanServer;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
-import com.lenis0012.bukkit.loginsecurity.LoginSecurityConfig;
 import com.lenis0012.bukkit.loginsecurity.events.AuthActionEvent;
 import com.lenis0012.bukkit.loginsecurity.events.AuthModeChangedEvent;
 import com.lenis0012.bukkit.loginsecurity.session.action.ActionCallback;

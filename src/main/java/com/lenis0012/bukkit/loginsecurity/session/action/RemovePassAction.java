@@ -2,7 +2,6 @@ package com.lenis0012.bukkit.loginsecurity.session.action;
 
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.session.*;
-import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 
 import java.sql.SQLException;
 import java.util.logging.Level;

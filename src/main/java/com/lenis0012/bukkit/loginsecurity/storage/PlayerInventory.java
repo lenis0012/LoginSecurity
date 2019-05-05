@@ -1,34 +1,18 @@
 package com.lenis0012.bukkit.loginsecurity.storage;
 
-import com.avaje.ebean.config.dbplatform.DbType;
-import com.avaje.ebean.config.dbplatform.MySqlClob;
-
-import javax.persistence.*;
-
-@Entity
-@Table(name="ls_inventories")
 public class PlayerInventory {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(unique = true, updatable = false)
     private int id;
 
-    @Column(columnDefinition = "TEXT")
     private String helmet;
 
-    @Column(columnDefinition = "TEXT")
     private String chestplate;
 
-    @Column(columnDefinition = "TEXT")
     private String leggings;
 
-    @Column(columnDefinition = "TEXT")
     private String boots;
 
-    @Column(columnDefinition = "TEXT")
     private String offHand;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
     private String contents;
 
     public int getId() {

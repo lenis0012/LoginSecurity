@@ -7,8 +7,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import static com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys.*;
 import static com.lenis0012.bukkit.loginsecurity.LoginSecurity.translate;
+import static com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys.KICK_TIME_OUT;
 
 public class TimeoutTask extends BukkitRunnable {
     private final LoginSecurity plugin;

@@ -2,7 +2,6 @@ package com.lenis0012.bukkit.loginsecurity.session;
 
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.session.action.ActionResponse;
-import com.lenis0012.bukkit.loginsecurity.session.exceptions.ProfileRefreshException;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerLocation;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 import com.lenis0012.bukkit.loginsecurity.util.InventorySerializer;

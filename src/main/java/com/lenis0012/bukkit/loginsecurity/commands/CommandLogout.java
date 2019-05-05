@@ -8,8 +8,8 @@ import com.lenis0012.bukkit.loginsecurity.session.action.ActionResponse;
 import com.lenis0012.bukkit.loginsecurity.session.action.LogoutAction;
 import com.lenis0012.pluginutils.modules.command.Command;
 
-import static com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys.*;
 import static com.lenis0012.bukkit.loginsecurity.LoginSecurity.translate;
+import static com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys.*;
 
 public class CommandLogout extends Command {
     private final LoginSecurity plugin;

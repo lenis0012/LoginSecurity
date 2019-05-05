@@ -19,8 +19,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 
-import static com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys.*;
 import static com.lenis0012.bukkit.loginsecurity.LoginSecurity.translate;
+import static com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys.*;
 
 public class CommandAdmin extends Command {
     private final Map<String, Method> methods = Maps.newLinkedHashMap(); // maintain order for help command

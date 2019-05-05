@@ -114,14 +114,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Because spigot removed this in 1.12 -->
-        <dependency>
-            <groupId>org.avaje</groupId>
-            <artifactId>ebean</artifactId>
-            <version>2.8.1</version>
-            <scope>compile</scope>
-        </dependency>
-
         <!-- Hash libraries -->
         <dependency>
             <groupId>org.bouncycastle</groupId>
@@ -158,14 +150,7 @@
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
-        <!-- 3rd party plugins -->
-        <dependency>
-            <groupId>com.gotoginal</groupId>
-            <artifactId>AutoIn</artifactId>
-            <version>3.0-alpha.7</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/AutoIn.jar</systemPath>
-        </dependency>
+
         <!-- Testing dependencies -->
         <dependency>
             <groupId>junit</groupId>

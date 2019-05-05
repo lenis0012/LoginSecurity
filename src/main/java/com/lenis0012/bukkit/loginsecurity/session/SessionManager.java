@@ -1,6 +1,5 @@
 package com.lenis0012.bukkit.loginsecurity.session;
 
-import com.avaje.ebean.EbeanServer;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;

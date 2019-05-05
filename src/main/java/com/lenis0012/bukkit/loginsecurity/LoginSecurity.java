@@ -1,7 +1,5 @@
 package com.lenis0012.bukkit.loginsecurity;
 
-import com.avaje.ebean.EbeanServer;
-import com.google.common.collect.Lists;
 import com.lenis0012.bukkit.loginsecurity.database.LoginSecurityDatabase;
 import com.lenis0012.bukkit.loginsecurity.hashing.Algorithm;
 import com.lenis0012.bukkit.loginsecurity.modules.captcha.CaptchaManager;
@@ -10,16 +8,13 @@ import com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys;
 import com.lenis0012.bukkit.loginsecurity.modules.language.LanguageModule;
 import com.lenis0012.bukkit.loginsecurity.modules.language.TranslatedMessage;
 import com.lenis0012.bukkit.loginsecurity.modules.storage.NewStorageModule;
-import com.lenis0012.bukkit.loginsecurity.modules.storage.StorageModule;
 import com.lenis0012.bukkit.loginsecurity.modules.threading.ThreadingModule;
 import com.lenis0012.bukkit.loginsecurity.session.SessionManager;
-import com.lenis0012.bukkit.loginsecurity.storage.*;
 import com.lenis0012.bukkit.loginsecurity.util.LoggingFilter;
 import com.lenis0012.pluginutils.PluginHolder;
 import com.lenis0012.pluginutils.modules.configuration.ConfigurationModule;
 import org.apache.logging.log4j.LogManager;
 
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -76,13 +71,6 @@ public class LoginSecurity extends PluginHolder {
         return getInstance().getModule(LanguageModule.class).translate(key);
     }
 
-//    public static Executor SYNC_EXECUTOR = runnable -> Bukkit.getScheduler().runTask(getInstance(), runnable);
-//    public static Executor ASYNC_EXECUTOR = runnable -> Bukkit.getScheduler().runTaskAsynchronously(getInstance(), runnable);
-
-    public static EbeanServer getDatabase() {
-        return ((LoginSecurity) getInstance()).getEbeanServer();
-    }
-
     private LoginSecurityConfig config;
     private SessionManager sessionManager;
 
@@ -115,7 +103,6 @@ public class LoginSecurity extends PluginHolder {
         // Register modules
         registry.registerModules(
                 LanguageModule.class,
-                StorageModule.class,
                 NewStorageModule.class,
                 GeneralModule.class,
                 ThreadingModule.class,
@@ -136,19 +123,5 @@ public class LoginSecurity extends PluginHolder {
 
     public LoginSecurityDatabase datastore() {
         return getModule(NewStorageModule.class).getDatabase();
-    }
-
-    public List<Class<?>> getDatabaseClasses() {
-        List<Class<?>> list = Lists.newArrayList();
-        list.add(Migration.class);
-        list.add(PlayerProfile.class);
-        list.add(ActionEntry.class);
-        list.add(PlayerLocation.class);
-        list.add(PlayerInventory.class);
-        return list;
-    }
-
-    public EbeanServer getEbeanServer() {
-        return getModule(StorageModule.class).getDatabase();
     }
 }

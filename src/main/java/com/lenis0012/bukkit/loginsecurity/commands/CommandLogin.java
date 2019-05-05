@@ -3,7 +3,10 @@ package com.lenis0012.bukkit.loginsecurity.commands;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurityConfig;
 import com.lenis0012.bukkit.loginsecurity.hashing.Algorithm;
-import com.lenis0012.bukkit.loginsecurity.session.*;
+import com.lenis0012.bukkit.loginsecurity.session.AuthAction;
+import com.lenis0012.bukkit.loginsecurity.session.AuthMode;
+import com.lenis0012.bukkit.loginsecurity.session.AuthService;
+import com.lenis0012.bukkit.loginsecurity.session.PlayerSession;
 import com.lenis0012.bukkit.loginsecurity.session.action.ActionCallback;
 import com.lenis0012.bukkit.loginsecurity.session.action.ActionResponse;
 import com.lenis0012.bukkit.loginsecurity.session.action.ChangePassAction;
@@ -15,8 +18,8 @@ import org.bukkit.entity.Player;
 
 import java.util.logging.Level;
 
-import static com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys.*;
 import static com.lenis0012.bukkit.loginsecurity.LoginSecurity.translate;
+import static com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys.*;
 
 public class CommandLogin extends Command {
     public CommandLogin(LoginSecurity plugin) {

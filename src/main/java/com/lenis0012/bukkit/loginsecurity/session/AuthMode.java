@@ -2,8 +2,9 @@ package com.lenis0012.bukkit.loginsecurity.session;
 
 import com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys;
 
-import static com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys.*;
 import static com.lenis0012.bukkit.loginsecurity.LoginSecurity.translate;
+import static com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys.MESSAGE_LOGIN;
+import static com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys.MESSAGE_REGISTER;
 
 public enum AuthMode {
     /**

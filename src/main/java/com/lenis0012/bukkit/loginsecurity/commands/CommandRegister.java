@@ -12,8 +12,8 @@ import com.lenis0012.bukkit.loginsecurity.session.action.RegisterAction;
 import com.lenis0012.pluginutils.modules.command.Command;
 import org.bukkit.entity.Player;
 
-import static com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys.*;
 import static com.lenis0012.bukkit.loginsecurity.LoginSecurity.translate;
+import static com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys.*;
 
 public class CommandRegister extends Command {
     private final LoginSecurity plugin;

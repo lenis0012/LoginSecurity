@@ -18,11 +18,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import static com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys.*;
-import static com.lenis0012.bukkit.loginsecurity.LoginSecurity.translate;
-
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+
+import static com.lenis0012.bukkit.loginsecurity.LoginSecurity.translate;
+import static com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys.SESSION_CONTINUE;
 
 public class ThreadingModule extends Module<LoginSecurity> implements Listener {
     private Cache<UUID, Long> sessionCache;

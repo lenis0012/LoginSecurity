@@ -1,6 +1,6 @@
 package com.lenis0012.bukkit.loginsecurity.hashing;
 
-import com.lenis0012.bukkit.loginsecurity.hashing.active.*;
+import com.lenis0012.bukkit.loginsecurity.hashing.active.BCrypt;
 import com.lenis0012.bukkit.loginsecurity.hashing.authme.AuthmeSHA;
 import com.lenis0012.bukkit.loginsecurity.hashing.deprecated.*;
 import com.lenis0012.bukkit.loginsecurity.hashing.xauth.xAuthAlgorithm;

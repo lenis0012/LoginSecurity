@@ -99,6 +99,7 @@ public class SingleConnectionDataSource extends DataSourceAdapter implements Con
 
         if(pooledConnection != null) {
             pooledConnection.close();
+            this.pooledConnection = null;
         }
     }
 

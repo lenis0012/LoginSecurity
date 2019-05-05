@@ -4,7 +4,6 @@ import com.google.common.base.Charsets;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.lang.reflect.Field;
 import java.util.UUID;
 
 /**
