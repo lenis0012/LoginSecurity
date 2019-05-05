@@ -15,6 +15,13 @@ public enum UserIdMode {
 
     private final String id;
 
+    public static UserIdMode fromId(String id) {
+        for(UserIdMode mode : values()) {
+            if(mode.id.equalsIgnoreCase(id)) return mode;
+        }
+        return null;
+    }
+
     public String getUserId(final PlayerProfile profile) {
         if(profile.getUniqueIdMode() == this) {
             return profile.getUniqueUserId();

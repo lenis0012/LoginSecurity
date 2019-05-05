@@ -12,6 +12,7 @@ import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.sql.SQLException;
 import java.util.UUID;
 
 /**
@@ -49,8 +50,12 @@ public class PlayerSession {
      * Refreshes player's profile.
      */
     public void refreshProfile() throws ProfileRefreshException {
-        final EbeanServer database = LoginSecurity.getDatabase();
-        PlayerProfile newProfile = database.find(PlayerProfile.class).where().ieq("unique_user_id", profile.getUniqueUserId()).findUnique();
+        PlayerProfile newProfile;
+        try {
+            newProfile = LoginSecurity.getDatastore().getProfileRepository().findByUniqueUserIdBlocking(UUID.fromString(profile.getUniqueUserId()));
+        } catch (SQLException e) {
+            throw new ProfileRefreshException("Failed to load profile from database", e);
+        }
 
         if(newProfile != null && !isRegistered()) {
             throw new ProfileRefreshException("Profile was registered while in database!");

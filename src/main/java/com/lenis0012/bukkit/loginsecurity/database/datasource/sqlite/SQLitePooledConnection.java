@@ -63,7 +63,7 @@ public class SQLitePooledConnection implements PooledConnection {
      * @see javax.sql.PooledConnection#getConnection()
      */
     public Connection getConnection() throws SQLException {
-        if (handleConn != null)
+        if (handleConn != null && !handleConn.isClosed())
             handleConn.close();
 
         handleConn = (Connection) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[]{Connection.class},

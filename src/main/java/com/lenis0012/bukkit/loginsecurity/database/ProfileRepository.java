@@ -2,11 +2,13 @@ package com.lenis0012.bukkit.loginsecurity.database;
 
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
+import com.lenis0012.bukkit.loginsecurity.util.UserIdMode;
 import org.bukkit.Bukkit;
 
 import javax.sql.DataSource;
 import java.sql.*;
 import java.time.Instant;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 public class ProfileRepository {
@@ -105,6 +107,44 @@ public class ProfileRepository {
                     "DELETE FROM ls_players WHERE id=?;")) {
                 statement.setInt(1, profile.getId());
                 statement.executeUpdate();
+            }
+        }
+    }
+
+    public void findByUniqueId(UUID unqiueId, Consumer<AsyncResult<PlayerProfile>> callback) {
+        Bukkit.getScheduler().runTaskAsynchronously(loginSecurity, () -> {
+            try {
+                final PlayerProfile profile = findByUniqueUserIdBlocking(unqiueId);
+                resolveResult(callback, profile);
+            } catch (SQLException e) {
+                resolveError(callback, e);
+            }
+        });
+    }
+
+    public PlayerProfile findByUniqueUserIdBlocking(UUID uniqueId) throws SQLException {
+        try(Connection connection = dataSource.getConnection()) {
+            try(PreparedStatement statement = connection.prepareStatement(
+                    "SELECT * FROM ls_players WHERE unique_user_id=?")) {
+                statement.setString(1, uniqueId.toString());
+                try(ResultSet result = statement.executeQuery()) {
+                    if(!result.next()) {
+                        return null;
+                    }
+
+                    PlayerProfile profile = new PlayerProfile();
+                    profile.setId(result.getInt("id"));
+                    profile.setUniqueIdMode(UserIdMode.fromId(result.getString("uuid_mode")));
+                    profile.setUniqueUserId(result.getString("unique_user_id"));
+                    profile.setLastName(result.getString("last_name"));
+                    profile.setIpAddress(result.getString("ip_address"));
+                    profile.setPassword(result.getString("password"));
+                    profile.setHashingAlgorithm(result.getInt("hashing_algorithm"));
+                    profile.setLastLogin(result.getTimestamp("last_login"));
+                    profile.setRegistrationDate(result.getDate("registration_date"));
+                    profile.setVersion(result.getLong("optlock"));
+                    return profile;
+                }
             }
         }
     }

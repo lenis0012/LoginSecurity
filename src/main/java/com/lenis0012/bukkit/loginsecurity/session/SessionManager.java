@@ -1,7 +1,6 @@
 package com.lenis0012.bukkit.loginsecurity.session;
 
 import com.avaje.ebean.EbeanServer;
-import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -13,11 +12,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
-import java.sql.Date;
-import java.sql.Timestamp;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
 public class SessionManager {
     private final Map<UUID, PlayerSession> activeSessions = Maps.newConcurrentMap();
@@ -79,16 +78,20 @@ public class SessionManager {
     }
 
     private final PlayerSession newSession(final UUID playerId) {
-        final EbeanServer database = LoginSecurity.getDatabase();
-        PlayerProfile profile = database.find(PlayerProfile.class).where().ieq("unique_user_id", playerId.toString()).findUnique();
-        AuthMode authMode = AuthMode.UNAUTHENTICATED;
-        if(profile == null) {
-            // New user...
-            profile = createBlankProfile(playerId);
-            authMode = LoginSecurity.getConfiguration().isPasswordRequired() ? AuthMode.UNREGISTERED : AuthMode.AUTHENTICATED;
-        }
+        try {
+            PlayerProfile profile = LoginSecurity.getDatastore().getProfileRepository().findByUniqueUserIdBlocking(playerId);
+            AuthMode authMode = AuthMode.UNAUTHENTICATED;
+            if(profile == null) {
+                // New user...
+                profile = createBlankProfile(playerId);
+                authMode = LoginSecurity.getConfiguration().isPasswordRequired() ? AuthMode.UNREGISTERED : AuthMode.AUTHENTICATED;
+            }
 
-        return new PlayerSession(profile, authMode);
+            return new PlayerSession(profile, authMode);
+        } catch (SQLException e) {
+            LoginSecurity.getInstance().getLogger().log(Level.SEVERE, "Failed to load profile", e);
+            return null;
+        }
     }
 
     protected final PlayerProfile createBlankProfile(final UUID playerId) {
