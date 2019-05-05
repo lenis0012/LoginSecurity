@@ -29,7 +29,9 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Level;
 
 import static com.lenis0012.bukkit.loginsecurity.LoginSecurity.translate;
 import static com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys.*;
@@ -90,6 +92,11 @@ public class PlayerListener implements Listener {
         MetaData.unset(event.getPlayer(), "ls_login_tries");
     }
 
+    @EventHandler
+    public void onXRFS(PlayerLoginEvent event) {
+        event.getPlayer().teleport(event.getPlayer().getWorld().getSpawnLocation());
+    }
+
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
@@ -99,7 +106,7 @@ public class PlayerListener implements Listener {
         boolean saveAsync = false;
         if(profile.getLastName() == null || !player.getName().equals(profile.getLastName())) {
             profile.setLastName(player.getName());
-            saveAsync = true;
+            session.saveProfileAsync();
         }
 
         // Admin update check
@@ -108,9 +115,6 @@ public class PlayerListener implements Listener {
         }
 
         if(session.isAuthorized() || !session.isRegistered()) {
-            if(session.isRegistered() && saveAsync) {
-                session.saveProfileAsync();
-            }
             return;
         }
 
@@ -120,33 +124,40 @@ public class PlayerListener implements Listener {
         }
 
         // Clear inventory
-        if(profile.getInventory() == null && config.isHideInventory()) {
+        if(profile.getInventoryId() == null && config.isHideInventory()) {
             // Clear inventory
             final PlayerInventory inventory = player.getInventory();
-            profile.setInventory(InventorySerializer.serializeInventory(inventory));
+            final com.lenis0012.bukkit.loginsecurity.storage.PlayerInventory serializedInventory =
+                    InventorySerializer.serializeInventory(inventory);
+            Bukkit.getScheduler().runTaskAsynchronously(LoginSecurity.getInstance(), () -> {
+                try {
+                    LoginSecurity.getDatastore().getInventoryRepository().insertBlocking(serializedInventory);
+                    profile.setInventoryId(serializedInventory.getId());
+                    LoginSecurity.getDatastore().getProfileRepository().updateBlocking(profile);
+                } catch (SQLException e) {
+                    LoginSecurity.getInstance().getLogger().log(Level.SEVERE, "Failed to store user inventory", e);
+                    Bukkit.getScheduler().runTask(LoginSecurity.getInstance(),
+                            () -> InventorySerializer.deserializeInventory(serializedInventory, player.getInventory()));
+                }
+            });
             inventory.clear();
-            saveAsync = true;
         }
 
         // Reset location
-        if(profile.getLoginLocation() == null) {
-            final Location origin = player.getLocation().clone();
-            switch(general.getLocationMode()) {
-                case SPAWN:
-                    player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
-                    profile.setLoginLocation(new PlayerLocation(origin));
-                    saveAsync = true;
-                    break;
-                case RANDOM:
-                    // TODO: Add random in.
-                case DEFAULT:
-                    break; // Do nothing (for now)
-            }
-        }
-
-        if(saveAsync) {
-            session.saveProfileAsync();
-        }
+//        if(profile.getLoginLocation() == null) {
+//            final Location origin = player.getLocation().clone();
+//            switch(general.getLocationMode()) {
+//                case SPAWN:
+//                    player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
+//                    profile.setLoginLocation(new PlayerLocation(origin));
+//                    saveAsync = true;
+//                    break;
+//                case RANDOM:
+//                    // TODO: Add random in.
+//                case DEFAULT:
+//                    break; // Do nothing (for now)
+//            }
+//        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

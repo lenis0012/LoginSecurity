@@ -2,6 +2,7 @@ package com.lenis0012.bukkit.loginsecurity.session;
 
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.session.action.ActionResponse;
+import com.lenis0012.bukkit.loginsecurity.storage.PlayerInventory;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerLocation;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 import com.lenis0012.bukkit.loginsecurity.util.InventorySerializer;
@@ -9,6 +10,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
+
+import java.sql.SQLException;
+import java.util.logging.Level;
 
 public abstract class AuthAction {
     private final AuthActionType type;
@@ -46,9 +50,25 @@ public abstract class AuthAction {
         final PlayerProfile profile = session.getProfile();
 
         Bukkit.getScheduler().runTask(LoginSecurity.getInstance(), () -> player.removePotionEffect(PotionEffectType.BLINDNESS));
-        if(profile.getInventory() != null) {
-            InventorySerializer.deserializeInventory(profile.getInventory(), player.getInventory());
-            profile.setInventory(null);
+        if(profile.getInventoryId() != null) {
+            try {
+                final PlayerInventory serializedInventory = LoginSecurity.getDatastore().getInventoryRepository()
+                        .findByIdBlocking(profile.getInventoryId());
+                if(serializedInventory != null) {
+                    Bukkit.getScheduler().runTask(LoginSecurity.getInstance(), () -> {
+                        InventorySerializer.deserializeInventory(serializedInventory, player.getInventory());
+                        profile.setInventoryId(null);
+                        session.saveProfileAsync();
+                        // TODO: Delete inventory
+                    });
+                } else {
+                    LoginSecurity.getInstance().getLogger().log(Level.WARNING, "Couldn't find player's inventory");
+                    profile.setInventoryId(null);
+                    session.saveProfileAsync();
+                }
+            } catch (SQLException e) {
+                LoginSecurity.getInstance().getLogger().log(Level.SEVERE, "Failed to load player inventory", e);
+            }
         }
 
         if(profile.getLoginLocation() != null) {

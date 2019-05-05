@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
 
 public class SingleConnectionDataSource extends DataSourceAdapter implements ConnectionEventListener, Runnable {
     private final Plugin plugin;
@@ -26,7 +27,7 @@ public class SingleConnectionDataSource extends DataSourceAdapter implements Con
     private boolean closing = false;
 
     public SingleConnectionDataSource(Plugin plugin, ConnectionPoolDataSource dataSource) throws SQLException {
-        this(plugin, dataSource, 5000, TimeUnit.SECONDS.toMillis(30));
+        this(plugin, dataSource, 5000, TimeUnit.MINUTES.toMillis(30));
     }
 
     public SingleConnectionDataSource(Plugin plugin, ConnectionPoolDataSource dataSource, int timeout, long maxLifetime) throws SQLException {
@@ -79,7 +80,7 @@ public class SingleConnectionDataSource extends DataSourceAdapter implements Con
             tryClose(pooledConnection);
             createConnection();
         } catch (SQLException e) {
-            e.printStackTrace();
+            plugin.getLogger().log(Level.SEVERE, "Failed to recreate database connection", e);
         } finally {
             lock.unlock();
         }

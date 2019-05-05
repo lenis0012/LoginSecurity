@@ -44,7 +44,7 @@ public class ProfileRepository {
                 statement.setString(5, profile.getPassword());
                 statement.setInt(6, profile.getHashingAlgorithm());
                 statement.setObject(7, profile.getLoginLocation() != null ? profile.getLoginLocation().getId() : null, Types.INTEGER);
-                statement.setObject(8, profile.getInventory() != null ? profile.getInventory().getId() : null, Types.INTEGER);
+                statement.setObject(8, profile.getInventoryId(), Types.INTEGER);
                 statement.setTimestamp(9, Timestamp.from(Instant.now()));
                 statement.setDate(10, new Date(System.currentTimeMillis()));
                 statement.setLong(11, 1);
@@ -80,8 +80,11 @@ public class ProfileRepository {
                 statement.setString(2, profile.getIpAddress());
                 statement.setString(3, profile.getPassword());
                 statement.setInt(4, profile.getHashingAlgorithm());
+
                 statement.setObject(5, profile.getLoginLocation() != null ? profile.getLoginLocation().getId() : null, Types.INTEGER);
-                statement.setObject(6, profile.getInventory() != null ? profile.getInventory().getId() : null, Types.INTEGER);
+                if(profile.getInventoryId() == null) statement.setNull(6, Types.INTEGER);
+                else statement.setInt(6, profile.getInventoryId());
+
                 statement.setTimestamp(7, Timestamp.from(Instant.now()));
                 statement.setLong(8, profile.getVersion() + 1);
                 statement.setInt(9, profile.getId());
@@ -129,7 +132,7 @@ public class ProfileRepository {
                 statement.setString(1, uniqueId.toString());
                 try(ResultSet result = statement.executeQuery()) {
                     if(!result.next()) {
-                        return null;
+                        return null; // Not found
                     }
 
                     return parseResultSet(result);
@@ -174,6 +177,9 @@ public class ProfileRepository {
         profile.setIpAddress(result.getString("ip_address"));
         profile.setPassword(result.getString("password"));
         profile.setHashingAlgorithm(result.getInt("hashing_algorithm"));
+
+        profile.setInventoryId((Integer) result.getObject("inventory_id"));
+
         profile.setLastLogin(result.getTimestamp("last_login"));
         profile.setRegistrationDate(result.getDate("registration_date"));
         profile.setVersion(result.getLong("optlock"));

@@ -16,7 +16,6 @@ public class CaptchaRenderer extends MapRenderer {
 
         final String text = MetaData.get(player, "ls_captcha_value", String.class);
         MetaData.set(player, "ls_captcha_set", true);
-        System.out.println("text: " + text);
 
         // Clear map
         for(int x = 0; x < 128; x++) {
