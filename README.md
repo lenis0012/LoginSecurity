@@ -1,22 +1,26 @@
-LoginSecurity 2.1
+LoginSecurity 3.0
 =================
 The #1 Auth plugin for Minecraft since 2012.  
 The most secure and advanced Minecraft login solution on the planet.
 
-Links:
-======
+# Links
 - [Development Builds](http://ci.lenis0012.com/job/LoginSecurity/)
 - [SpigotMC](https://www.spigotmc.org/resources/loginsecurity.19362/)
 - [Bukkit](http://dev.bukkit.org/bukkit-plugins/loginsecurity/)
 - [Curse](http://mods.curse.com/bukkit-plugins/minecraft/loginsecurity)
 
-Features:
-========
+# Changes in 3.0
+* Lightweight download (over 20x smaller than v2.1)
+* Improved performance, resulting in higher tps
+* Removed AutoIn support, consider migrating to FastLogin
+* Removed deprecated hashing algorithms
+* More to come
+
+# Features
 - Login with custom password
-- Advanced database structure using EbeanORM
 - Hidden pre-login location
 - Hidden inventory
-- Hashing with BCrypt, Scrypt, PBKDF2, Whirlpool and SHA3_256
+- Secure password storage with BCrypt.
 - Captcha
 - Sessions & Login timeout
 - Username filter
@@ -27,15 +31,3 @@ Features:
 - Easy to set up
 - Used by thousands of server owners
 - 20 existing translations and more to come!
-
-License:
-=======
-
-Copyright (C) 2016, lenis0012
-
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
