@@ -13,8 +13,6 @@
  *--------------------------------------------------------------------------*/
 package com.lenis0012.bukkit.loginsecurity.database.datasource.sqlite;
 
-import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
-
 import javax.sql.ConnectionEvent;
 import javax.sql.ConnectionEventListener;
 import javax.sql.PooledConnection;
@@ -27,7 +25,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 public class SQLitePooledConnection implements PooledConnection {
 
@@ -48,8 +45,8 @@ public class SQLitePooledConnection implements PooledConnection {
      * @see javax.sql.PooledConnection#close()
      */
     public void close() throws SQLException {
-        LoginSecurity.getInstance().getLogger().log(Level.INFO, "Closing pooled connection");
-        Thread.dumpStack();
+//        LoginSecurity.getInstance().getLogger().log(Level.INFO, "Closing pooled connection");
+//        Thread.dumpStack();
         if (handleConn != null) {
             listeners.clear();
             handleConn.close();

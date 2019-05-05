@@ -92,11 +92,6 @@ public class PlayerListener implements Listener {
         MetaData.unset(event.getPlayer(), "ls_login_tries");
     }
 
-    @EventHandler
-    public void onXRFS(PlayerLoginEvent event) {
-        event.getPlayer().teleport(event.getPlayer().getWorld().getSpawnLocation());
-    }
-
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
