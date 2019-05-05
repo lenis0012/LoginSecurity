@@ -3,7 +3,6 @@ package com.lenis0012.bukkit.loginsecurity.modules.general;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurityConfig;
 import com.lenis0012.bukkit.loginsecurity.commands.*;
-import com.lenis0012.bukkit.loginsecurity.integrate.autoin.LoginPluginLoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.modules.language.LanguageModule;
 import com.lenis0012.bukkit.loginsecurity.util.Metrics;
 import com.lenis0012.bukkit.loginsecurity.util.Metrics.Graph;
@@ -46,13 +45,6 @@ public class GeneralModule extends Module<LoginSecurity> {
 
         // This line is so alone :(  I feel bad for him
         this.locationMode = LocationMode.valueOf(LoginSecurity.getConfiguration().getLocation().toUpperCase());
-
-        // AutoIn support
-        if(Bukkit.getPluginManager().isPluginEnabled("AutoIn")) {
-            plugin.getLogger().log(Level.INFO, "Attempting to hook with AutoIn...");
-            LoginPluginLoginSecurity hook = new LoginPluginLoginSecurity(plugin);
-            hook.register();
-        }
     }
 
     @Override
@@ -135,15 +127,12 @@ public class GeneralModule extends Module<LoginSecurity> {
                 logger().log(Level.WARNING, "Updater was in unexpected state, please report on https://github.com/lenis0012/LoginSecurity-2/issues");
                 return;
             }
-            Bukkit.getScheduler().runTask(plugin, new Runnable() {
-                @Override
-                public void run() {
-                    player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                            "&bA new &3" + version.getType().toString() + " build for LoginSecurity is available! &3" +
-                                    version.getName() + " &afor &9" + version.getServerVersion()));
-                    player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                            "&bUse &3/lac update &bto download the new version."));
-                }
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                        "&bA new &3" + version.getType().toString() + " build for LoginSecurity is available! &3" +
+                                version.getName() + " &afor &9" + version.getServerVersion()));
+                player.sendMessage(ChatColor.translateAlternateColorCodes('&',
+                        "&bUse &3/lac update &bto download the new version."));
             });
         });
     }

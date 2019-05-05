@@ -88,6 +88,27 @@ public class ProfileRepository {
         }
     }
 
+    public void delete(PlayerProfile profile, Consumer<AsyncResult<PlayerProfile>> callback) {
+        Bukkit.getScheduler().runTaskAsynchronously(loginSecurity, () -> {
+            try {
+                deleteBlocking(profile);
+                resolveResult(callback, profile);
+            } catch (SQLException e) {
+                resolveError(callback, e);
+            }
+        });
+    }
+
+    public void deleteBlocking(PlayerProfile profile) throws SQLException {
+        try(Connection connection = dataSource.getConnection()) {
+            try(PreparedStatement statement = connection.prepareStatement(
+                    "DELETE FROM ls_players WHERE id=?;")) {
+                statement.setInt(1, profile.getId());
+                statement.executeUpdate();
+            }
+        }
+    }
+
     private <T> void resolveResult(Consumer<AsyncResult<T>> callback, T result) {
         Bukkit.getScheduler().runTask(loginSecurity, () ->
                 callback.accept(new AsyncResult<T>(true, result, null)));
