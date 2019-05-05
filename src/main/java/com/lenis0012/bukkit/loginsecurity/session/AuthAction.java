@@ -71,14 +71,34 @@ public abstract class AuthAction {
             }
         }
 
-        if(profile.getLoginLocation() != null) {
-            final PlayerLocation loginLocation = profile.getLoginLocation();
-            loginLocation.getWorld(); // hotfix: Populate method
-            final Location location = loginLocation.asLocation();
-            if(location != null) {
-                Bukkit.getScheduler().runTask(LoginSecurity.getInstance(), () -> player.teleport(location));
+        if(profile.getLoginLocationId() != null) {
+            try {
+                final PlayerLocation serializedLocation = LoginSecurity.getDatastore().getLocationRepository()
+                        .findByIdBlocking(profile.getLoginLocationId());
+                Bukkit.getScheduler().runTask(LoginSecurity.getInstance(), () -> {
+                    player.teleport(serializedLocation.asLocation());
+                    profile.setLoginLocationId(null);
+                    session.saveProfileAsync();
+                    // TODO: Delete location
+                });
+                if(serializedLocation != null) {
+                    LoginSecurity.getInstance().getLogger().log(Level.WARNING, "Couldn't find player's login location");
+                    profile.setLoginLocationId(null);
+                    session.saveProfileAsync();
+                }
+            } catch (SQLException e) {
+                LoginSecurity.getInstance().getLogger().log(Level.SEVERE, "Failed to load player login location", e);
             }
-            profile.setLoginLocation(null);
         }
+
+//        if(profile.getLoginLocation() != null) {
+//            final PlayerLocation loginLocation = profile.getLoginLocation();
+//            loginLocation.getWorld(); // hotfix: Populate method
+//            final Location location = loginLocation.asLocation();
+//            if(location != null) {
+//                Bukkit.getScheduler().runTask(LoginSecurity.getInstance(), () -> player.teleport(location));
+//            }
+//            profile.setLoginLocation(null);
+//        }
     }
 }

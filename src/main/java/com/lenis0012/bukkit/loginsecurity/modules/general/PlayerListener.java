@@ -144,20 +144,19 @@ public class PlayerListener implements Listener {
         }
 
         // Reset location
-//        if(profile.getLoginLocation() == null) {
-//            final Location origin = player.getLocation().clone();
-//            switch(general.getLocationMode()) {
-//                case SPAWN:
-//                    player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
-//                    profile.setLoginLocation(new PlayerLocation(origin));
-//                    saveAsync = true;
-//                    break;
-//                case RANDOM:
-//                    // TODO: Add random in.
-//                case DEFAULT:
-//                    break; // Do nothing (for now)
-//            }
-//        }
+        if(profile.getLoginLocationId() == null) {
+            final Location origin = player.getLocation().clone();
+            if(general.getLocationMode() == LocationMode.SPAWN) {
+                player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
+                final PlayerLocation serializedLocation = new PlayerLocation(origin);
+                LoginSecurity.getDatastore().getLocationRepository().insertLoginLocation(profile, serializedLocation, result -> {
+                    if(!result.isSuccess()) {
+                        LoginSecurity.getInstance().getLogger().log(Level.SEVERE, "Failed to save player location", result.getError());
+                        player.teleport(origin);
+                    }
+                });
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)

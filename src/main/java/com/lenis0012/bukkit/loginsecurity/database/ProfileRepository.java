@@ -43,8 +43,12 @@ public class ProfileRepository {
                 statement.setString(4, profile.getIpAddress());
                 statement.setString(5, profile.getPassword());
                 statement.setInt(6, profile.getHashingAlgorithm());
-                statement.setObject(7, profile.getLoginLocation() != null ? profile.getLoginLocation().getId() : null, Types.INTEGER);
-                statement.setObject(8, profile.getInventoryId(), Types.INTEGER);
+
+                if(profile.getLoginLocationId() == null) statement.setNull(7, Types.INTEGER);
+                else statement.setInt(7, profile.getLoginLocationId());
+                if(profile.getInventoryId() == null) statement.setNull(8, Types.INTEGER);
+                else statement.setInt(8, profile.getInventoryId());
+
                 statement.setTimestamp(9, Timestamp.from(Instant.now()));
                 statement.setDate(10, new Date(System.currentTimeMillis()));
                 statement.setLong(11, 1);
@@ -81,7 +85,8 @@ public class ProfileRepository {
                 statement.setString(3, profile.getPassword());
                 statement.setInt(4, profile.getHashingAlgorithm());
 
-                statement.setObject(5, profile.getLoginLocation() != null ? profile.getLoginLocation().getId() : null, Types.INTEGER);
+                if(profile.getLoginLocationId() == null) statement.setNull(5, Types.INTEGER);
+                else statement.setInt(5, profile.getLoginLocationId());
                 if(profile.getInventoryId() == null) statement.setNull(6, Types.INTEGER);
                 else statement.setInt(6, profile.getInventoryId());
 
@@ -178,6 +183,7 @@ public class ProfileRepository {
         profile.setPassword(result.getString("password"));
         profile.setHashingAlgorithm(result.getInt("hashing_algorithm"));
 
+        profile.setLoginLocationId((Integer) result.getObject("location_id"));
         profile.setInventoryId((Integer) result.getObject("inventory_id"));
 
         profile.setLastLogin(result.getTimestamp("last_login"));

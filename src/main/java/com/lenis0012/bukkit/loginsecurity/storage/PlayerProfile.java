@@ -24,7 +24,7 @@ public class PlayerProfile {
 
     private Integer inventoryId;
 
-    private PlayerLocation loginLocation;
+    private Integer loginLocationId;
 
     private Timestamp lastLogin = new Timestamp(System.currentTimeMillis());
 
