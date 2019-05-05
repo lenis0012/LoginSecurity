@@ -31,6 +31,9 @@
                     <optional>true</optional>
                 </dependency>
             </dependencies>
+            <build>
+                <finalName>${project.artifactId}-${project.version}-${project.platform}</finalName>
+            </build>
         </profile>
         <profile>
             <id>spigot</id>
@@ -47,6 +50,9 @@
                     <optional>true</optional>
                 </dependency>
             </dependencies>
+            <build>
+                <finalName>${project.artifactId}-${project.version}-${project.platform}</finalName>
+            </build>
         </profile>
     </profiles>
 
@@ -161,7 +167,6 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
-        <finalName>${project.name}-${project.version}-${project.platform}</finalName>
         <defaultGoal>clean install</defaultGoal>
         <!-- Plugins -->
         <plugins>
