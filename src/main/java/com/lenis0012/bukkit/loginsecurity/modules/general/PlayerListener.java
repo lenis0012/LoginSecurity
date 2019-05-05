@@ -29,7 +29,6 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
 

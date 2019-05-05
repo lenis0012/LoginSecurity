@@ -7,7 +7,6 @@ import org.bukkit.Bukkit;
 
 import javax.sql.DataSource;
 import java.sql.*;
-import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 

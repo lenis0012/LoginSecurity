@@ -71,12 +71,6 @@
             <id>vault-repo</id>
             <url>http://nexus.hc.to/content/repositories/pub_releases</url>
         </repository>
-        
-        <!-- Repo access to Argon2 -->
-        <repository>
-            <id>bintray-phxql-maven</id>
-            <url>http://dl.bintray.com/phxql/maven</url>
-        </repository>
     </repositories>
 
     <dependencies>
@@ -114,22 +108,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Hash libraries -->
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15on</artifactId>
-            <version>1.54</version>
-            <scope>compile</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>de.mkammerer</groupId>
-            <artifactId>argon2-jvm</artifactId>
-            <version>1.2</version>
-            <!-- Added to the classpath by the maven jar plugin -->
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
         <!-- Used libraries -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -170,7 +148,7 @@
             </resource>
         </resources>
         <finalName>${project.name}-${project.version}-${project.platform}</finalName>
-        <defaultGoal>clean install javadoc:javadoc</defaultGoal>
+        <defaultGoal>clean install</defaultGoal>
         <!-- Plugins -->
         <plugins>
             <!-- Compiler plugin -->
@@ -199,37 +177,6 @@
                 </executions>
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
-                    <!-- META-INF transformer, required by bouncycastle -->
-                    <transformers>
-                        <transformer
-                                implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                            <mainClass>com.x.y.Main</mainClass>
-                        </transformer>
-                        <transformer
-                                implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                            <resource>META-INF/spring.handlers</resource>
-                        </transformer>
-                        <transformer
-                                implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                            <resource>META-INF/spring.schemas</resource>
-                        </transformer>
-                        <transformer
-                                implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-                            <resource>META-INF/spring.tooling</resource>
-                        </transformer>
-                        <transformer
-                                implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
-                    </transformers>
-                    <filters>
-                        <filter>
-                            <artifact>*:*</artifact>
-                            <excludes>
-                                <exclude>META-INF/*.SF</exclude>
-                                <exclude>META-INF/*.DSA</exclude>
-                                <exclude>META-INF/*.RSA</exclude>
-                            </excludes>
-                        </filter>
-                    </filters>
                     <relocations>
                         <!-- Relocate utils -->
                         <relocation>
