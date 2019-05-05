@@ -1,6 +1,5 @@
 package com.lenis0012.bukkit.loginsecurity.database.datasource;
 
-import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -13,7 +12,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
 
 public class SingleConnectionDataSource extends DataSourceAdapter implements ConnectionEventListener, Runnable {
     private final Plugin plugin;

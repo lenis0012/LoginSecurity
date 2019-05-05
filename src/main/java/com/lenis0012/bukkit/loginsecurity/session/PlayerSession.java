@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
 import java.util.UUID;
+import java.util.logging.Level;
 
 /**
  * Player session
@@ -37,13 +38,15 @@ public class PlayerSession {
     }
 
     /**
-     * Save the profile on a seperate thread.
+     * Save the profile on a separate thread.
      */
     public void saveProfileAsync() {
         if(!isRegistered()) {
             throw new IllegalStateException("Can't save profile when not registered!");
         }
-        LoginSecurity.getExecutorService().execute(() -> LoginSecurity.getDatabase().save(profile));
+        LoginSecurity.getDatastore().getProfileRepository().insert(profile, result -> {
+            if(!result.isSuccess()) LoginSecurity.getInstance().getLogger().log(Level.SEVERE, "Failed to save user profile", result.getError());
+        });
     }
 
     /**

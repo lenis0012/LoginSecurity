@@ -1,5 +1,6 @@
 package com.lenis0012.bukkit.loginsecurity.session.action;
 
+import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.session.*;
 import com.lenis0012.bukkit.loginsecurity.session.exceptions.ProfileRefreshException;
 
@@ -23,7 +24,7 @@ public class LoginAction extends AuthAction {
         rehabPlayer(session);
         session.getProfile().setLastLogin(new Timestamp(System.currentTimeMillis()));
         session.getProfile().setIpAddress(session.getPlayer().getAddress().getAddress().toString());
-        save(session.getProfile());
+        session.saveProfileAsync();
         return AuthMode.AUTHENTICATED;
     }
 }

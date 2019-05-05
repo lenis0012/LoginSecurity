@@ -36,11 +36,6 @@ public abstract class AuthAction {
 
     public abstract AuthMode run(PlayerSession session, ActionResponse response);
 
-    protected void save(final Object model) {
-        Runnable runnable = () -> LoginSecurity.getDatabase().save(model);
-        LoginSecurity.getExecutorService().execute(runnable);
-    }
-
     /**
      * Return player to their original state.
      *
