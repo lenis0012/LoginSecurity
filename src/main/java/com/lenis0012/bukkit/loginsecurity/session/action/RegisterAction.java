@@ -6,6 +6,9 @@ import com.lenis0012.bukkit.loginsecurity.session.*;
 import com.lenis0012.bukkit.loginsecurity.session.exceptions.ProfileRefreshException;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 
+import java.sql.SQLException;
+import java.util.logging.Level;
+
 public class RegisterAction extends AuthAction {
     private final String password;
 
@@ -30,8 +33,17 @@ public class RegisterAction extends AuthAction {
         final String hash = algorithm.hash(password);
         profile.setPassword(hash);
         profile.setHashingAlgorithm(algorithm.getId());
-        rehabPlayer(session);
-        save(profile);
+        try {
+            plugin.datastore().getProfileRepository().insertBlocking(profile);
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.SEVERE, "Failed to register user", e);
+            response.setSuccess(false);
+            response.setErrorMessage("Failed to register your account, try again later.");
+            return null;
+        }
+
+//        rehabPlayer(session);
+//        save(profile);
         return AuthMode.AUTHENTICATED;
     }
 }

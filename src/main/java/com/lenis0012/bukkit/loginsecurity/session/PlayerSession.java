@@ -42,12 +42,7 @@ public class PlayerSession {
         if(!isRegistered()) {
             throw new IllegalStateException("Can't save profile when not registered!");
         }
-        LoginSecurity.getExecutorService().execute(new Runnable() {
-            @Override
-            public void run() {
-                LoginSecurity.getDatabase().save(profile);
-            }
-        });
+        LoginSecurity.getExecutorService().execute(() -> LoginSecurity.getDatabase().save(profile));
     }
 
     /**

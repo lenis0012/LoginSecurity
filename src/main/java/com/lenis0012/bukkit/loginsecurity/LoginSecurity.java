@@ -2,13 +2,14 @@ package com.lenis0012.bukkit.loginsecurity;
 
 import com.avaje.ebean.EbeanServer;
 import com.google.common.collect.Lists;
+import com.lenis0012.bukkit.loginsecurity.database.LoginSecurityDatabase;
 import com.lenis0012.bukkit.loginsecurity.hashing.Algorithm;
 import com.lenis0012.bukkit.loginsecurity.modules.captcha.CaptchaManager;
 import com.lenis0012.bukkit.loginsecurity.modules.general.GeneralModule;
 import com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys;
 import com.lenis0012.bukkit.loginsecurity.modules.language.LanguageModule;
 import com.lenis0012.bukkit.loginsecurity.modules.language.TranslatedMessage;
-import com.lenis0012.bukkit.loginsecurity.modules.migration.MigrationModule;
+import com.lenis0012.bukkit.loginsecurity.modules.storage.NewStorageModule;
 import com.lenis0012.bukkit.loginsecurity.modules.storage.StorageModule;
 import com.lenis0012.bukkit.loginsecurity.modules.threading.ThreadingModule;
 import com.lenis0012.bukkit.loginsecurity.session.SessionManager;
@@ -52,6 +53,8 @@ public class LoginSecurity extends PluginHolder {
     public static LoginSecurityConfig getConfiguration() {
         return ((LoginSecurity) getInstance()).config();
     }
+
+    public static LoginSecurityDatabase getDatastore() { return ((LoginSecurity) getInstance()).datastore(); }
 
     /**
      * Translate a message by key.
@@ -113,7 +116,7 @@ public class LoginSecurity extends PluginHolder {
         registry.registerModules(
                 LanguageModule.class,
                 StorageModule.class,
-                MigrationModule.class,
+                NewStorageModule.class,
                 GeneralModule.class,
                 ThreadingModule.class,
                 CaptchaManager.class);
@@ -129,6 +132,10 @@ public class LoginSecurity extends PluginHolder {
 
     public LoginSecurityConfig config() {
         return config;
+    }
+
+    public LoginSecurityDatabase datastore() {
+        return getModule(NewStorageModule.class).getDatabase();
     }
 
     public List<Class<?>> getDatabaseClasses() {

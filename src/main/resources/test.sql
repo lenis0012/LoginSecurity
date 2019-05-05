@@ -1,0 +1,1 @@
+/* insert */ INSERT INTO ls_players(uuid_mode,unique_user_id,last_name,ip_address,password,hashing_algorithm,location_id,inventory_id,last_login,registration_date,optlock) VALUES(?,?,?,?,?,?,?,?,?,?,?);

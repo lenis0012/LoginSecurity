@@ -42,12 +42,9 @@ public class CommandRegister extends Command {
 
         if(config.isRegisterCaptcha()) {
             CaptchaManager captcha = plugin.getModule(CaptchaManager.class);
-            captcha.giveMapItem(player, new Runnable() {
-                @Override
-                public void run() {
-                    AuthAction action = new RegisterAction(AuthService.PLAYER, player, password);
-                    session.performActionAsync(action, new RegisterCallback(CommandRegister.this, player));
-                }
+            captcha.giveMapItem(player, () -> {
+                AuthAction action = new RegisterAction(AuthService.PLAYER, player, password);
+                session.performActionAsync(action, new RegisterCallback(CommandRegister.this, player));
             });
             reply(true, translate(REGISTER_CAPTCHA));
         } else {

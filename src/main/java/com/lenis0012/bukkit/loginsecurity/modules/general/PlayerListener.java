@@ -168,6 +168,7 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         final Player player = event.getPlayer();
+        player.sendMessage(Thread.currentThread().getName());
         if(isInvalidPlayer(player)) return;
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
         if(session.isAuthorized()) return;

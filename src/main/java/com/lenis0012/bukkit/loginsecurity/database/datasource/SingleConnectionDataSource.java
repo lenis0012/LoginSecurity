@@ -42,6 +42,7 @@ public class SingleConnectionDataSource extends DataSourceAdapter implements Con
 
     @Override
     public Connection getConnection() throws SQLException {
+        if(closing) throw new SQLException("Database is shutting down");
         lock.lock();
         try {
             if(pooledConnection != null) {
@@ -67,7 +68,7 @@ public class SingleConnectionDataSource extends DataSourceAdapter implements Con
         if(recreateTask != null) recreateTask.cancel();
         this.pooledConnection = dataSource.getPooledConnection();
         pooledConnection.addConnectionEventListener(this);
-        Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, this, maxLifetime / 50);
+        this.recreateTask = Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, this, maxLifetime / 50);
     }
 
     @Override
@@ -93,13 +94,11 @@ public class SingleConnectionDataSource extends DataSourceAdapter implements Con
 
     public void shutdown() throws SQLException {
         this.closing = true;
+        if(recreateTask != null) recreateTask.cancel();
         lock.lock();
 
         if(pooledConnection != null) {
-            final Connection connection = pooledConnection.getConnection();
-            if(!connection.isClosed()) {
-                connection.close();
-            }
+            pooledConnection.close();
         }
     }
 

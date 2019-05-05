@@ -3,12 +3,8 @@ package com.lenis0012.bukkit.loginsecurity.commands;
 import com.google.common.collect.Maps;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.modules.general.GeneralModule;
-import com.lenis0012.bukkit.loginsecurity.modules.migration.AbstractMigration;
-import com.lenis0012.bukkit.loginsecurity.modules.migration.MigrationModule;
 import com.lenis0012.bukkit.loginsecurity.session.AuthService;
 import com.lenis0012.bukkit.loginsecurity.session.PlayerSession;
-import com.lenis0012.bukkit.loginsecurity.session.action.ActionCallback;
-import com.lenis0012.bukkit.loginsecurity.session.action.ActionResponse;
 import com.lenis0012.bukkit.loginsecurity.session.action.RemovePassAction;
 import com.lenis0012.pluginutils.modules.command.Command;
 import com.lenis0012.updater.api.Updater;
@@ -95,28 +91,6 @@ public class CommandAdmin extends Command {
         );
     }
 
-    @SubCommand(description = "lacImport", usage = "lacImportArgs", minArgs = 1)
-    public void dbimport() {
-        MigrationModule module = plugin.getModule(MigrationModule.class);
-        AbstractMigration migration = module.getMigration(getArg(1));
-        if(migration == null) {
-            reply(false, translate(LAC_UNKNOWN_SOURCE));
-            return;
-        }
-
-        String[] params = new String[getArgLength() - 2];
-        for(int i = 0; i < params.length; i++) {
-            params[i] = getArg(i + 2);
-        }
-
-        if(!migration.canExecute(params)) {
-            reply(false, translate(LAC_IMPORT_FAILED));
-            return;
-        }
-
-        migration.execute(params);
-    }
-
     @SubCommand(description = "NoTrans:Download update from bukkit/spigot")
     public void update() {
         final Updater updater = plugin.getModule(GeneralModule.class).getUpdater();
@@ -132,36 +106,30 @@ public class CommandAdmin extends Command {
         }
 
         reply(true, "Downloading " + version.getName() + "...");
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-            @Override
-            public void run() {
-                String message = updater.downloadVersion();
-                final String response = message == null ? "&aUpdate successful, will be active on reboot." : "&c&lError: &c" + message;
-                Bukkit.getScheduler().runTask(plugin, new Runnable() {
-                    @Override
-                    public void run() {
-                        reply(response);
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+            String message = updater.downloadVersion();
+            final String response = message == null ? "&aUpdate successful, will be active on reboot." : "&c&lError: &c" + message;
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                reply(response);
 //                        if(!Settings.ENABLE_CHANGELOG.value()) {
 //                            return;
 //                        }
 
-                        ItemStack changelog = updater.getChangelog();
-                        if(changelog == null) {
-                            reply("&cChangelog isn't available for this version.");
-                            return;
-                        }
+                ItemStack changelog = updater.getChangelog();
+                if(changelog == null) {
+                    reply("&cChangelog isn't available for this version.");
+                    return;
+                }
 
-                        ItemStack inHand = player.getItemInHand();
-                        player.setItemInHand(changelog);
-                        if(inHand != null) {
-                            player.getInventory().addItem(inHand);
-                        }
+                ItemStack inHand = player.getItemInHand();
+                player.setItemInHand(changelog);
+                if(inHand != null) {
+                    player.getInventory().addItem(inHand);
+                }
 
-                        reply("&llenis> &bCheck my changelog out! (I put it in your hand)");
-                        player.updateInventory();
-                    }
-                });
-            }
+                reply("&llenis> &bCheck my changelog out! (I put it in your hand)");
+                player.updateInventory();
+            });
         });
     }
 }

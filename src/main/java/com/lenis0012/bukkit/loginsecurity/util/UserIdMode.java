@@ -1,17 +1,19 @@
 package com.lenis0012.bukkit.loginsecurity.util;
 
-import com.avaje.ebean.annotation.EnumValue;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.util.UUID;
 
+@RequiredArgsConstructor
+@Getter
 public enum UserIdMode {
-    @EnumValue("U")
-    UNKNOWN,
-    @EnumValue("M")
-    MOJANG,
-    @EnumValue("O")
-    OFFLINE;
+    UNKNOWN("U"),
+    MOJANG("M"),
+    OFFLINE("O");
+
+    private final String id;
 
     public String getUserId(final PlayerProfile profile) {
         if(profile.getUniqueIdMode() == this) {

@@ -1,10 +1,8 @@
 package com.lenis0012.bukkit.loginsecurity.session.action;
 
+@FunctionalInterface
 public interface ActionCallback {
-    ActionCallback EMPTY = new ActionCallback() {
-        @Override
-        public void call(ActionResponse response) {
-        }
+    ActionCallback EMPTY = response -> {
     };
 
     /**

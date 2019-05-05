@@ -19,6 +19,8 @@ import org.sqlite.SQLiteDataSource;
 import javax.sql.ConnectionPoolDataSource;
 import javax.sql.PooledConnection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.util.logging.Logger;
 
 public class SQLiteConnectionPoolDataSource extends SQLiteDataSource implements ConnectionPoolDataSource {
 
@@ -49,5 +51,10 @@ public class SQLiteConnectionPoolDataSource extends SQLiteDataSource implements 
      */
     public PooledConnection getPooledConnection(String user, String password) throws SQLException {
         return new SQLitePooledConnection(getConnection(user, password));
+    }
+
+    @Override
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        throw new SQLFeatureNotSupportedException();
     }
 }
