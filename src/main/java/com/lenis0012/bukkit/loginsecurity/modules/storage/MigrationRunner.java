@@ -7,6 +7,7 @@ import javax.sql.DataSource;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.sql.*;
+import java.time.Instant;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -39,11 +40,22 @@ public class MigrationRunner implements Runnable {
                     final String content = getContent("sql/" + platform + "/" + migrationFileName);
                     try(Statement statement = connection.createStatement()) {
                         statement.executeUpdate(content);
+                        insertMigration(connection, version, name);
                     }
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void insertMigration(Connection connectionm, String version, String name) throws SQLException {
+        try(PreparedStatement statement = connectionm.prepareStatement(
+                "INSERT INTO ls_upgrades (version, description, applied_at) VALUES (?,?,?);")) {
+            statement.setString(1, version);
+            statement.setString(2, name);
+            statement.setTimestamp(3, Timestamp.from(Instant.now()));
+            statement.executeUpdate();
         }
     }
 
