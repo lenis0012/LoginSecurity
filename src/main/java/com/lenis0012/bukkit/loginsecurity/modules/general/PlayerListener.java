@@ -98,10 +98,11 @@ public class PlayerListener implements Listener {
         if(isInvalidPlayer(player)) return;
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
         final PlayerProfile profile = session.getProfile();
-        boolean saveAsync = false;
         if(profile.getLastName() == null || !player.getName().equals(profile.getLastName())) {
             profile.setLastName(player.getName());
-            session.saveProfileAsync();
+            if(session.isRegistered()) {
+                session.saveProfileAsync();
+            }
         }
 
         // Admin update check
@@ -167,7 +168,6 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         final Player player = event.getPlayer();
-        player.sendMessage(Thread.currentThread().getName());
         if(isInvalidPlayer(player)) return;
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
         if(session.isAuthorized()) return;

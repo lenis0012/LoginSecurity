@@ -25,9 +25,11 @@ public class NewStorageModule extends Module<LoginSecurity> {
         final String path = new File(plugin.getDataFolder(), "LoginSecurity.db").getPath();
         sqliteConfig.setUrl("jdbc:sqlite:" + path);
 
+        this.dataSource = new SingleConnectionDataSource(plugin, sqliteConfig);
+        this.database = new LoginSecurityDatabase(plugin, dataSource);
         try {
-            this.dataSource = new SingleConnectionDataSource(plugin, sqliteConfig);
-            this.database = new LoginSecurityDatabase(plugin, dataSource);
+            dataSource.createConnection();
+            new MigrationRunner(plugin, dataSource, "sqlite").run();
         } catch (SQLException e) {
             plugin.getLogger().log(Level.SEVERE, "Failed to initiate database");
         }

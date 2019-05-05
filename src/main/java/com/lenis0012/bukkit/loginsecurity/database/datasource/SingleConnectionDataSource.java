@@ -15,6 +15,10 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 
 public class SingleConnectionDataSource extends DataSourceAdapter implements ConnectionEventListener, Runnable {
+    private static final int VALID_CHECK_BYPASS = 500; // 0.5 sec
+    private static final int DEFAULT_TIMEOUT = 5000; // 5 sec
+    private static final long DEFAULT_MAX_LIFETIME = TimeUnit.MINUTES.toMillis(30);
+
     private final Plugin plugin;
     private final ConnectionPoolDataSource dataSource;
     private final ReentrantLock lock;
@@ -23,22 +27,21 @@ public class SingleConnectionDataSource extends DataSourceAdapter implements Con
     private final long maxLifetime;
 
     private volatile PooledConnection pooledConnection;
+    private volatile long lastUsedTime;
     private BukkitTask recreateTask;
     private boolean closing = false;
 
-    public SingleConnectionDataSource(Plugin plugin, ConnectionPoolDataSource dataSource) throws SQLException {
-        this(plugin, dataSource, 5000, TimeUnit.MINUTES.toMillis(30));
+    public SingleConnectionDataSource(Plugin plugin, ConnectionPoolDataSource dataSource) {
+        this(plugin, dataSource, DEFAULT_TIMEOUT, DEFAULT_MAX_LIFETIME);
     }
 
-    public SingleConnectionDataSource(Plugin plugin, ConnectionPoolDataSource dataSource, int timeout, long maxLifetime) throws SQLException {
+    public SingleConnectionDataSource(Plugin plugin, ConnectionPoolDataSource dataSource, int timeout, long maxLifetime) {
         this.plugin = plugin;
         this.dataSource = dataSource;
         this.lock = new ReentrantLock(true);
 
         this.maxLifetime = maxLifetime;
         this.timeout = timeout;
-
-        createConnection();
     }
 
     @Override
@@ -49,10 +52,10 @@ public class SingleConnectionDataSource extends DataSourceAdapter implements Con
             if(pooledConnection != null) {
                 final Connection connection = pooledConnection.getConnection();
                 if(!connection.isClosed()) {
-                    if(!connection.isValid(timeout)) {
-                        tryClose(pooledConnection);
-                    } else {
+                    if((lastUsedTime - System.currentTimeMillis() <= VALID_CHECK_BYPASS) || connection.isValid(timeout)) {
                         return connection;
+                    } else {
+                        tryClose(pooledConnection);
                     }
                 }
             }
@@ -65,8 +68,9 @@ public class SingleConnectionDataSource extends DataSourceAdapter implements Con
         }
     }
 
-    private void createConnection() throws SQLException {
+    public void createConnection() throws SQLException {
         if(recreateTask != null) recreateTask.cancel();
+        if(pooledConnection != null) tryClose(pooledConnection);
         this.pooledConnection = dataSource.getPooledConnection();
         pooledConnection.addConnectionEventListener(this);
         this.recreateTask = Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, this, maxLifetime / 50);
@@ -89,6 +93,7 @@ public class SingleConnectionDataSource extends DataSourceAdapter implements Con
     private void tryClose(PooledConnection connection) {
         try {
             connection.close();
+            this.pooledConnection = null;
         } catch (SQLException e) {
         }
     }
@@ -108,6 +113,7 @@ public class SingleConnectionDataSource extends DataSourceAdapter implements Con
     public void connectionClosed(ConnectionEvent event) {
 //        LoginSecurity.getInstance().getLogger().log(Level.INFO, "Returning connection " + event.getSource().getClass().getSimpleName());
 //        Thread.dumpStack();
+        this.lastUsedTime = System.currentTimeMillis();
         lock.unlock();
     }
 
