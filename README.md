@@ -1,4 +1,4 @@
-LoginSecurity 3.0
+LoginSecurity 3.0 [![Build Status](https://ci.codemc.org/job/lenis0012/job/LoginSecurity/badge/icon)](https://ci.codemc.org/job/lenis0012/job/LoginSecurity/)
 =================
 The #1 Auth plugin for Minecraft since 2012.  
 The most secure and advanced Minecraft login solution on the planet.
