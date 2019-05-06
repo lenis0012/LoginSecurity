@@ -27,11 +27,13 @@ public class NewStorageModule extends Module<LoginSecurity> {
 
     @Override
     public void enable() {
-        String platform;
-        ConnectionPoolDataSource dataSourceConfig;
         final File configFile = new File(plugin.getDataFolder(), "database.yml");
         if(!configFile.exists()) copyFile(plugin.getResource("database.yml"), configFile);
         final Configuration config = new Configuration(configFile);
+        config.reload();
+
+        String platform;
+        ConnectionPoolDataSource dataSourceConfig;
         if(config.getBoolean("mysql.enabled")) {
             platform = "mysql";
             dataSourceConfig = createMysqlDataSource(config);

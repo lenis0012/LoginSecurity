@@ -30,21 +30,31 @@ public class MigrationRunner implements Runnable {
     @Override
     public void run() {
         try(Connection connection = dataSource.getConnection()) {
-            final boolean installed = isInstalled(connection);
-            for(String migrationFileName : readMigrations()) {
-                final String[] migrationData = migrationFileName.split(Pattern.quote("__"));
-                final String version = migrationData[0];
-                String name = migrationData[1].replace("_", " ");
-                name = name.substring(0, name.length() - ".sql".length()); // Remove extension
+            final boolean originAutoCommit = connection.getAutoCommit();
+            try {
+                connection.setAutoCommit(false);
+                final boolean installed = isInstalled(connection);
+                for(String migrationFileName : readMigrations()) {
+                    final String[] migrationData = migrationFileName.split(Pattern.quote("__"));
+                    final String version = migrationData[0];
+                    String name = migrationData[1].replace("_", " ");
+                    name = name.substring(0, name.length() - ".sql".length()); // Remove extension
 
-                if(!installed || !isMigrationInstalled(connection, version)) {
-                    loginSecurity.getLogger().log(Level.INFO, "Applying database upgrade " + version + ": " + name);
-                    final String content = getContent("sql/" + platform + "/" + migrationFileName);
-                    try(Statement statement = connection.createStatement()) {
-                        statement.executeUpdate(content);
-                        insertMigration(connection, version, name);
+                    if(!installed || !isMigrationInstalled(connection, version)) {
+                        loginSecurity.getLogger().log(Level.INFO, "Applying database upgrade " + version + ": " + name);
+                        final String content = getContent("sql/" + platform + "/" + migrationFileName);
+                        try(Statement statement = connection.createStatement()) {
+                            for(String query : content.split(";")) {
+                                if(query.trim().isEmpty()) continue;
+                                statement.executeUpdate(query);
+                            }
+                            insertMigration(connection, version, name);
+                            connection.commit();
+                        }
                     }
                 }
+            } finally {
+                connection.setAutoCommit(originAutoCommit);
             }
         } catch (SQLException e) {
             e.printStackTrace();
