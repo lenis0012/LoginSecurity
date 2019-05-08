@@ -13,6 +13,7 @@ import com.lenis0012.bukkit.loginsecurity.util.MetaData;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
@@ -23,6 +24,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 import org.bukkit.inventory.PlayerInventory;
@@ -121,16 +123,19 @@ public class PlayerListener implements Listener {
         // Clear inventory
         if(profile.getInventoryId() == null && config.isHideInventory()) {
             // Clear inventory
-            final PlayerInventory inventory = player.getInventory();
-            final com.lenis0012.bukkit.loginsecurity.storage.PlayerInventory serializedInventory =
-                    InventorySerializer.serializeInventory(inventory);
-            inventory.clear();
-            LoginSecurity.getDatastore().getInventoryRepository().insert(profile, serializedInventory, result -> {
-                if(!result.isSuccess()) {
-                    LoginSecurity.getInstance().getLogger().log(Level.SEVERE, "Failed to save player inventory", result.getError());
-                    InventorySerializer.deserializeInventory(serializedInventory, inventory);
-                }
-            });
+            Bukkit.getScheduler().runTaskLater(LoginSecurity.getInstance(), () -> {
+                if(!player.isOnline()) return;
+                final PlayerInventory inventory = player.getInventory();
+                final com.lenis0012.bukkit.loginsecurity.storage.PlayerInventory serializedInventory =
+                        InventorySerializer.serializeInventory(inventory);
+                inventory.clear();
+                LoginSecurity.getDatastore().getInventoryRepository().insert(profile, serializedInventory, result -> {
+                    if(!result.isSuccess()) {
+                        LoginSecurity.getInstance().getLogger().log(Level.SEVERE, "Failed to save player inventory", result.getError());
+                        InventorySerializer.deserializeInventory(serializedInventory, inventory);
+                    }
+                });
+            }, 1);
         }
 
         // Reset location
@@ -162,6 +167,16 @@ public class PlayerListener implements Listener {
         }
 
         general.checkUpdates(player);
+    }
+
+    @EventHandler
+    public void onInventoryOpen(InventoryOpenEvent event) {
+        if(isInvalidPlayer(event.getPlayer())) return;
+        final Player player = (Player) event.getPlayer();
+        final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
+        if(session.isAuthorized()) return;
+
+        event.setCancelled(true);
     }
 
     @EventHandler
@@ -307,7 +322,9 @@ public class PlayerListener implements Listener {
         ((Cancellable) event).setCancelled(true);
     }
 
-    private boolean isInvalidPlayer(Player player) {
+    private boolean isInvalidPlayer(HumanEntity human) {
+        if(!(human instanceof Player)) return true;
+        final Player player = (Player) human;
         return player.hasMetadata("NPC") || !player.isOnline();
     }
 }
