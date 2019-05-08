@@ -1,5 +1,6 @@
-package com.lenis0012.bukkit.loginsecurity;
+package com.lenis0012.bukkit.loginsecurity.test;
 
+import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.events.AuthActionEvent;
 import com.lenis0012.bukkit.loginsecurity.session.AuthAction;
 import com.lenis0012.bukkit.loginsecurity.session.AuthActionType;
