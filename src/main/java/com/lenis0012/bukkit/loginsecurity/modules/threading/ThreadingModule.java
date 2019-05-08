@@ -42,7 +42,10 @@ public class ThreadingModule extends Module<LoginSecurity> implements Listener {
         (this.message = new MessageTask(plugin)).runTaskTimer(plugin, 20L, 20L);
         register(this);
 
-        Bukkit.getOnlinePlayers().forEach(player -> MetaData.set(player, "ls_login_time", System.currentTimeMillis()));
+        Bukkit.getOnlinePlayers()
+                .stream()
+                .filter(Player::isOnline) // NPC hotfix
+                .forEach(player -> MetaData.set(player, "ls_login_time", System.currentTimeMillis()));
     }
 
     @Override
