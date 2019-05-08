@@ -115,6 +115,7 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- SQL dependencies. Synced with craftbukkit 1.8.8 -->
         <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
@@ -147,6 +148,14 @@
             <version>1.0</version>
             <scope>compile</scope>
             <optional>true</optional>
+        </dependency>
+
+        <!-- Metrics -->
+        <dependency>
+            <groupId>org.bstats</groupId>
+            <artifactId>bstats-bukkit</artifactId>
+            <version>1.4</version>
+            <scope>compile</scope>
         </dependency>
 
         <!-- Testing dependencies -->
@@ -206,6 +215,11 @@
                         <relocation>
                             <pattern>com.lenis0012.updater</pattern>
                             <shadedPattern>com.lenis0012.bukkit.loginsecurity.libs.updater</shadedPattern>
+                        </relocation>
+                        <!-- Relocate bStats -->
+                        <relocation>
+                            <pattern>org.bstats</pattern>
+                            <shadedPattern>com.lenis0012.bukkit.loginsecurity</shadedPattern>
                         </relocation>
                     </relocations>
                     <filters>

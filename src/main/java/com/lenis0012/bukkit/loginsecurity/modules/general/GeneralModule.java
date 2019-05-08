@@ -4,14 +4,12 @@ import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurityConfig;
 import com.lenis0012.bukkit.loginsecurity.commands.*;
 import com.lenis0012.bukkit.loginsecurity.modules.language.LanguageModule;
-import com.lenis0012.bukkit.loginsecurity.util.Metrics;
-import com.lenis0012.bukkit.loginsecurity.util.Metrics.Graph;
-import com.lenis0012.bukkit.loginsecurity.util.Metrics.Plotter;
 import com.lenis0012.pluginutils.Module;
 import com.lenis0012.updater.api.ReleaseType;
 import com.lenis0012.updater.api.Updater;
 import com.lenis0012.updater.api.UpdaterFactory;
 import com.lenis0012.updater.api.Version;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -20,12 +18,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.concurrent.Callable;
 import java.util.logging.Level;
 
 public class GeneralModule extends Module<LoginSecurity> {
     private LocationMode locationMode;
     private Updater updater;
-    private Metrics metrics;
 
     public GeneralModule(LoginSecurity plugin) {
         super(plugin);
@@ -36,12 +34,7 @@ public class GeneralModule extends Module<LoginSecurity> {
         registerCommands();
         registerListeners();
         setupUpdater();
-        try {
-            setupMetrics();
-        } catch(IOException e) {
-            // We should probably stay silent actually :P, Don't want to annoy the user with something he can disable.
-//            logger().log(Level.WARNING, "Couldn't load metrics", e);
-        }
+        setupMetrics();
 
         // This line is so alone :(  I feel bad for him
         this.locationMode = LocationMode.valueOf(LoginSecurity.getConfiguration().getLocation().toUpperCase());
@@ -55,30 +48,12 @@ public class GeneralModule extends Module<LoginSecurity> {
         return locationMode;
     }
 
-    private void setupMetrics() throws IOException {
+    private void setupMetrics() {
         // Create metrics
         final Metrics metrics = new Metrics(plugin);
-        final LoginSecurityConfig config = LoginSecurity.getConfiguration();
-
-        // Algorithm
-        Graph algorithm = metrics.createGraph("Algorithm");
-        algorithm.addPlotter(new Plotter(config.getHashingAlgorithm().toString()) {
-            @Override
-            public int getValue() {
-                return 1;
-            }
-        });
-
-        Graph language = metrics.createGraph("Language");
-        language.addPlotter(new Plotter(plugin.getModule(LanguageModule.class).getTranslation().getName()) {
-            @Override
-            public int getValue() {
-                return 1;
-            }
-        });
-
-        // Start
-        metrics.start();
+//        final LoginSecurityConfig config = LoginSecurity.getConfiguration();
+        metrics.addCustomChart(new Metrics.SimplePie("language", () ->
+                plugin.getModule(LanguageModule.class).getTranslation().getName()));
     }
 
     private void setupUpdater() {
