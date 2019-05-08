@@ -111,9 +111,6 @@ public class CommandAdmin extends Command {
             final String response = message == null ? "&aUpdate successful, will be active on reboot." : "&c&lError: &c" + message;
             Bukkit.getScheduler().runTask(plugin, () -> {
                 reply(response);
-//                        if(!Settings.ENABLE_CHANGELOG.value()) {
-//                            return;
-//                        }
 
                 ItemStack changelog = updater.getChangelog();
                 if(changelog == null) {
