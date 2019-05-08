@@ -11,6 +11,7 @@ import com.lenis0012.bukkit.loginsecurity.session.action.ActionResponse;
 import com.lenis0012.bukkit.loginsecurity.session.action.ChangePassAction;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 import com.lenis0012.pluginutils.modules.command.Command;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import static com.lenis0012.bukkit.loginsecurity.LoginSecurity.translate;
@@ -53,33 +54,21 @@ public class CommandChangePass extends Command {
         }
 
         // Verify login
-        final boolean validated = algorithm.check(password, profile.getPassword());
-        if(!validated) {
-            reply(false, translate(CHANGE_FAIL));
-            return;
-        }
-
-        AuthAction action = new ChangePassAction(AuthService.PLAYER, player, changed);
-        session.performActionAsync(action, new ChangePassCallback(this, player));
-    }
-
-    private static class ChangePassCallback implements ActionCallback {
-        private final CommandChangePass command;
-        private final Player player;
-
-        private ChangePassCallback(CommandChangePass command, Player player) {
-            this.command = command;
-            this.player = player;
-        }
-
-        @Override
-        public void call(ActionResponse response) {
-            if(!response.isSuccess()) {
-                command.reply(player, false, response.getErrorMessage());
+        Bukkit.getScheduler().runTaskAsynchronously(LoginSecurity.getInstance(), () -> {
+            final boolean validated = algorithm.check(password, profile.getPassword());
+            if(!validated) {
+                reply(player, false, translate(CHANGE_FAIL));
                 return;
             }
 
-            command.reply(player, true, translate(CHANGE_SUCCESS));
-        }
+            final AuthAction action = new ChangePassAction(AuthService.PLAYER, player, changed);
+            final ActionResponse response = session.performAction(action);
+            if(!response.isSuccess()) {
+                reply(player, false, response.getErrorMessage());
+                return;
+            }
+
+            reply(player, true, translate(CHANGE_SUCCESS));
+        });
     }
 }
