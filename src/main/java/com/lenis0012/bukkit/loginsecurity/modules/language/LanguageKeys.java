@@ -31,6 +31,11 @@ public enum LanguageKeys {
     REGISTER_CAPTCHA("registerCaptcha"),
     REGISTER_SUCCESS("registerSuccess"),
     /**
+     * Unregister command
+     */
+    UNREGISTER_SUCCESS("unregisterSuccess"),
+    UNREGISTER_FAIL("unregisterFail"),
+    /**
      * Admin Command
      */
     COMMAND_ERROR("commandError"),

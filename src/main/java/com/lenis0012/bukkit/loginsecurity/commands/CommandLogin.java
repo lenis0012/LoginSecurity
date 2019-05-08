@@ -14,6 +14,7 @@ import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 import com.lenis0012.bukkit.loginsecurity.util.MetaData;
 import com.lenis0012.pluginutils.modules.command.Command;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.util.logging.Level;
 
@@ -32,7 +33,7 @@ public class CommandLogin extends Command {
         final String password = getArg(0);
 
         LoginSecurityConfig config = LoginSecurity.getConfiguration();
-        int tries = MetaData.get(player, "ls_login_tries", 0) + 1;
+        int tries = MetaData.incrementAndGet(player, "ls_login_tries");
         if(tries > config.getMaxLoginTries()) {
             player.kickPlayer("[LoginSecurity] " + translate(LOGIN_TRIES_EXCEEDED).param("max", config.getMaxLoginTries()).toString());
             return;
@@ -53,6 +54,7 @@ public class CommandLogin extends Command {
         }
 
         // Verify login
+        final Player player = this.player;
         Bukkit.getScheduler().runTaskAsynchronously(LoginSecurity.getInstance(), () -> {
             final boolean validated = algorithm.check(password, profile.getPassword());
             if(!validated) {

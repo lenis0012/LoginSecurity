@@ -20,6 +20,12 @@ public class MetaData {
         return value == null ? def : (T) value;
     }
 
+    public static int incrementAndGet(Player player, String key) {
+        final int value = get(player, key, 0) + 1;
+        set(player, key, value);
+        return value;
+    }
+
     public static <T> T get(Player player, String key, Class<T> type) {
         if(!player.hasMetadata(key)) {
             return null;

@@ -3,7 +3,6 @@ version: ${project.version}
 main: com.lenis0012.bukkit.loginsecurity.LoginSecurity
 author: lenis0012
 description: The #1 Auth plugin
-database: true
 commands:
   login:
     description: Login with your account.
@@ -18,6 +17,9 @@ commands:
   logout:
     description: Log out of your account.
     usage: /logout
+  unregister:
+    description: Unregister your account.
+    usage: /unregister <current password>
   lac:
     description: LoginSecurity Admin command.
     usage: /lac
