@@ -1,7 +1,6 @@
 package com.lenis0012.bukkit.loginsecurity;
 
 import com.lenis0012.bukkit.loginsecurity.database.LoginSecurityDatabase;
-import com.lenis0012.bukkit.loginsecurity.hashing.Algorithm;
 import com.lenis0012.bukkit.loginsecurity.modules.captcha.CaptchaManager;
 import com.lenis0012.bukkit.loginsecurity.modules.general.GeneralModule;
 import com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys;
@@ -92,13 +91,6 @@ public class LoginSecurity extends PluginHolder {
         // Filter log
         org.apache.logging.log4j.core.Logger consoleLogger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
         consoleLogger.addFilter(new LoggingFilter());
-
-        // Switch algorithm if deprecated
-        if(config.getHashingAlgorithm().isDeprecated()) {
-            getLogger().log(Level.WARNING, "The configured hashing algorithm is deprecated, changing to BCrypt for future compatibility.");
-            config.setHashingAlgorithm(Algorithm.BCRYPT);
-            config.save();
-        }
 
         // Register modules
         registry.registerModules(

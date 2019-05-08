@@ -29,10 +29,9 @@ public class RegisterAction extends AuthAction {
 
         final LoginSecurity plugin = (LoginSecurity) LoginSecurity.getInstance();
         final PlayerProfile profile = session.getProfile();
-        final Algorithm algorithm = plugin.config().getHashingAlgorithm();
-        final String hash = algorithm.hash(password);
+        final String hash = Algorithm.BCRYPT.hash(password);
         profile.setPassword(hash);
-        profile.setHashingAlgorithm(algorithm.getId());
+        profile.setHashingAlgorithm(Algorithm.BCRYPT.getId());
         try {
             plugin.datastore().getProfileRepository().insertBlocking(profile);
         } catch (SQLException e) {

@@ -6,13 +6,11 @@ import com.lenis0012.bukkit.loginsecurity.hashing.Algorithm;
 import com.lenis0012.bukkit.loginsecurity.session.AuthAction;
 import com.lenis0012.bukkit.loginsecurity.session.AuthService;
 import com.lenis0012.bukkit.loginsecurity.session.PlayerSession;
-import com.lenis0012.bukkit.loginsecurity.session.action.ActionCallback;
 import com.lenis0012.bukkit.loginsecurity.session.action.ActionResponse;
 import com.lenis0012.bukkit.loginsecurity.session.action.ChangePassAction;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 import com.lenis0012.pluginutils.modules.command.Command;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 import static com.lenis0012.bukkit.loginsecurity.LoginSecurity.translate;
 import static com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys.*;

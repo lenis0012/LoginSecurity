@@ -29,10 +29,9 @@ public class ChangePassAction extends AuthAction {
 
         final LoginSecurity plugin = (LoginSecurity) LoginSecurity.getInstance();
         final PlayerProfile profile = session.getProfile();
-        final Algorithm algorithm = plugin.config().getHashingAlgorithm();
-        final String hash = algorithm.hash(newPassword);
+        final String hash = Algorithm.BCRYPT.hash(newPassword);
         profile.setPassword(hash);
-        profile.setHashingAlgorithm(algorithm.getId());
+        profile.setHashingAlgorithm(Algorithm.BCRYPT.getId());
         try {
             plugin.datastore().getProfileRepository().updateBlocking(profile);
         } catch (SQLException e) {

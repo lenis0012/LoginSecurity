@@ -1,6 +1,5 @@
 package com.lenis0012.bukkit.loginsecurity;
 
-import com.lenis0012.bukkit.loginsecurity.hashing.Algorithm;
 import com.lenis0012.pluginutils.modules.configuration.AbstractConfig;
 import com.lenis0012.pluginutils.modules.configuration.ConfigurationModule;
 import com.lenis0012.pluginutils.modules.configuration.mapping.ConfigHeader;
@@ -37,13 +36,6 @@ public class LoginSecurityConfig extends AbstractConfig {
     private int passwordMinLength = 6;
     @ConfigKey(path="password-max-length")
     private int passwordMaxLength = 32;
-    @ConfigHeader({
-            "Available algorithms: BCRYPT",
-            "All other options are deprecated and will be removed in the near future.",
-            "If you are using a property different from Bcrypt, please wait a few weeks before upgrading to LoginSecurity 3.x to allow all password to be migrated."
-    })
-    @ConfigKey(path="password.hashing.algorithm")
-    private String hashingAlgorithm = "BCRYPT";
 
     /**
      * Join settings.
@@ -113,13 +105,5 @@ public class LoginSecurityConfig extends AbstractConfig {
 
     public LoginSecurityConfig(ConfigurationModule module) {
         super(module);
-    }
-
-    public Algorithm getHashingAlgorithm() {
-        return Algorithm.valueOf(hashingAlgorithm.toUpperCase());
-    }
-
-    public void setHashingAlgorithm(Algorithm algorithm) {
-        this.hashingAlgorithm = algorithm.toString().toUpperCase();
     }
 }
