@@ -150,7 +150,7 @@ public class PlayerSession {
      *
      * @param action to perform
      */
-    private ActionResponse performAction(AuthAction action) {
+    public ActionResponse performAction(AuthAction action) {
         AuthActionEvent event = new AuthActionEvent(this, action, true);
         Bukkit.getPluginManager().callEvent(event);
         if(event.isCancelled()) {
