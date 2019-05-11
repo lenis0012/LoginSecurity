@@ -14,8 +14,8 @@ public class AuthModeChangedEvent extends Event {
     private final AuthMode previous;
     private final AuthMode current;
 
-    public AuthModeChangedEvent(PlayerSession session, AuthMode previous, AuthMode current, boolean isAsync) {
-        super(isAsync);
+    public AuthModeChangedEvent(PlayerSession session, AuthMode previous, AuthMode current) {
+        super(true);
         this.session = session;
         this.previous = previous;
         this.current = current;

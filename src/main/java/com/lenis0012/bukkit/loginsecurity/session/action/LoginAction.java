@@ -21,9 +21,11 @@ public class LoginAction extends AuthAction {
             return null;
         }
         rehabPlayer(session);
-        session.getProfile().setLastLogin(new Timestamp(System.currentTimeMillis()));
-        session.getProfile().setIpAddress(session.getPlayer().getAddress().getAddress().toString());
-        session.saveProfileAsync();
+        if(session.isRegistered()) {
+            session.getProfile().setLastLogin(new Timestamp(System.currentTimeMillis()));
+            session.getProfile().setIpAddress(session.getPlayer().getAddress().getAddress().toString());
+            session.saveProfileAsync();
+        }
         return AuthMode.AUTHENTICATED;
     }
 }

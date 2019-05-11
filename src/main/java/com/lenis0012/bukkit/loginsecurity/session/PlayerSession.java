@@ -151,7 +151,7 @@ public class PlayerSession {
      * @param action to perform
      */
     public ActionResponse performAction(AuthAction action) {
-        AuthActionEvent event = new AuthActionEvent(this, action, true);
+        AuthActionEvent event = new AuthActionEvent(this, action);
         Bukkit.getPluginManager().callEvent(event);
         if(event.isCancelled()) {
             return new ActionResponse(false, event.getCancelledMessage());
@@ -166,7 +166,7 @@ public class PlayerSession {
 
         // If auth mode changed, run event
         if(previous != mode) {
-            AuthModeChangedEvent event1 = new AuthModeChangedEvent(this, previous, mode, true);
+            AuthModeChangedEvent event1 = new AuthModeChangedEvent(this, previous, mode);
             Bukkit.getPluginManager().callEvent(event1);
         }
 

@@ -19,8 +19,8 @@ public class AuthActionEvent extends Event implements Cancellable {
     private boolean cancelled = false;
     private String cancelledMessage = null;
 
-    public AuthActionEvent(PlayerSession session, AuthAction action, boolean async) {
-        super(async);
+    public AuthActionEvent(PlayerSession session, AuthAction action) {
+        super(true);
         this.session = session;
         this.action = action;
     }
