@@ -30,9 +30,9 @@ public class SessionManager {
         });
     }
 
-    public void preloadSession(final String playerName, final UUID playerUUID) {
+    public PlayerSession preloadSession(final String playerName, final UUID playerUUID) {
         final UUID profileId = ProfileUtil.getUUID(playerName, playerUUID);
-        preloadCache.getUnchecked(profileId);
+        return preloadCache.getUnchecked(profileId);
     }
 
     public final PlayerSession getPlayerSession(final Player player) {

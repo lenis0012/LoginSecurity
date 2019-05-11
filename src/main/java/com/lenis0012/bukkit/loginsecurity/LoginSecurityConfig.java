@@ -28,6 +28,9 @@ public class LoginSecurityConfig extends AbstractConfig {
      */
     @ConfigKey(path="login.max-tries")
     private int maxLoginTries = 5;
+    @ConfigHeader("Only allow registered players to join using exactly the same name as registered.")
+    @ConfigKey(path = "login.username-match-exact")
+    private boolean matchUsernameExact = true;
 
     /**
      * Password settings.
@@ -83,15 +86,15 @@ public class LoginSecurityConfig extends AbstractConfig {
     @ConfigKey(path = "updater.channel")
     private String updaterChannel = "BETA";
 
-    @ConfigHeader("Session timeout, set to -1 to disable.")
+    @ConfigHeader("Session timeout in seconds, set to -1 to disable.")
     @ConfigKey
     private int sessionTimeout = 60;
 
-    @ConfigHeader("Login timeout, set to -1 to disable.")
+    @ConfigHeader("Login timeout in seconds, set to -1 to disable.")
     @ConfigKey
     private int loginTimeout = 120;
 
-    @ConfigHeader("Login/register message delay.")
+    @ConfigHeader("Login/register message delay in seconds.")
     @ConfigKey
     private int loginMessageDelay = 10;
 

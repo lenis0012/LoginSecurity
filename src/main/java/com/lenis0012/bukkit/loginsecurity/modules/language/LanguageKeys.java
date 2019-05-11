@@ -66,7 +66,8 @@ public enum LanguageKeys {
     KICK_ALREADY_ONLINE("kickAlreadyOnline"),
     KICK_USERNAME_CHARS("kickUsernameChars"),
     KICK_USERNAME_LENGTH("kickUsernameLength"),
-    KICK_TIME_OUT("kickTimeOut");
+    KICK_TIME_OUT("kickTimeOut"),
+    KICK_USERNAME_REGISTERED("kickUsernameRegistered");
 
     private final String value;
 

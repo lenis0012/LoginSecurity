@@ -10,6 +10,7 @@ import com.lenis0012.bukkit.loginsecurity.storage.PlayerLocation;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 import com.lenis0012.bukkit.loginsecurity.util.InventorySerializer;
 import com.lenis0012.bukkit.loginsecurity.util.MetaData;
+import com.lenis0012.bukkit.loginsecurity.util.UserIdMode;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
@@ -83,7 +84,17 @@ public class PlayerListener implements Listener {
         }
 
         // Pre-load player to improve performance...
-        LoginSecurity.getSessionManager().preloadSession(event.getName(), event.getUniqueId());
+        final PlayerSession session = LoginSecurity.getSessionManager().preloadSession(event.getName(), event.getUniqueId());
+
+        // Dis-allow joining if a differently-cased version of the same name is used.
+        if(LoginSecurity.getConfiguration().isMatchUsernameExact() &&
+                session.getProfile().getUniqueIdMode() == UserIdMode.OFFLINE &&
+                session.getProfile().getLastName() != null &&
+                !event.getName().equals(session.getProfile().getLastName())) {
+            event.setLoginResult(Result.KICK_OTHER);
+            event.setKickMessage("[LoginSecurity] " + translate(KICK_USERNAME_REGISTERED)
+                    .param("username", session.getProfile().getLastName()));
+        }
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
