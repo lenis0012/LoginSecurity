@@ -20,7 +20,7 @@ public class LoggingFilter extends AbstractFilter {
 
         message = message.toLowerCase();
         for(String word : filteredWords) {
-            if(message.contains(word)) {
+            if(message.startsWith(word)) {
                 return Result.DENY;
             }
         }
