@@ -6,6 +6,7 @@ import com.lenis0012.bukkit.loginsecurity.modules.general.GeneralModule;
 import com.lenis0012.bukkit.loginsecurity.modules.storage.StorageImport;
 import com.lenis0012.bukkit.loginsecurity.session.AuthService;
 import com.lenis0012.bukkit.loginsecurity.session.PlayerSession;
+import com.lenis0012.bukkit.loginsecurity.session.action.ChangePassAction;
 import com.lenis0012.bukkit.loginsecurity.session.action.RemovePassAction;
 import com.lenis0012.pluginutils.modules.command.Command;
 import com.lenis0012.updater.api.Updater;
@@ -96,6 +97,23 @@ public class CommandAdmin extends Command {
         session.performActionAsync(
                 new RemovePassAction(AuthService.ADMIN, admin),
                 response -> reply(admin, true, translate(LAC_RESET_PLAYER))
+        );
+    }
+
+    @SubCommand(description = "lacChangepass", usage = "lacChangepassArgs", minArgs = 2)
+    public void changepass() {
+        String name = getArg(1);
+        Player target = Bukkit.getPlayer(name);
+        PlayerSession session = target != null ? LoginSecurity.getSessionManager().getPlayerSession(target) : LoginSecurity.getSessionManager().getOfflineSession(name);
+        if(!session.isRegistered()) {
+            reply(false, translate(LAC_NOT_REGISTERED));
+            return;
+        }
+
+        final CommandSender admin = sender;
+        session.performActionAsync(
+                new ChangePassAction(AuthService.ADMIN, admin, getArg(2)),
+                response -> reply(admin, true, translate(LAC_CHANGED_PASSWORD))
         );
     }
 

@@ -26,6 +26,7 @@
   "lacRmpassArgs": "<username>",
   "lacNotRegistered": "No player with that name has been registered!",
   "lacResetPlayer": "Successfully reset player account!",
+  "lacChangedPassword": "Successfully changed player password!",
   "lacImport": "Import from another database",
   "lacImportArgs": "<source> [args]",
   "lacUnknownSource": "Unknown database type, please check the wiki!",

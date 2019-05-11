@@ -46,6 +46,7 @@ public enum LanguageKeys {
     LAC_RMPASS_ARGS("lacRmpassArgs"),
     LAC_NOT_REGISTERED("lacNotRegistered"),
     LAC_RESET_PLAYER("lacResetPlayer"),
+    LAC_CHANGED_PASSWORD("lacChangedPassword"),
     LAC_IMPORT("lacImport"),
     LAC_UNKNOWN_SOURCE("lacUnknownSource"),
     LAC_IMPORT_FAILED("lacImportFailed"),
