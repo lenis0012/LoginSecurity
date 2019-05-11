@@ -20,8 +20,12 @@ public class CommandRegister extends Command {
 
     public CommandRegister(LoginSecurity plugin) {
         this.plugin = plugin;
-        setMinArgs(1);
         setAllowConsole(false);
+        if(plugin.config().isRegisterConfirmPassword()) {
+            setMinArgs(2);
+        } else {
+            setMinArgs(1);
+        }
     }
 
     @Override
@@ -37,6 +41,11 @@ public class CommandRegister extends Command {
 
         if(session.isRegistered()) {
             reply(false, translate(REGISTER_ALREADY));
+            return;
+        }
+
+        if(config.isRegisterConfirmPassword() && !password.equals(getArg(1))) {
+            reply(false, translate(ERROR_MATCH_PASSWORD));
             return;
         }
 

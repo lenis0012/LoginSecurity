@@ -55,11 +55,13 @@ public enum LanguageKeys {
     SESSION_CONTINUE("sessionContinue"),
     MESSAGE_LOGIN("messageLogin"),
     MESSAGE_REGISTER("messageRegister"),
+    MESSAGE_REGISTER2("messageRegister2"),
     /**
      * Errors
      */
     ERROR_REFRESH_PROFILE("errorRefreshProfile"),
     ERROR_NOT_REGISTERED("errorNotRegistered"),
+    ERROR_MATCH_PASSWORD("errorMatchPassword"),
     /**
      * Kick messages
      */

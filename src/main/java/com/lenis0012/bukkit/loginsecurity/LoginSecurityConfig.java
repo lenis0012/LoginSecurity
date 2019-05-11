@@ -19,9 +19,12 @@ public class LoginSecurityConfig extends AbstractConfig {
      */
     @ConfigKey(path="register.required")
     private boolean passwordRequired = true;
-    @ConfigHeader("When enabled, users need to enter a captcha on registration.")
+    @ConfigHeader("When enabled, users need to enter a captcha upon registration.")
     @ConfigKey(path = "register.captcha")
     private boolean registerCaptcha = false;
+    @ConfigHeader("When enabled, requires users to enter their password twice upon registration.")
+    @ConfigKey(path = "register.confirm-password")
+    private boolean registerConfirmPassword = false;
 
     /**
      * Login settings
