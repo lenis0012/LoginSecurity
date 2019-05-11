@@ -140,7 +140,7 @@ public class PlayerSession {
      */
     public void performActionAsync(final AuthAction action, final ActionCallback callback) {
         LoginSecurity.getExecutorService().execute(() -> {
-            final ActionResponse response = performAction(action, true);
+            final ActionResponse response = performAction(action);
             Bukkit.getScheduler().runTask(LoginSecurity.getInstance(), () -> callback.call(response));
         });
     }
@@ -150,12 +150,8 @@ public class PlayerSession {
      *
      * @param action to perform
      */
-    public ActionResponse performAction(AuthAction action) {
-        return performAction(action, false);
-    }
-
-    private ActionResponse performAction(AuthAction action, boolean isAsync) {
-        AuthActionEvent event = new AuthActionEvent(this, action, isAsync);
+    private ActionResponse performAction(AuthAction action) {
+        AuthActionEvent event = new AuthActionEvent(this, action, true);
         Bukkit.getPluginManager().callEvent(event);
         if(event.isCancelled()) {
             return new ActionResponse(false, event.getCancelledMessage());
