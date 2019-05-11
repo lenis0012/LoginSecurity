@@ -166,7 +166,7 @@ public class PlayerSession {
 
         // If auth mode changed, run event
         if(previous != mode) {
-            AuthModeChangedEvent event1 = new AuthModeChangedEvent(this, previous, mode, isAsync);
+            AuthModeChangedEvent event1 = new AuthModeChangedEvent(this, previous, mode, true);
             Bukkit.getPluginManager().callEvent(event1);
         }
 
