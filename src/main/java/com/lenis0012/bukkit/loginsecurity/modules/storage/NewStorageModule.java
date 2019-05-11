@@ -7,6 +7,7 @@ import com.lenis0012.bukkit.loginsecurity.database.datasource.sqlite.SQLiteConne
 import com.lenis0012.pluginutils.Module;
 import com.lenis0012.pluginutils.modules.configuration.Configuration;
 import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 
 import javax.sql.ConnectionPoolDataSource;
@@ -20,6 +21,8 @@ import java.util.logging.Level;
 public class NewStorageModule extends Module<LoginSecurity> {
     private SingleConnectionDataSource dataSource;
     private LoginSecurityDatabase database;
+    @Getter
+    private String platform;
 
     public NewStorageModule(LoginSecurity plugin) {
         super(plugin);
@@ -32,13 +35,12 @@ public class NewStorageModule extends Module<LoginSecurity> {
         final Configuration config = new Configuration(configFile);
         config.reload();
 
-        String platform;
         ConnectionPoolDataSource dataSourceConfig;
         if(config.getBoolean("mysql.enabled")) {
-            platform = "mysql";
+            this.platform = "mysql";
             dataSourceConfig = createMysqlDataSource(config);
         } else {
-            platform = "sqlite";
+            this.platform = "sqlite";
             dataSourceConfig = createSqliteDataSource();
         }
 
@@ -61,7 +63,7 @@ public class NewStorageModule extends Module<LoginSecurity> {
         }
     }
 
-    private ConnectionPoolDataSource createMysqlDataSource(Configuration config) {
+    ConnectionPoolDataSource createMysqlDataSource(Configuration config) {
         MysqlConnectionPoolDataSource mysqlConfig = new MysqlConnectionPoolDataSource();
         mysqlConfig.setUrl("jdbc:mysql://" + config.getString("mysql.host") + "/" + config.getString("mysql.database"));
         mysqlConfig.setUser(config.getString("mysql.username"));
@@ -69,7 +71,7 @@ public class NewStorageModule extends Module<LoginSecurity> {
         return mysqlConfig;
     }
 
-    private ConnectionPoolDataSource createSqliteDataSource() {
+    ConnectionPoolDataSource createSqliteDataSource() {
         SQLiteConnectionPoolDataSource sqliteConfig = new SQLiteConnectionPoolDataSource();
         final String path = new File(plugin.getDataFolder(), "LoginSecurity.db").getPath();
         sqliteConfig.setUrl("jdbc:sqlite:" + path);

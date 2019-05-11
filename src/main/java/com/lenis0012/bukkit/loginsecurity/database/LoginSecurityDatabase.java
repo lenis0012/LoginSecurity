@@ -7,6 +7,7 @@ import javax.sql.DataSource;
 
 @Getter
 public class LoginSecurityDatabase {
+    public static final int BATCH_SIZE = 1000;
     private final ProfileRepository profileRepository;
     private final InventoryRepository inventoryRepository;
     private final LocationRepository locationRepository;

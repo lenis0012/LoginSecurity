@@ -9,6 +9,7 @@ import javax.sql.DataSource;
 import java.sql.*;
 import java.time.Instant;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 public class ProfileRepository {
@@ -36,7 +37,6 @@ public class ProfileRepository {
             try(PreparedStatement statement = connection.prepareStatement(
                     "INSERT INTO ls_players(uuid_mode,unique_user_id,last_name,ip_address,password,hashing_algorithm,location_id,inventory_id,last_login,registration_date,optlock) VALUES(?,?,?,?,?,?,?,?,?,?,?);",
                     Statement.RETURN_GENERATED_KEYS)) {
-
                 statement.setString(1, profile.getUniqueIdMode().getId());
                 statement.setString(2, profile.getUniqueUserId());
                 statement.setString(3, profile.getLastName());
@@ -80,19 +80,7 @@ public class ProfileRepository {
             try(PreparedStatement statement = connection.prepareStatement(
                     "UPDATE ls_players SET last_name=?,ip_address=?,password=?,hashing_algorithm=?,location_id=?,inventory_id=?,last_login=?,optlock=? WHERE id=?;")) {
 
-                statement.setString(1, profile.getLastName());
-                statement.setString(2, profile.getIpAddress());
-                statement.setString(3, profile.getPassword());
-                statement.setInt(4, profile.getHashingAlgorithm());
-
-                if(profile.getLoginLocationId() == null) statement.setNull(5, Types.INTEGER);
-                else statement.setInt(5, profile.getLoginLocationId());
-                if(profile.getInventoryId() == null) statement.setNull(6, Types.INTEGER);
-                else statement.setInt(6, profile.getInventoryId());
-
-                statement.setTimestamp(7, Timestamp.from(Instant.now()));
-                statement.setLong(8, profile.getVersion() + 1);
-                statement.setInt(9, profile.getId());
+                prepareInsert(statement, profile);
                 statement.executeUpdate();
             }
         }
@@ -171,6 +159,54 @@ public class ProfileRepository {
                 }
             }
         }
+    }
+
+    public void iterateAllBlocking(SQLConsumer<PlayerProfile> consumer) throws SQLException {
+        try(Connection connection = dataSource.getConnection()) {
+            try(Statement statement = connection.createStatement()) {
+                try(ResultSet result = statement.executeQuery("SELECT * FROM ls_players;")) {
+                    while(result.next()) {
+                        consumer.accept(parseResultSet(result));
+                    }
+                }
+            }
+        }
+    }
+
+    public void batchInsert(SQLConsumer<SQLConsumer<PlayerProfile>> callback) throws SQLException {
+        try(Connection connection = dataSource.getConnection()) {
+            try(PreparedStatement statement = connection.prepareStatement("INSERT INTO ls_players(uuid_mode,unique_user_id,last_name,ip_address,password,hashing_algorithm,location_id,inventory_id,last_login,registration_date,optlock) VALUES(?,?,?,?,?,?,?,?,?,?,?);")) {
+                final AtomicInteger currentBatchSize = new AtomicInteger();
+                callback.accept(profile -> {
+                    prepareInsert(statement, profile);
+                    statement.addBatch();
+
+                    // execute batch if size is >= BATCH_SIZE
+                    if(currentBatchSize.incrementAndGet() >= LoginSecurityDatabase.BATCH_SIZE) {
+                        statement.executeBatch();
+                        currentBatchSize.set(0);
+                    }
+                });
+                // execute batch
+                if(currentBatchSize.get() > 0) statement.executeBatch();
+            }
+        }
+    }
+
+    private void prepareInsert(PreparedStatement statement, PlayerProfile profile) throws SQLException {
+        statement.setString(1, profile.getLastName());
+        statement.setString(2, profile.getIpAddress());
+        statement.setString(3, profile.getPassword());
+        statement.setInt(4, profile.getHashingAlgorithm());
+
+        if(profile.getLoginLocationId() == null) statement.setNull(5, Types.INTEGER);
+        else statement.setInt(5, profile.getLoginLocationId());
+        if(profile.getInventoryId() == null) statement.setNull(6, Types.INTEGER);
+        else statement.setInt(6, profile.getInventoryId());
+
+        statement.setTimestamp(7, Timestamp.from(Instant.now()));
+        statement.setLong(8, profile.getVersion() + 1);
+        statement.setInt(9, profile.getId());
     }
 
     private PlayerProfile parseResultSet(ResultSet result) throws SQLException {

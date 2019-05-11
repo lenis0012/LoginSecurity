@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 
 import javax.sql.DataSource;
 import java.sql.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 
@@ -35,12 +36,7 @@ public class LocationRepository {
             try(PreparedStatement statement = connection.prepareStatement(
                     "INSERT INTO ls_locations(world, x, y, z, yaw, pitch) VALUES (?,?,?,?,?,?);",
                     Statement.RETURN_GENERATED_KEYS)) {
-                statement.setString(1, location.getWorld());
-                statement.setDouble(2, location.getX());
-                statement.setDouble(3, location.getY());
-                statement.setDouble(4, location.getZ());
-                statement.setInt(5, location.getYaw());
-                statement.setInt(6, location.getPitch());
+                prepareInsert(statement, location);
                 statement.executeUpdate();
 
                 try(ResultSet keys = statement.getGeneratedKeys()) {
@@ -85,18 +81,63 @@ public class LocationRepository {
                         return null; // Not found
                     }
 
-                    PlayerLocation location = new PlayerLocation();
-                    location.setId(result.getInt("id"));
-                    location.setWorld(result.getString("world"));
-                    location.setX(result.getDouble("x"));
-                    location.setY(result.getDouble("y"));
-                    location.setZ(result.getDouble("z"));
-                    location.setYaw(result.getInt("yaw"));
-                    location.setPitch(result.getInt("pitch"));
-                    return location;
+                    return parseResultSet(result);
                 }
             }
         }
+    }
+
+    public void iterateAllBlocking(SQLConsumer<PlayerLocation> consumer) throws SQLException {
+        try(Connection connection = dataSource.getConnection()) {
+            try(Statement statement = connection.createStatement()) {
+                try(ResultSet result = statement.executeQuery("SELECT * FROM ls_locations;")) {
+                    while(result.next()) {
+                        consumer.accept(parseResultSet(result));
+                    }
+                }
+            }
+        }
+    }
+
+    public void batchInsert(SQLConsumer<SQLConsumer<PlayerLocation>> callback) throws SQLException {
+        try(Connection connection = dataSource.getConnection()) {
+            try(PreparedStatement statement = connection.prepareStatement("INSERT INTO ls_locations(world, x, y, z, yaw, pitch) VALUES (?,?,?,?,?,?);")) {
+                final AtomicInteger currentBatchSize = new AtomicInteger();
+                callback.accept(location -> {
+                    prepareInsert(statement, location);
+                    statement.addBatch();
+
+                    // execute batch if size is >= BATCH_SIZE
+                    if(currentBatchSize.incrementAndGet() >= LoginSecurityDatabase.BATCH_SIZE) {
+                        statement.executeBatch();
+                        currentBatchSize.set(0);
+                    }
+                });
+                // execute batch
+                if(currentBatchSize.get() > 0) statement.executeBatch();
+            }
+        }
+    }
+
+    private PlayerLocation parseResultSet(ResultSet result) throws SQLException {
+        PlayerLocation location = new PlayerLocation();
+        location.setId(result.getInt("id"));
+        location.setWorld(result.getString("world"));
+        location.setX(result.getDouble("x"));
+        location.setY(result.getDouble("y"));
+        location.setZ(result.getDouble("z"));
+        location.setYaw(result.getInt("yaw"));
+        location.setPitch(result.getInt("pitch"));
+        return location;
+    }
+
+    private void prepareInsert(PreparedStatement statement, PlayerLocation location) throws SQLException {
+        statement.setString(1, location.getWorld());
+        statement.setDouble(2, location.getX());
+        statement.setDouble(3, location.getY());
+        statement.setDouble(4, location.getZ());
+        statement.setInt(5, location.getYaw());
+        statement.setInt(6, location.getPitch());
     }
 
     private <T> void resolveResult(Consumer<AsyncResult<T>> callback, T result) {

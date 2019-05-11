@@ -3,6 +3,7 @@ package com.lenis0012.bukkit.loginsecurity.commands;
 import com.google.common.collect.Maps;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.modules.general.GeneralModule;
+import com.lenis0012.bukkit.loginsecurity.modules.storage.StorageImport;
 import com.lenis0012.bukkit.loginsecurity.session.AuthService;
 import com.lenis0012.bukkit.loginsecurity.session.PlayerSession;
 import com.lenis0012.bukkit.loginsecurity.session.action.RemovePassAction;
@@ -32,10 +33,12 @@ public class CommandAdmin extends Command {
         setPermission("loginsecurity.admin");
         setUsage("/lac");
         for(Method method : getClass().getMethods()) {
-            if(!method.isAnnotationPresent(SubCommand.class)) {
+            SubCommand subCommand = method.getAnnotation(SubCommand.class);
+            if(subCommand == null) {
                 continue;
             }
-            methods.put(method.getName(), method);
+
+            methods.put(subCommand.name().isEmpty() ? method.getName() : subCommand.name(), method);
         }
     }
 
@@ -68,8 +71,13 @@ public class CommandAdmin extends Command {
         for(Entry<String, Method> entry : methods.entrySet()) {
             String name = entry.getKey();
             SubCommand info = entry.getValue().getAnnotation(SubCommand.class);
-            String usage = info.usage().isEmpty() ? "" : " " + translate(info.usage()).toString();
-            String desc = info.description().startsWith("NoTrans:") ? info.description().substring("NoTrans:".length()) : translate(info.description()).toString();
+            String usage = info.usage().isEmpty() ? "" : " " +
+                    (info.usage().startsWith("NoTrans:") ?
+                            info.usage().substring("NoTrans:".length()) :
+                            translate(info.usage()).toString());
+            String desc = info.description().startsWith("NoTrans:") ?
+                    info.description().substring("NoTrans:".length()) :
+                    translate(info.description()).toString();
             reply("&b/lac " + name + usage + " &7- &f" + desc);
         }
     }
@@ -89,6 +97,19 @@ public class CommandAdmin extends Command {
                 new RemovePassAction(AuthService.ADMIN, admin),
                 response -> reply(admin, true, translate(LAC_RESET_PLAYER))
         );
+    }
+
+    @SubCommand(name = "import", description = "NoTrans:Import profiles into LoginSecurity", usage = "loginsecurity", minArgs = 1)
+    public void importFrom() {
+        String source = getArg(1);
+        StorageImport storageImport = StorageImport.fromSourceName(source, sender);
+        if(storageImport == null) {
+            reply(false, "Unknown import source: " + source);
+            return;
+        }
+
+        reply(true, "Importing profiles from " + source);
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, storageImport);
     }
 
     @SubCommand(description = "NoTrans:Download update from bukkit/spigot")
