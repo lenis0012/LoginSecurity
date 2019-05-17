@@ -52,7 +52,7 @@ public class Translation {
         } else if(fallback != null) {
             return fallback.translate(key);
         } else {
-            throw new IllegalArgumentException("Unknown translation key for language " + name);
+            throw new IllegalArgumentException("Unknown translation key \"" + key + "\" for language " + name);
         }
     }
 }

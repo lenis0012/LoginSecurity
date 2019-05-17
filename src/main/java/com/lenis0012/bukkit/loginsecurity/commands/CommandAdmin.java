@@ -61,9 +61,9 @@ public class CommandAdmin extends Command {
         try {
             method.invoke(this);
         } catch(Exception e) {
+            plugin.getLogger().log(Level.SEVERE, "Error while executing command", e);
             reply(false, translate(COMMAND_ERROR)
                     .param("error", e.getMessage() != null ? e.getMessage() : ""));
-            plugin.getLogger().log(Level.SEVERE, "Error while executing command", e);
         }
     }
 
@@ -118,7 +118,7 @@ public class CommandAdmin extends Command {
         );
     }
 
-    @SubCommand(name = "import", description = "NoTrans:Import profiles into LoginSecurity", usage = "loginsecurity", minArgs = 1)
+    @SubCommand(name = "import", description = "NoTrans:Import profiles into LoginSecurity", usage = "NoTrans:loginsecurity", minArgs = 1)
     public void importFrom() {
         String source = getArg(1);
         StorageImport storageImport = StorageImport.fromSourceName(source, sender);

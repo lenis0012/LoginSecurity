@@ -25,6 +25,8 @@
   "lacHelp": "Display command help",
   "lacRmpass": "Remove a user's password",
   "lacRmpassArgs": "<username>",
+  "lacChangepass": "Change a user's password",
+  "lacChangepassArgs": "<username> <new password>",
   "lacNotRegistered": "No player with that name has been registered!",
   "lacResetPlayer": "Successfully reset player account!",
   "lacChangedPassword": "Successfully changed player password!",
