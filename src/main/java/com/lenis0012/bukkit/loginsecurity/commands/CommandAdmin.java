@@ -61,7 +61,8 @@ public class CommandAdmin extends Command {
         try {
             method.invoke(this);
         } catch(Exception e) {
-            reply(false, translate(COMMAND_ERROR).param("error", e.getMessage()));
+            reply(false, translate(COMMAND_ERROR)
+                    .param("error", e.getMessage() != null ? e.getMessage() : ""));
             plugin.getLogger().log(Level.SEVERE, "Error while executing command", e);
         }
     }

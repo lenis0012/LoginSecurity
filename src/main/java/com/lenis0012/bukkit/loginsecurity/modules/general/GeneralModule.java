@@ -49,7 +49,6 @@ public class GeneralModule extends Module<LoginSecurity> {
     private void setupMetrics() {
         // Create metrics
         final Metrics metrics = new Metrics(plugin);
-//        final LoginSecurityConfig config = LoginSecurity.getConfiguration();
         metrics.addCustomChart(new Metrics.SimplePie("language", () ->
                 plugin.getModule(LanguageModule.class).getTranslation().getName()));
     }
