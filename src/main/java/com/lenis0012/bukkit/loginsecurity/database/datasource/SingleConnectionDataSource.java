@@ -1,5 +1,6 @@
 package com.lenis0012.bukkit.loginsecurity.database.datasource;
 
+import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -28,6 +29,7 @@ public class SingleConnectionDataSource extends DataSourceAdapter implements Con
 
     private volatile PooledConnection pooledConnection;
     private volatile long lastUsedTime;
+    private volatile boolean obtainingConnection;
     private BukkitTask recreateTask;
     private boolean closing = false;
 
@@ -48,20 +50,29 @@ public class SingleConnectionDataSource extends DataSourceAdapter implements Con
     public Connection getConnection() throws SQLException {
         if(closing) throw new SQLException("Database is shutting down");
         lock.lock();
+        this.obtainingConnection = true;
         try {
             if(pooledConnection != null) {
-                final Connection connection = pooledConnection.getConnection();
-                if(!connection.isClosed()) {
-                    if((lastUsedTime - System.currentTimeMillis() <= VALID_CHECK_BYPASS) || connection.isValid(timeout)) {
-                        return connection;
-                    } else {
-                        tryClose(pooledConnection);
+                try {
+                    final Connection connection = pooledConnection.getConnection();
+                    if(!connection.isClosed()) {
+                        if((lastUsedTime - System.currentTimeMillis() <= VALID_CHECK_BYPASS) || connection.isValid(timeout)) {
+                            this.obtainingConnection = false;
+                            plugin.getLogger().log(Level.INFO, "Re-using connection");
+                            return connection;
+                        } else {
+                            tryClose(pooledConnection);
+                        }
                     }
+                } catch(SQLException e) {
+                    tryClose(pooledConnection);
                 }
             }
 
             createConnection();
-            return pooledConnection.getConnection();
+            Connection connection = pooledConnection.getConnection();
+            this.obtainingConnection = false;
+            return connection;
         } catch (Throwable t) {
             lock.unlock();
             throw t;
@@ -92,8 +103,8 @@ public class SingleConnectionDataSource extends DataSourceAdapter implements Con
 
     private void tryClose(PooledConnection connection) {
         try {
-            connection.close();
             this.pooledConnection = null;
+            connection.close();
         } catch (SQLException e) {
         }
     }
@@ -114,14 +125,14 @@ public class SingleConnectionDataSource extends DataSourceAdapter implements Con
 //        LoginSecurity.getInstance().getLogger().log(Level.INFO, "Returning connection " + event.getSource().getClass().getSimpleName());
 //        Thread.dumpStack();
         this.lastUsedTime = System.currentTimeMillis();
-        lock.unlock();
+        if(!obtainingConnection) lock.unlock();
     }
 
     @Override
     public void connectionErrorOccurred(ConnectionEvent event) {
-        PooledConnection brokenConnection = this.pooledConnection;
+        final PooledConnection brokenConnection = this.pooledConnection;
         this.pooledConnection = null;
-        lock.unlock();
+        if(!obtainingConnection) lock.unlock();
 
         tryClose(brokenConnection);
     }

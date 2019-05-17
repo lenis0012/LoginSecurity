@@ -93,7 +93,10 @@ public class ThreadingModule extends Module<LoginSecurity> implements Listener {
 
         // Allow log in once
         final int seconds = (int) ((System.currentTimeMillis() - lastLogout) / 1000L);
-        session.performAction(new LoginAction(AuthService.SESSION, plugin));
-        player.sendMessage(translate(SESSION_CONTINUE).param("sec", seconds).toString());
+        session.performActionAsync(new LoginAction(AuthService.SESSION, plugin), response -> {
+            if(response.isSuccess()) {
+                player.sendMessage(translate(SESSION_CONTINUE).param("sec", seconds).toString());
+            }
+        });
     }
 }

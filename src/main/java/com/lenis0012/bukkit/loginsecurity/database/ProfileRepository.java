@@ -37,21 +37,7 @@ public class ProfileRepository {
             try(PreparedStatement statement = connection.prepareStatement(
                     "INSERT INTO ls_players(uuid_mode,unique_user_id,last_name,ip_address,password,hashing_algorithm,location_id,inventory_id,last_login,registration_date,optlock) VALUES(?,?,?,?,?,?,?,?,?,?,?);",
                     Statement.RETURN_GENERATED_KEYS)) {
-                statement.setString(1, profile.getUniqueIdMode().getId());
-                statement.setString(2, profile.getUniqueUserId());
-                statement.setString(3, profile.getLastName());
-                statement.setString(4, profile.getIpAddress());
-                statement.setString(5, profile.getPassword());
-                statement.setInt(6, profile.getHashingAlgorithm());
-
-                if(profile.getLoginLocationId() == null) statement.setNull(7, Types.INTEGER);
-                else statement.setInt(7, profile.getLoginLocationId());
-                if(profile.getInventoryId() == null) statement.setNull(8, Types.INTEGER);
-                else statement.setInt(8, profile.getInventoryId());
-
-                statement.setTimestamp(9, Timestamp.from(Instant.now()));
-                statement.setDate(10, new Date(System.currentTimeMillis()));
-                statement.setLong(11, 1);
+                prepareInsert(statement, profile);
                 statement.executeUpdate();
 
                 try(ResultSet keys = statement.getGeneratedKeys()) {
@@ -80,7 +66,7 @@ public class ProfileRepository {
             try(PreparedStatement statement = connection.prepareStatement(
                     "UPDATE ls_players SET last_name=?,ip_address=?,password=?,hashing_algorithm=?,location_id=?,inventory_id=?,last_login=?,optlock=? WHERE id=?;")) {
 
-                prepareInsert(statement, profile);
+                prepareUpdate(statement, profile);
                 statement.executeUpdate();
             }
         }
@@ -194,6 +180,24 @@ public class ProfileRepository {
     }
 
     private void prepareInsert(PreparedStatement statement, PlayerProfile profile) throws SQLException {
+        statement.setString(1, profile.getUniqueIdMode().getId());
+        statement.setString(2, profile.getUniqueUserId());
+        statement.setString(3, profile.getLastName());
+        statement.setString(4, profile.getIpAddress());
+        statement.setString(5, profile.getPassword());
+        statement.setInt(6, profile.getHashingAlgorithm());
+
+        if(profile.getLoginLocationId() == null) statement.setNull(7, Types.INTEGER);
+        else statement.setInt(7, profile.getLoginLocationId());
+        if(profile.getInventoryId() == null) statement.setNull(8, Types.INTEGER);
+        else statement.setInt(8, profile.getInventoryId());
+
+        statement.setTimestamp(9, Timestamp.from(Instant.now()));
+        statement.setDate(10, new Date(System.currentTimeMillis()));
+        statement.setLong(11, 1);
+    }
+
+    private void prepareUpdate(PreparedStatement statement, PlayerProfile profile) throws SQLException {
         statement.setString(1, profile.getLastName());
         statement.setString(2, profile.getIpAddress());
         statement.setString(3, profile.getPassword());
