@@ -67,11 +67,8 @@ public class GeneralModule extends Module<LoginSecurity> {
         register(new CommandRegister(plugin), "register");
         register(new CommandChangePass(plugin), "changepassword");
         register(new CommandLogout(plugin), "logout");
+        register(new CommandUnregister(plugin), "unregister");
         register(new CommandAdmin(plugin), "lac");
-
-        if(!LoginSecurity.getConfiguration().isPasswordRequired()) {
-            register(new CommandUnregister(plugin), "unregister");
-        }
     }
 
     private void registerListeners() {

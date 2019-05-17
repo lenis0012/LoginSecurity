@@ -18,6 +18,7 @@
   "registerSuccess": "Successfully registered, you are now logged in.",
   "unregisterSuccess": "Successfully unregistered your account.",
   "unregisterFail": "Failed to unregister, invalid password!",
+  "unregisterNotPossible": "You can't unregister on this server.",
   "commandError": "Error while executing command: %error%",
   "commandUnknown": "Unknown command! Use %cmd% for help.",
   "commandArguments": "Not enough arguments! Use %cmd% for help.",

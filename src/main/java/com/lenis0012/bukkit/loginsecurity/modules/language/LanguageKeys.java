@@ -35,6 +35,7 @@ public enum LanguageKeys {
      */
     UNREGISTER_SUCCESS("unregisterSuccess"),
     UNREGISTER_FAIL("unregisterFail"),
+    UNREGISTER_NOT_POSSIBLE("unregisterNotPossible"),
     /**
      * Admin Command
      */

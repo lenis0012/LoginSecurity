@@ -28,9 +28,16 @@ public class CommandUnregister extends Command {
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
         final String password = getArg(0);
 
+
         // Verify auth mode
         if(!session.isLoggedIn()) {
             reply(false, translate(GENERAL_NOT_LOGGED_IN));
+            return;
+        }
+
+        // Disable if password required
+        if(LoginSecurity.getConfiguration().isPasswordRequired()) {
+            reply(false, translate(UNREGISTER_NOT_POSSIBLE));
             return;
         }
 
