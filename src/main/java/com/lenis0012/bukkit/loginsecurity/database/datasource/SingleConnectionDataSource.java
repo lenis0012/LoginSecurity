@@ -102,8 +102,10 @@ public class SingleConnectionDataSource extends DataSourceAdapter implements Con
     }
 
     private void tryClose(PooledConnection connection) {
+        this.pooledConnection = null;
+        if(connection == null) return;
+
         try {
-            this.pooledConnection = null;
             connection.close();
         } catch (SQLException e) {
         }
@@ -130,7 +132,8 @@ public class SingleConnectionDataSource extends DataSourceAdapter implements Con
 
     @Override
     public void connectionErrorOccurred(ConnectionEvent event) {
-        final PooledConnection brokenConnection = this.pooledConnection;
+        final PooledConnection brokenConnection = event.getSource() instanceof PooledConnection ?
+                (PooledConnection) event.getSource() : pooledConnection;
         this.pooledConnection = null;
         if(!obtainingConnection) lock.unlock();
 
