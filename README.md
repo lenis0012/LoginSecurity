@@ -26,17 +26,14 @@ Now even ligher and faster than before!
 * Allow other plugins to log users in while they are not registered
 
 # Features
-- Login with custom password
-- Hidden pre-login location
-- Hidden inventory
-- Secure password storage with BCrypt.
-- Captcha
-- Sessions & Login timeout
-- Username filter
-- UUID Support
-- Advanced and detailed configuration
-- Action-based system & API
-- Reliable and fast
-- Easy to set up
+- 6 useful commands to manage your password
+- Light, fast and easy to set up
+- Secure password storage using industry-standard cryptography
+- Protects and hides user's location and inventory
+- IP & time-based session continuation
+- Straightforward administrative control
+- User-friendly captcha system for new players
 - Used by thousands of server owners
-- 20 existing translations and more to come!
+- Stay secure with automatic update notifications
+- Prevents players from getting kicked for being logged in from another location
+- 20+ supported languages and more to come
