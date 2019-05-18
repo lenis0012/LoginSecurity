@@ -11,10 +11,7 @@ import lombok.Getter;
 import org.bukkit.Bukkit;
 
 import javax.sql.ConnectionPoolDataSource;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.sql.SQLException;
 import java.util.logging.Level;
 
@@ -30,6 +27,7 @@ public class NewStorageModule extends Module<LoginSecurity> {
 
     @Override
     public void enable() {
+        // Create backup
         final File configFile = new File(plugin.getDataFolder(), "database.yml");
         if(!configFile.exists()) copyFile(plugin.getResource("database.yml"), configFile);
         final Configuration config = new Configuration(configFile);
@@ -72,6 +70,13 @@ public class NewStorageModule extends Module<LoginSecurity> {
     }
 
     ConnectionPoolDataSource createSqliteDataSource() {
+        File backupFile = new File(plugin.getDataFolder(), "LoginSecurity.db.3.0.backup");
+        if(!backupFile.exists()) {
+            try {
+                copyFile(new FileInputStream(new File(plugin.getDataFolder(), "LoginSecurity.db")), backupFile);
+            } catch (FileNotFoundException e) { }
+        }
+
         SQLiteConnectionPoolDataSource sqliteConfig = new SQLiteConnectionPoolDataSource();
         final String path = new File(plugin.getDataFolder(), "LoginSecurity.db").getPath();
         sqliteConfig.setUrl("jdbc:sqlite:" + path);

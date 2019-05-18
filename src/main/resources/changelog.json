@@ -1,22 +1,24 @@
 {
-  "version": "LoginSecurity v2.1.9",
+  "version": "LoginSecurity v3.0.0",
   "data":
   [
     [
       "---[ Changelog ]---",
       "",
-      "- Updated and tested for 1.14",
+      "- Removed all hashing algorithms except BCrypt",
       "",
-      "- Fixed captcha issue on 1.8-1.11",
+      "- 20x smaller download",
       "",
-      "- Fixed /lac help formatting"
+      "- Improved performance, higher TPS",
+      "",
+      "- Added /unregister"
     ],
     [
-      "!!! IMPORTANT !!!",
+      "- Added /lac changepass",
       "",
-      "If you have changed the hashing algorithm setting in the config, everyone's password will be migrated to BCrypt automatically.",
+      "- Fixed many errors and bugs",
       "",
-      "If you don't know what this means, you are not affected."
+      "Please check spigot-mc.org for the full changelog."
     ],
     [
       "====[ DONATE ]====",

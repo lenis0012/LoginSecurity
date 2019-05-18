@@ -58,7 +58,7 @@ public class SingleConnectionDataSource extends DataSourceAdapter implements Con
                     if(!connection.isClosed()) {
                         if((lastUsedTime - System.currentTimeMillis() <= VALID_CHECK_BYPASS) || connection.isValid(timeout)) {
                             this.obtainingConnection = false;
-                            plugin.getLogger().log(Level.INFO, "Re-using connection");
+//                            plugin.getLogger().log(Level.FINE, "Re-using connection");
                             return connection;
                         } else {
                             tryClose(pooledConnection);
