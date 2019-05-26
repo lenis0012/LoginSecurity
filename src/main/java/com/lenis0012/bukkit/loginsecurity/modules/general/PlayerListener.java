@@ -173,7 +173,7 @@ public class PlayerListener implements Listener {
         }
 
         final Player player = session.getPlayer();
-        if(!session.isLoggedIn() || !player.hasPermission("loginsecurity.update")) {
+        if(player == null || !session.isLoggedIn() || !player.hasPermission("loginsecurity.update")) {
             return;
         }
 
