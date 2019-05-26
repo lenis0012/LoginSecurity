@@ -1,7 +1,14 @@
 {
-  "version": "LoginSecurity v3.0.0",
+  "version": "LoginSecurity v3.0.1",
   "data":
   [
+    [
+      "---[ Changelog ]---",
+      "",
+      "Bug fix update for version 3.0",
+      "",
+      "Check the next page for the 3.0 changelog"
+    ],
     [
       "---[ Changelog ]---",
       "",
