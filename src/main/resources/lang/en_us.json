@@ -44,5 +44,6 @@
   "kickAlreadyOnline": "This player is already online!",
   "kickUsernameChars": "Your username contains illegal characters!",
   "kickUsernameLength": "Your username is too long/short! (%min% - %max% chars)",
+  "kickUsernameRegistered": "This account is registered under the name %username%, please log in as such.",
   "kickTimeOut": "Login timed out!"
 }
