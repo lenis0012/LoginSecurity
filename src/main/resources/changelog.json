@@ -1,29 +1,15 @@
 {
-  "version": "LoginSecurity v3.0.1",
+  "version": "LoginSecurity v3.0.2",
   "data":
   [
     [
       "---[ Changelog ]---",
       "",
-      "Bug fix update for version 3.0",
-      "",
-      "Check the next page for the 3.0 changelog"
-    ],
-    [
-      "---[ Changelog ]---",
-      "",
-      "- Removed all hashing algorithms except BCrypt",
-      "",
-      "- 20x smaller download",
-      "",
-      "- Improved performance, higher TPS",
-      "",
-      "- Added /unregister"
-    ],
-    [
-      "- Added /lac changepass",
-      "",
-      "- Fixed many errors and bugs",
+      "- Made translations available offline", ,
+      "- Fixed console filter",
+      "- Don't tp dead players to spawn",
+      "- Updated 12 translations",
+      "- Bug fixes",
       "",
       "Please check spigot-mc.org for the full changelog."
     ],
