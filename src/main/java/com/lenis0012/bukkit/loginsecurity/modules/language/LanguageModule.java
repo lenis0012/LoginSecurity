@@ -31,11 +31,17 @@ public class LanguageModule extends Module<LoginSecurity> {
             this.translation = byFile(file, base);
         } else {
             try {
-                this.translation = languageAPI.getTranslation(languageCode, base);
-            } catch (IOException e) {
-                logger().log(Level.WARNING, "Couldn't get translation, defaulting to en_us", e);
+                byResource(languageCode, base);
+            } catch (Exception e) {
+                logger().log(Level.WARNING, "Can't find translation for " + languageCode + ". Are you upt to date?");
                 this.translation = base;
             }
+//            try {
+//                this.translation = languageAPI.getTranslation(languageCode, base);
+//            } catch (IOException e) {
+//                logger().log(Level.WARNING, "Couldn't get translation, defaulting to en_us", e);
+//                this.translation = base;
+//            }
         }
     }
 

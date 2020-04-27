@@ -20,10 +20,11 @@ public class LoggingFilter extends AbstractFilter {
 
         message = message.toLowerCase();
         for(String word : filteredWords) {
-            if(message.startsWith(word)) {
+            if(message.startsWith(word) || message.contains("issued server command: " + word)) {
                 return Result.DENY;
             }
         }
+
         return Result.NEUTRAL;
     }
 

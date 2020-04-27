@@ -56,6 +56,8 @@ public class LanguageAPI {
         URL url = new URL(API_BASEPOINT + endpoint);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setUseCaches(false);
+        connection.setConnectTimeout(20000);
+        connection.setReadTimeout(20000);
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));

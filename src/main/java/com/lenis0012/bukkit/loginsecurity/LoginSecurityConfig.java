@@ -103,8 +103,8 @@ public class LoginSecurityConfig extends AbstractConfig {
 
     @ConfigHeader({
             "Language for messages, check wiki for more info.",
-            "List: http://lang.lenis0012.com/list",
-            "Note: Changing this setting will request info from lang.lenis0012.com!"
+            "List: https://github.com/lenis0012/Translations",
+            "This setting should be set tot he file name without .json"
     })
     @ConfigKey
     private String language = "en_us";
