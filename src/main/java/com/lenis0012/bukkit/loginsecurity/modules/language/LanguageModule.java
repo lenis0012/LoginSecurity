@@ -31,7 +31,7 @@ public class LanguageModule extends Module<LoginSecurity> {
             this.translation = byFile(file, base);
         } else {
             try {
-                byResource(languageCode, base);
+                this.translation = byResource(languageCode, base);
             } catch (Exception e) {
                 logger().log(Level.WARNING, "Can't find translation for " + languageCode + ". Are you upt to date?");
                 this.translation = base;
