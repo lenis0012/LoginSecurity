@@ -57,7 +57,7 @@ public class ThreadingModule extends Module<LoginSecurity> implements Listener {
         final LoginSecurityConfig config = plugin.config();
         final int sessionTimeout = config.getSessionTimeout();
 
-        this.sessionCache = CacheBuilder.newBuilder().expireAfterWrite(sessionTimeout, TimeUnit.SECONDS).build();
+        this.sessionCache = CacheBuilder.newBuilder().expireAfterWrite(Math.max(1, sessionTimeout), TimeUnit.SECONDS).build();
     }
 
     @EventHandler

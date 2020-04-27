@@ -21,6 +21,8 @@ public class TimeoutTask extends BukkitRunnable {
 
     @Override
     public void run() {
+        if(loginTimeout < 0) return; // Disabled
+
         for(final Player player : Bukkit.getOnlinePlayers()) {
             if(!player.isOnline()) continue; // NPC hotfix
             final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
