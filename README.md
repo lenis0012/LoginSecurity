@@ -37,3 +37,12 @@ Now even ligher and faster than before!
 - Stay secure with automatic update notifications
 - Prevents players from getting kicked for being logged in from another location
 - 20+ supported languages and more to come
+
+# Installation
+```shell script
+git clone https://github.com/lenis0012/LoginSecurity-2.git LoginSecurity
+cd LoginSecurity
+git submodule init
+git submodule update
+mcn clean install
+```
