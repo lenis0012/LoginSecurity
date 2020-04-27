@@ -150,7 +150,7 @@ public class PlayerListener implements Listener {
         }
 
         // Reset location
-        if(profile.getLoginLocationId() == null) {
+        if(profile.getLoginLocationId() == null && !player.isDead()) {
             final Location origin = player.getLocation().clone();
             if(general.getLocationMode() == LocationMode.SPAWN) {
                 player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
