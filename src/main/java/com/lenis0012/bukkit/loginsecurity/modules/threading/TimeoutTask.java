@@ -29,8 +29,8 @@ public class TimeoutTask extends BukkitRunnable {
                 continue;
             }
 
-            long lastLogin = MetaData.get(player, "ls_login_time", Long.class);
-            if(lastLogin + loginTimeout < System.currentTimeMillis()) {
+            Long loginTime = MetaData.get(player, "ls_login_time", Long.class);
+            if(loginTime != null && loginTime + loginTimeout < System.currentTimeMillis()) {
                 player.kickPlayer(translate(KICK_TIME_OUT).toString());
             }
         }
