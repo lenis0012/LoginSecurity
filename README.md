@@ -46,3 +46,5 @@ git submodule init
 git submodule update
 mcn clean install
 ```
+
+Update changes in the translations repo using `git submodule update --remote src/main/resources/lang`
