@@ -6,7 +6,7 @@
 
     <groupId>com.lenis0012.bukkit</groupId>
     <artifactId>loginsecurity</artifactId>
-    <version>3.0.3-SNAPSHOT</version>
+    <version>3.0.2</version>
     <name>LoginSecurity</name>
     <url>https://www.spigotmc.org/resources/loginsecurity.19362/</url>
 
