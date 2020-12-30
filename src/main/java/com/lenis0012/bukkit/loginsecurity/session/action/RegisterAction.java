@@ -34,10 +34,10 @@ public class RegisterAction extends AuthAction {
         final String hash = Algorithm.BCRYPT.hash(password);
         profile.setPassword(hash);
         profile.setHashingAlgorithm(Algorithm.BCRYPT.getId());
+        profile.setIpAddress(session.getPlayer().getAddress().getAddress().toString());
         try {
             LoginSecurityConfig config = LoginSecurity.getConfiguration();
-
-            ArrayList<PlayerProfile> ListByIp = plugin.datastore().getProfileRepository().SearchUsersByIP(session.getPlayer().getAddress().getAddress().toString());
+            ArrayList<PlayerProfile> ListByIp = plugin.datastore().getProfileRepository().SearchUsersByIP(profile.getIpAddress());
             String ListUsersByIp = "";
             for (PlayerProfile user : ListByIp) { ListUsersByIp += user.getLastName()+" ";}
             if (ListByIp.size() >= config.getLimitAccounts()){
