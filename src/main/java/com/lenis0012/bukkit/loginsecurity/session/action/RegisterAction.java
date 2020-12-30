@@ -7,6 +7,7 @@ import com.lenis0012.bukkit.loginsecurity.session.exceptions.ProfileRefreshExcep
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 public class RegisterAction extends AuthAction {
@@ -33,6 +34,14 @@ public class RegisterAction extends AuthAction {
         profile.setPassword(hash);
         profile.setHashingAlgorithm(Algorithm.BCRYPT.getId());
         try {
+            ArrayList<PlayerProfile> ListByIp = plugin.datastore().getProfileRepository().SearchUsersByIP(session.getPlayer().getAddress().getAddress().toString());
+            String ListUsersByIp = "";
+            for (PlayerProfile user : ListByIp) { ListUsersByIp += user.getLastName()+" ";}
+            if (ListByIp.size() >= 2){
+                response.setSuccess(false);
+                response.setErrorMessage( "Account limit: 2 \n Registered accounts: "+ListByIp.size()+" \n You have reached the account limit, you can enter with: "+ListUsersByIp);
+                return null;
+            }
             plugin.datastore().getProfileRepository().insertBlocking(profile);
         } catch (SQLException e) {
             plugin.getLogger().log(Level.SEVERE, "Failed to register user", e);

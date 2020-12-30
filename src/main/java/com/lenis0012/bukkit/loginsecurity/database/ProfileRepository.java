@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -240,5 +241,20 @@ public class ProfileRepository {
     private <T> void resolveError(Consumer<AsyncResult<T>> callback, Exception error) {
         Bukkit.getScheduler().runTask(loginSecurity, () ->
                 callback.accept(new AsyncResult<T>(false, null, error)));
+    }
+
+    public ArrayList<PlayerProfile> SearchUsersByIP(String ip) throws SQLException {
+        ArrayList<PlayerProfile> r = new ArrayList<>();
+        try(Connection connection = dataSource.getConnection()) {
+            try(PreparedStatement statement = connection.prepareStatement("SELECT * FROM ls_players WHERE ip_address=?;")) {
+                statement.setString(1, ip);
+                try(ResultSet result = statement.executeQuery()) {
+                    while(result.next()) {
+                        r.add(parseResultSet(result));
+                    }
+                    return r;
+                }
+            }
+        }
     }
 }
