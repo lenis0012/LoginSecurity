@@ -1,6 +1,7 @@
 package com.lenis0012.bukkit.loginsecurity.session.action;
 
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
+import com.lenis0012.bukkit.loginsecurity.LoginSecurityConfig;
 import com.lenis0012.bukkit.loginsecurity.hashing.Algorithm;
 import com.lenis0012.bukkit.loginsecurity.session.*;
 import com.lenis0012.bukkit.loginsecurity.session.exceptions.ProfileRefreshException;
@@ -34,12 +35,14 @@ public class RegisterAction extends AuthAction {
         profile.setPassword(hash);
         profile.setHashingAlgorithm(Algorithm.BCRYPT.getId());
         try {
+            LoginSecurityConfig config = LoginSecurity.getConfiguration();
+
             ArrayList<PlayerProfile> ListByIp = plugin.datastore().getProfileRepository().SearchUsersByIP(session.getPlayer().getAddress().getAddress().toString());
             String ListUsersByIp = "";
             for (PlayerProfile user : ListByIp) { ListUsersByIp += user.getLastName()+" ";}
-            if (ListByIp.size() >= 2){
+            if (ListByIp.size() >= config.getLimitAccounts()){
                 response.setSuccess(false);
-                response.setErrorMessage( "Account limit: 2 \n Registered accounts: "+ListByIp.size()+" \n You have reached the account limit, you can enter with: "+ListUsersByIp);
+                response.setErrorMessage( "Accounts limit: "+config.getLimitAccounts()+" \n Registered accounts: "+ListByIp.size()+" \n You have reached the accounts limit, you can enter with: "+ListUsersByIp);
                 return null;
             }
             plugin.datastore().getProfileRepository().insertBlocking(profile);

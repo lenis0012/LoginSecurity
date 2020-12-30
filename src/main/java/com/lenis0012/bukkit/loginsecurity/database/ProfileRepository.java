@@ -252,9 +252,9 @@ public class ProfileRepository {
                     while(result.next()) {
                         r.add(parseResultSet(result));
                     }
-                    return r;
                 }
             }
         }
+        return r;
     }
 }
