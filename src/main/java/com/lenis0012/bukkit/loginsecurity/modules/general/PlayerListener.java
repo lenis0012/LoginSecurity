@@ -23,6 +23,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
@@ -95,6 +96,16 @@ public class PlayerListener implements Listener {
             event.setKickMessage("[LoginSecurity] " + translate(KICK_USERNAME_REGISTERED)
                     .param("username", session.getProfile().getLastName()));
         }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void PlayerPickupItem(EntityPickupItemEvent event){
+        final Player player = (Player) event.getEntity();
+        if(isInvalidPlayer(player)) return;
+        final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
+        if(session.isAuthorized()) return;
+
+        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
