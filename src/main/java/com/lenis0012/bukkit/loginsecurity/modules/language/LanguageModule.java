@@ -4,6 +4,7 @@ import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.pluginutils.Module;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 
 public class LanguageModule extends Module<LoginSecurity> {
@@ -53,7 +54,7 @@ public class LanguageModule extends Module<LoginSecurity> {
         String name = file.getName().split("\\.")[0];
         try {
             InputStream input = new FileInputStream(file);
-            return new Translation(fallback, new InputStreamReader(input), name);
+            return new Translation(fallback, new InputStreamReader(input, StandardCharsets.UTF_8), name);
         } catch(IOException e) {
             throw new RuntimeException("Couldn't read internal language file", e);
         }
@@ -62,7 +63,7 @@ public class LanguageModule extends Module<LoginSecurity> {
     private Translation byResource(String name, Translation fallback) {
         try {
             InputStream input = plugin.getResource("lang/" + name + ".json");
-            return new Translation(fallback, new InputStreamReader(input), name);
+            return new Translation(fallback, new InputStreamReader(input, StandardCharsets.UTF_8), name);
         } catch(IOException e) {
             throw new RuntimeException("Couldn't read internal language file", e);
         }
