@@ -131,24 +131,6 @@ public class PlayerListener implements Listener {
             player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, 1));
         }
 
-        // Clear inventory
-        if(profile.getInventoryId() == null && config.isHideInventory()) {
-            // Clear inventory
-            Bukkit.getScheduler().runTaskLater(LoginSecurity.getInstance(), () -> {
-                if(!player.isOnline()) return;
-                final PlayerInventory inventory = player.getInventory();
-                final com.lenis0012.bukkit.loginsecurity.storage.PlayerInventory serializedInventory =
-                        InventorySerializer.serializeInventory(inventory);
-                inventory.clear();
-                LoginSecurity.getDatastore().getInventoryRepository().insert(profile, serializedInventory, result -> {
-                    if(!result.isSuccess()) {
-                        LoginSecurity.getInstance().getLogger().log(Level.SEVERE, "Failed to save player inventory", result.getError());
-                        InventorySerializer.deserializeInventory(serializedInventory, inventory);
-                    }
-                });
-            }, 1);
-        }
-
         // Reset location
         if(profile.getLoginLocationId() == null && !player.isDead()) {
             final Location origin = player.getLocation().clone();

@@ -6,7 +6,7 @@
 
     <groupId>com.lenis0012.bukkit</groupId>
     <artifactId>loginsecurity</artifactId>
-    <version>3.0.3-SNAPSHOT</version>
+    <version>3.1-SNAPSHOT</version>
     <name>LoginSecurity</name>
     <url>https://www.spigotmc.org/resources/loginsecurity.19362/</url>
 
@@ -80,6 +80,12 @@
             <id>codemc-releases</id>
             <url>https://repo.codemc.org/repository/maven-releases/</url>
         </repository>
+
+        <!-- ProtocolLib repo -->
+        <repository>
+            <id>dmulloy2-repo</id>
+            <url>https://repo.dmulloy2.net/repository/public/</url>
+        </repository>
     </repositories>
 
     <distributionManagement>
@@ -113,6 +119,12 @@
             <version>1.0</version>
             <scope>compile</scope>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.comphenix.protocol</groupId>
+            <artifactId>ProtocolLib</artifactId>
+            <version>4.7.0</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- SQL dependencies. Synced with craftbukkit 1.8.8 -->

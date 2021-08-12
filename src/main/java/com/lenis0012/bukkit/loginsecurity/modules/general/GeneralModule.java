@@ -73,6 +73,10 @@ public class GeneralModule extends Module<LoginSecurity> {
     private void registerListeners() {
         logger().log(Level.INFO, "Registering listeners...");
         register(new PlayerListener(this));
+
+        if(Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")) {
+            InventoryPacketListener.register(plugin);
+        }
     }
 
     private File getPluginFile() {

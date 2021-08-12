@@ -7,6 +7,8 @@ import com.lenis0012.pluginutils.modules.configuration.mapping.ConfigKey;
 import com.lenis0012.pluginutils.modules.configuration.mapping.ConfigMapper;
 import lombok.Getter;
 
+import java.util.Locale;
+
 @Getter
 @ConfigMapper(fileName = "config.yml", header = {
         "LoginSecurity configuration.",
@@ -57,10 +59,16 @@ public class LoginSecurityConfig extends AbstractConfig {
     private String location = "DEFAULT";
     @ConfigHeader({
             "Hides the player's inventory until they log in.",
-            "The inventory is never lost, even after reboot or crash."
+            "DEPRECATED: This feature is being redesigned to be more reliable, see 'hide-inventory-safe'"
     })
     @ConfigKey(path="join.hide-inventory")
-    private boolean hideInventory = true;
+    private boolean hideInventoryOld = false;
+    @ConfigHeader({
+            "Safely hides the player's inventory until the player is logged in",
+            "This required ProtocolLib to be installed",
+    })
+    @ConfigKey(path = "join.hide-inventory-safe")
+    private boolean hideInventory = false;
 
     /**
      * Username settings.

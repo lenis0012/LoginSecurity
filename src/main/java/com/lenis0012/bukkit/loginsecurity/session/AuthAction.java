@@ -90,6 +90,10 @@ public abstract class AuthAction {
             }
         }
 
+        if(LoginSecurity.getConfiguration().isHideInventory()) {
+            Bukkit.getScheduler().runTask(LoginSecurity.getInstance(), player::updateInventory);
+        }
+
 //        if(profile.getLoginLocation() != null) {
 //            final PlayerLocation loginLocation = profile.getLoginLocation();
 //            loginLocation.getWorld(); // hotfix: Populate method
