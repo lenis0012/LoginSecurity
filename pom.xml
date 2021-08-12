@@ -69,12 +69,6 @@
             <url>http://nexus.hc.to/content/repositories/pub_releases</url>
         </repository>
 
-        <!-- Author's repo -->
-        <repository>
-            <id>lenis0012-repo</id>
-            <url>https://dl.bintray.com/lenis0012/maven-releases/</url>
-        </repository>
-
         <!-- CodeMC repo -->
         <repository>
             <id>codemc-releases</id>
@@ -116,7 +110,7 @@
         <dependency>
             <groupId>com.lenis0012.bukkit</groupId>
             <artifactId>lenisutils</artifactId>
-            <version>1.0</version>
+            <version>1.0.1</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
