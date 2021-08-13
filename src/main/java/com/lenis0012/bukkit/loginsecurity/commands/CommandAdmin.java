@@ -84,10 +84,10 @@ public class CommandAdmin extends Command {
         }
     }
 
-    @SubCommand(description = "NoTrans:Reload the configuration")
+    @SubCommand(description = "lacReload")
     public void reload() {
         LoginSecurity.getConfiguration().reload();
-        reply(true, "Reloaded LoginSecurity configuration, some changes may not apply until restart.");
+        reply(true, translate(LAC_RELOAD_SUCCESS));
     }
 
     @SubCommand(description = "lacRmpass", usage = "lacRmpassArgs", minArgs = 1)

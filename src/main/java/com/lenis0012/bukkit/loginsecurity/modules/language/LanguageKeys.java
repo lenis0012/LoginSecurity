@@ -51,6 +51,7 @@ public enum LanguageKeys {
     LAC_IMPORT("lacImport"),
     LAC_UNKNOWN_SOURCE("lacUnknownSource"),
     LAC_IMPORT_FAILED("lacImportFailed"),
+    LAC_RELOAD_SUCCESS("lacReloadSuccess"),
     /**
      * Messages
      */
