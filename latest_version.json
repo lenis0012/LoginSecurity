@@ -1,8 +1,8 @@
 {
   "release": {
-    "name": "LoginSecurity v3.0.2",
+    "name": "LoginSecurity v3.1",
     "type": "release",
-    "gameVersion": "1.8 - 1.15",
-    "downloadURL": "https://github.com/lenis0012/LoginSecurity-2/releases/download/v3.0.2/LoginSecurity-3.0.2-Spigot.jar"
+    "gameVersion": "1.8 - 1.17",
+    "downloadURL": "https://github.com/lenis0012/LoginSecurity-2/releases/download/v3.1/LoginSecurity-3.1-Spigot.jar"
   }
 }
