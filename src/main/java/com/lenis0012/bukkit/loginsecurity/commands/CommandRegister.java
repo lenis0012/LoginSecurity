@@ -49,6 +49,11 @@ public class CommandRegister extends Command {
             return;
         }
 
+        if(!config.isAllowUsernameAsPassword() && player.getName().equalsIgnoreCase(password)) {
+            reply(false, translate(ERROR_PASSWORD_SAME_AS_USERNAME));
+            return;
+        }
+
         if(config.isRegisterCaptcha()) {
             CaptchaManager captcha = plugin.getModule(CaptchaManager.class);
             captcha.giveMapItem(player, () -> {

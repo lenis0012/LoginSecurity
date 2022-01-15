@@ -44,6 +44,9 @@ public class LoginSecurityConfig extends AbstractConfig {
     private int passwordMinLength = 6;
     @ConfigKey(path="password-max-length")
     private int passwordMaxLength = 32;
+    @ConfigHeader("Allow players to use their username as a password.")
+    @ConfigKey(path="password.allow-username-as-password")
+    private boolean allowUsernameAsPassword = true;
 
     /**
      * Join settings.

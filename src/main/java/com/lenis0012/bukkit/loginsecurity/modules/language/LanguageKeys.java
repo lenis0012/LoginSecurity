@@ -65,6 +65,7 @@ public enum LanguageKeys {
     ERROR_REFRESH_PROFILE("errorRefreshProfile"),
     ERROR_NOT_REGISTERED("errorNotRegistered"),
     ERROR_MATCH_PASSWORD("errorMatchPassword"),
+    ERROR_PASSWORD_SAME_AS_USERNAME("errorPasswordSameAsUsername"),
     /**
      * Kick messages
      */
