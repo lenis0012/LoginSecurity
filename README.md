@@ -44,7 +44,7 @@ git clone https://github.com/lenis0012/LoginSecurity-2.git LoginSecurity
 cd LoginSecurity
 git submodule init
 git submodule update
-mcn clean install
+mvn clean install
 ```
 
 Update changes in the translations repo using `git submodule update --remote src/main/resources/lang`
