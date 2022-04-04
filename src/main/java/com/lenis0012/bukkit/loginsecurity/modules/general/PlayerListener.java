@@ -117,11 +117,6 @@ public class PlayerListener implements Listener {
             }
         }
 
-        // Admin update check
-        if(session.isAuthorized() && player.hasPermission("ls.update")) {
-            general.checkUpdates(player);
-        }
-
         if(session.isAuthorized() || !session.isRegistered()) {
             return;
         }
@@ -145,21 +140,6 @@ public class PlayerListener implements Listener {
                 });
             }
         }
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onAuthChange(AuthModeChangedEvent event) {
-        final PlayerSession session = event.getSession();
-        if(event.getCurrentMode() != AuthMode.AUTHENTICATED) {
-            return;
-        }
-
-        final Player player = session.getPlayer();
-        if(player == null || !session.isLoggedIn() || !player.hasPermission("loginsecurity.update")) {
-            return;
-        }
-
-        general.checkUpdates(player);
     }
 
     @EventHandler

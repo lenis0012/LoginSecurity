@@ -5,10 +5,6 @@ import com.lenis0012.bukkit.loginsecurity.LoginSecurityConfig;
 import com.lenis0012.bukkit.loginsecurity.commands.*;
 import com.lenis0012.bukkit.loginsecurity.modules.language.LanguageModule;
 import com.lenis0012.pluginutils.Module;
-import com.lenis0012.updater.api.ReleaseType;
-import com.lenis0012.updater.api.Updater;
-import com.lenis0012.updater.api.UpdaterFactory;
-import com.lenis0012.updater.api.Version;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -21,7 +17,6 @@ import java.util.logging.Level;
 
 public class GeneralModule extends Module<LoginSecurity> {
     private LocationMode locationMode;
-    private Updater updater;
 
     public GeneralModule(LoginSecurity plugin) {
         super(plugin);
@@ -31,7 +26,6 @@ public class GeneralModule extends Module<LoginSecurity> {
     public void enable() {
         registerCommands();
         registerListeners();
-        setupUpdater();
         setupMetrics();
 
         // This line is so alone :(  I feel bad for him
@@ -51,13 +45,6 @@ public class GeneralModule extends Module<LoginSecurity> {
         final Metrics metrics = new Metrics(plugin);
         metrics.addCustomChart(new Metrics.SimplePie("language", () ->
                 plugin.getModule(LanguageModule.class).getTranslation().getName()));
-    }
-
-    private void setupUpdater() {
-        final UpdaterFactory factory = new UpdaterFactory(plugin);
-        final LoginSecurityConfig config = LoginSecurity.getConfiguration();
-        this.updater = factory.newUpdater(getPluginFile(), config.isUpdaterEnabled());
-        updater.setChannel(ReleaseType.valueOf(config.getUpdaterChannel().toUpperCase()));
     }
 
     private void registerCommands() {
@@ -87,30 +74,5 @@ public class GeneralModule extends Module<LoginSecurity> {
         } catch(Exception e) {
             throw new RuntimeException("Couldn't get plugin file", e);
         }
-    }
-
-    public Updater getUpdater() {
-        return updater;
-    }
-
-    public void checkUpdates(final Player player) {
-        LoginSecurity.getExecutorService().execute(() -> {
-            if(!updater.hasUpdate()) {
-                return;
-            }
-
-            final Version version = updater.getNewVersion();
-            if(version == null || version.getType() == null) {
-                logger().log(Level.WARNING, "Updater was in unexpected state, please report on https://github.com/lenis0012/LoginSecurity-2/issues");
-                return;
-            }
-            Bukkit.getScheduler().runTask(plugin, () -> {
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                        "&bA new &3" + version.getType().toString() + " &bbuild for LoginSecurity is available! &3" +
-                                version.getName() + " &bfor &3" + version.getServerVersion()));
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                        "&bUse &3/lac update &bto download the new version."));
-            });
-        });
     }
 }

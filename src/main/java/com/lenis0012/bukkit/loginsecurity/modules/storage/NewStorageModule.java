@@ -6,7 +6,7 @@ import com.lenis0012.bukkit.loginsecurity.database.datasource.SingleConnectionDa
 import com.lenis0012.bukkit.loginsecurity.database.datasource.sqlite.SQLiteConnectionPoolDataSource;
 import com.lenis0012.pluginutils.Module;
 import com.lenis0012.pluginutils.modules.configuration.Configuration;
-import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
+import com.mysql.cj.jdbc.MysqlConnectionPoolDataSource;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 
