@@ -52,11 +52,11 @@ public class PlayerLocation {
     }
 
     public String getWorld() {
-        return world;
+        return spawn;
     }
 
-    public void setWorld(String world) {
-        this.world = world;
+    public void setWorld(String spawn) {
+        this.world = spawn;
     }
 
     public double getX() {
