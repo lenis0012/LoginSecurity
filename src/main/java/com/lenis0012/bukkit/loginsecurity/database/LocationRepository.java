@@ -34,7 +34,7 @@ public class LocationRepository {
     public void insertLoginLocationBlocking(PlayerProfile profile, PlayerLocation location) throws SQLException {
         try(Connection connection = dataSource.getConnection()) {
             try(PreparedStatement statement = connection.prepareStatement(
-                    "INSERT INTO ls_locations(world, x, y, z, yaw, pitch) VALUES (?,?,?,?,?,?);",
+                    "INSERT INTO ls_locations(spawn, x, y, z, yaw, pitch) VALUES (?,?,?,?,?,?);",
                     Statement.RETURN_GENERATED_KEYS)) {
                 prepareInsert(statement, location);
                 statement.executeUpdate();
@@ -101,7 +101,7 @@ public class LocationRepository {
 
     public void batchInsert(SQLConsumer<SQLConsumer<PlayerLocation>> callback) throws SQLException {
         try(Connection connection = dataSource.getConnection()) {
-            try(PreparedStatement statement = connection.prepareStatement("INSERT INTO ls_locations(world, x, y, z, yaw, pitch) VALUES (?,?,?,?,?,?);")) {
+            try(PreparedStatement statement = connection.prepareStatement("INSERT INTO ls_locations(spawn, x, y, z, yaw, pitch) VALUES (?,?,?,?,?,?);")) {
                 final AtomicInteger currentBatchSize = new AtomicInteger();
                 callback.accept(location -> {
                     prepareInsert(statement, location);
@@ -122,7 +122,7 @@ public class LocationRepository {
     private PlayerLocation parseResultSet(ResultSet result) throws SQLException {
         PlayerLocation location = new PlayerLocation();
         location.setId(result.getInt("id"));
-        location.setWorld(result.getString("world"));
+        location.setWorld(result.getString("spawn"));
         location.setX(result.getDouble("x"));
         location.setY(result.getDouble("y"));
         location.setZ(result.getDouble("z"));
