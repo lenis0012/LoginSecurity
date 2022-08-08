@@ -12,7 +12,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.jdkVersion>11</project.jdkVersion>
+        <project.jdkVersion>8</project.jdkVersion>
     </properties>
 
     <profiles>
@@ -22,15 +22,6 @@
                 <project.updaterInfo>41702</project.updaterInfo>
                 <project.platform>Bukkit</project.platform>
             </properties>
-            <dependencies>
-                <dependency>
-                    <groupId>com.lenis0012.updater</groupId>
-                    <artifactId>updater-bukkit</artifactId>
-                    <version>1.0</version>
-                    <scope>compile</scope>
-                    <optional>true</optional>
-                </dependency>
-            </dependencies>
             <build>
                 <finalName>${project.name}-${project.version}-${project.platform}</finalName>
             </build>
@@ -38,18 +29,8 @@
         <profile>
             <id>spigot</id>
             <properties>
-                <project.updaterInfo>https://raw.githubusercontent.com/lenis0012/LoginSecurity-2/master/latest_version.json</project.updaterInfo>
                 <project.platform>Spigot</project.platform>
             </properties>
-            <dependencies>
-                <dependency>
-                    <groupId>com.lenis0012.updater</groupId>
-                    <artifactId>updater-spigot</artifactId>
-                    <version>1.0</version>
-                    <scope>compile</scope>
-                    <optional>true</optional>
-                </dependency>
-            </dependencies>
             <build>
                 <finalName>${project.name}-${project.version}-${project.platform}</finalName>
             </build>
@@ -98,7 +79,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.16.5-R0.1-SNAPSHOT</version>
+            <version>1.19.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -117,7 +98,7 @@
         <dependency>
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib</artifactId>
-            <version>4.7.0</version>
+            <version>5.0.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
 
@@ -147,13 +128,6 @@
             <artifactId>log4j-core</artifactId>
             <version>2.17.2</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.lenis0012.updater</groupId>
-            <artifactId>updater-api</artifactId>
-            <version>1.0</version>
-            <scope>compile</scope>
-            <optional>true</optional>
         </dependency>
 
         <!-- Metrics -->
@@ -216,11 +190,6 @@
                         <relocation>
                             <pattern>com.lenis0012.pluginutils</pattern>
                             <shadedPattern>com.lenis0012.bukkit.loginsecurity.libs.pluginutils</shadedPattern>
-                        </relocation>
-                        <!-- Relocate updater -->
-                        <relocation>
-                            <pattern>com.lenis0012.updater</pattern>
-                            <shadedPattern>com.lenis0012.bukkit.loginsecurity.libs.updater</shadedPattern>
                         </relocation>
                         <!-- Relocate bStats -->
                         <relocation>

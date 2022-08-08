@@ -4,6 +4,7 @@ main: com.lenis0012.bukkit.loginsecurity.LoginSecurity
 author: lenis0012
 description: 'The #1 Auth plugin'
 softdepend: [ProtocolLib]
+api-version: 1.13
 commands:
   login:
     description: Login with your account.
