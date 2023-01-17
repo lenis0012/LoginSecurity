@@ -1,23 +1,19 @@
 {
-  "version": "LoginSecurity v3.1",
+  "version": "LoginSecurity v3.1.1",
   "data":
   [
     [
       "---[ Changelog ]---",
       "",
-      "- Remade inventory hiding to be 100% safe and reliable",
-      "",
-      "- Update translations",
+      "- Fix MySQL support on recent Minecraft versions",
       "",
       "Please check spigot-mc.org for the full changelog."
     ],
     [
       "---[ Dev Notes ]---",
       "",
-      "Sorry for the delay in this update.",
-      "I have been busy with life, but I am committed to keep this plugin bug free.",
-      "",
-      "This will be the last version supporting Minecraft 1.8. I will focus on 1.17+ from now on."
+      "As you may have noticed, LoginSecurity is not being actively worked on.",
+      "I intend to add some minor requested features and fix bugs, but I will not make any promises."
     ],
     [
       "====[ DONATE ]====",
