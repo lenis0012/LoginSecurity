@@ -4,9 +4,9 @@ import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.database.LoginSecurityDatabase;
 import com.lenis0012.bukkit.loginsecurity.database.datasource.SingleConnectionDataSource;
 import com.lenis0012.bukkit.loginsecurity.database.datasource.sqlite.SQLiteConnectionPoolDataSource;
+import com.lenis0012.bukkit.loginsecurity.util.ReflectionBuilder;
 import com.lenis0012.pluginutils.Module;
 import com.lenis0012.pluginutils.modules.configuration.Configuration;
-import com.mysql.cj.jdbc.MysqlConnectionPoolDataSource;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 
@@ -48,7 +48,7 @@ public class NewStorageModule extends Module<LoginSecurity> {
             dataSource.createConnection();
             new MigrationRunner(plugin, dataSource, platform).run();
         } catch (SQLException e) {
-            plugin.getLogger().log(Level.SEVERE, "Failed to initiate database");
+            plugin.getLogger().log(Level.SEVERE, "Failed to initiate database", e);
         }
     }
 
@@ -62,11 +62,28 @@ public class NewStorageModule extends Module<LoginSecurity> {
     }
 
     ConnectionPoolDataSource createMysqlDataSource(Configuration config) {
-        MysqlConnectionPoolDataSource mysqlConfig = new MysqlConnectionPoolDataSource();
-        mysqlConfig.setUrl("jdbc:mysql://" + config.getString("mysql.host") + "/" + config.getString("mysql.database"));
-        mysqlConfig.setUser(config.getString("mysql.username"));
-        mysqlConfig.setPassword(config.getString("mysql.password"));
-        return mysqlConfig;
+        if (ReflectionBuilder.classExists("com.mysql.cj.jdbc.MysqlConnectionPoolDataSource")) {
+            return createMysqlDataSourceCJ(config);
+        } else if(ReflectionBuilder.classExists("com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource")) {
+            return createMysqlDataSourceOld(config);
+        }
+        throw new IllegalStateException("Failed to create MySQL data source (no compatible driver found)");
+    }
+
+    private ConnectionPoolDataSource createMysqlDataSourceCJ(Configuration config) {
+        return new ReflectionBuilder("com.mysql.cj.jdbc.MysqlConnectionPoolDataSource")
+            .call("setUrl", "jdbc:mysql://" + config.getString("mysql.host") + "/" + config.getString("mysql.database"))
+            .call("setUser", config.getString("mysql.username"))
+            .call("setPassword", config.getString("mysql.password"))
+            .build(ConnectionPoolDataSource.class);
+    }
+
+    private ConnectionPoolDataSource createMysqlDataSourceOld(Configuration config) {
+        return new ReflectionBuilder("com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource")
+            .call("setUrl", "jdbc:mysql://" + config.getString("mysql.host") + "/" + config.getString("mysql.database"))
+            .call("setUser", config.getString("mysql.username"))
+            .call("setPassword", config.getString("mysql.password"))
+            .build(ConnectionPoolDataSource.class);
     }
 
     ConnectionPoolDataSource createSqliteDataSource() {
