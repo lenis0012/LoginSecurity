@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Optional;
 
 public class ReflectionBuilder {
     private final Class<?> clazz;
@@ -17,14 +18,13 @@ public class ReflectionBuilder {
 
     @SneakyThrows
     public ReflectionBuilder call(String methodName, Object... args) {
-        Method matchingMethod = Arrays.stream(clazz.getMethods())
+        Optional<Method> matchingMethod = Arrays.stream(clazz.getMethods())
             .filter(method -> method.getName().equals(methodName))
             .filter(method -> method.getParameterCount() == args.length)
             .filter(method -> methodSignatureMatches(method, args))
-            .findFirst()
-            .orElseThrow();
+            .findFirst();
 
-        matchingMethod.invoke(instance, args);
+        matchingMethod.get().invoke(instance, args);
         return this;
     }
 
