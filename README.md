@@ -1,7 +1,7 @@
-LoginSecurity 3 [![Build Status](https://ci.codemc.org/job/lenis0012/job/LoginSecurity/badge/icon)](https://ci.codemc.org/job/lenis0012/job/LoginSecurity/)
+LoginSecurity 3 [![Build Status](https://ci.codemc.io/job/lenis0012/job/LoginSecurity/badge/icon)](https://ci.codemc.io/job/lenis0012/job/LoginSecurity/)
 =================
 Simple, light, fast and secure user authentication management. Since 2012.  
-Now even ligher and faster than before!
+Now even lighter and faster than before!
 
 # Links
 - [Development Builds](https://ci.codemc.org/view/Author/job/lenis0012/job/LoginSecurity/)
