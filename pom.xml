@@ -72,7 +72,7 @@
         <!-- CodeMC repo -->
         <repository>
             <id>codemc-releases</id>
-            <url>https://repo.codemc.org/repository/maven-releases/</url>
+            <url>https://repo.codemc.io/repository/maven-releases/</url>
         </repository>
 
         <!-- ProtocolLib repo -->
@@ -154,7 +154,7 @@
         <dependency>
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
-            <version>1.4</version>
+            <version>3.0.0</version>
             <scope>compile</scope>
         </dependency>
 
@@ -219,7 +219,7 @@
                         <!-- Relocate bStats -->
                         <relocation>
                             <pattern>org.bstats</pattern>
-                            <shadedPattern>com.lenis0012.bukkit.loginsecurity</shadedPattern>
+                            <shadedPattern>com.lenis0012.bukkit.loginsecurity.libs.bstats</shadedPattern>
                         </relocation>
                     </relocations>
                     <filters>
