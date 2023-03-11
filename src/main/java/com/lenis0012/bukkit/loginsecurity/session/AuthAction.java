@@ -78,10 +78,9 @@ public abstract class AuthAction {
                     player.teleport(serializedLocation.asLocation());
                     profile.setLoginLocationId(null);
                     session.saveProfileAsync();
-                    // TODO: Delete location
+                    LoginSecurity.getDatastore().getLocationRepository().delete(serializedLocation);
                 });
                 if(serializedLocation != null) {
-                    LoginSecurity.getInstance().getLogger().log(Level.WARNING, "Couldn't find player's login location");
                     profile.setLoginLocationId(null);
                     session.saveProfileAsync();
                 }
@@ -93,15 +92,5 @@ public abstract class AuthAction {
         if(LoginSecurity.getConfiguration().isHideInventory()) {
             Bukkit.getScheduler().runTask(LoginSecurity.getInstance(), player::updateInventory);
         }
-
-//        if(profile.getLoginLocation() != null) {
-//            final PlayerLocation loginLocation = profile.getLoginLocation();
-//            loginLocation.getWorld(); // hotfix: Populate method
-//            final Location location = loginLocation.asLocation();
-//            if(location != null) {
-//                Bukkit.getScheduler().runTask(LoginSecurity.getInstance(), () -> player.teleport(location));
-//            }
-//            profile.setLoginLocation(null);
-//        }
     }
 }
