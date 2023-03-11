@@ -158,6 +158,10 @@ public class PlayerListener implements Listener {
         if(session.isAuthorized()) {
             return;
         }
+        // Don't update location if already done in previous login
+        if(session.getProfile().getLoginLocationId() != null) {
+            return;
+        }
 
         PlayerLocation rememberedLocation = new PlayerLocation(event.getSpawnLocation());
         event.setSpawnLocation(Bukkit.getWorlds().get(0).getSpawnLocation());
