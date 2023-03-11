@@ -36,6 +36,7 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -145,21 +146,27 @@ public class PlayerListener implements Listener {
         if(config.isBlindness()) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, 1));
         }
+    }
 
-        // Reset location
-        if(profile.getLoginLocationId() == null && !player.isDead()) {
-            final Location origin = player.getLocation().clone();
-            if(general.getLocationMode() == LocationMode.SPAWN) {
-                player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
-                final PlayerLocation serializedLocation = new PlayerLocation(origin);
-                LoginSecurity.getDatastore().getLocationRepository().insertLoginLocation(profile, serializedLocation, result -> {
-                    if(!result.isSuccess()) {
-                        LoginSecurity.getInstance().getLogger().log(Level.SEVERE, "Failed to save player location", result.getError());
-                        player.teleport(origin);
-                    }
-                });
-            }
+    @EventHandler
+    public void onPlayerSpawn(PlayerSpawnLocationEvent event) {
+        final Player player = event.getPlayer();
+        final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
+        if(general.getLocationMode() != LocationMode.SPAWN) {
+            return;
         }
+        if(session.isAuthorized()) {
+            return;
+        }
+
+        PlayerLocation rememberedLocation = new PlayerLocation(event.getSpawnLocation());
+        event.setSpawnLocation(Bukkit.getWorlds().get(0).getSpawnLocation());
+        LoginSecurity.getDatastore().getLocationRepository().insertLoginLocation(session.getProfile(), rememberedLocation, result -> {
+            if(!result.isSuccess()) {
+                LoginSecurity.getInstance().getLogger().log(Level.SEVERE, "Failed to save player location", result.getError());
+                player.teleport(rememberedLocation.asLocation());
+            }
+        });
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
