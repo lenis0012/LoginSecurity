@@ -6,11 +6,14 @@ import com.lenis0012.bukkit.loginsecurity.storage.PlayerInventory;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerLocation;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 import com.lenis0012.bukkit.loginsecurity.util.InventorySerializer;
+import io.papermc.lib.PaperLib;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 
 import java.sql.SQLException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.logging.Level;
 
 public abstract class AuthAction {
@@ -75,15 +78,11 @@ public abstract class AuthAction {
                 final PlayerLocation serializedLocation = LoginSecurity.getDatastore().getLocationRepository()
                         .findByIdBlocking(profile.getLoginLocationId());
                 Bukkit.getScheduler().runTask(LoginSecurity.getInstance(), () -> {
-                    player.teleport(serializedLocation.asLocation());
+                    PaperLib.teleportAsync(player, serializedLocation.asLocation());
                     profile.setLoginLocationId(null);
                     session.saveProfileAsync();
                     LoginSecurity.getDatastore().getLocationRepository().delete(serializedLocation);
                 });
-                if(serializedLocation != null) {
-                    profile.setLoginLocationId(null);
-                    session.saveProfileAsync();
-                }
             } catch (SQLException e) {
                 LoginSecurity.getInstance().getLogger().log(Level.SEVERE, "Failed to load player login location", e);
             }
