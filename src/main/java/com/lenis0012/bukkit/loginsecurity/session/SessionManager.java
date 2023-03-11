@@ -36,18 +36,16 @@ public class SessionManager {
     }
 
     public final PlayerSession getPlayerSession(final Player player) {
-        if(!player.isOnline()) {
-            throw new IllegalStateException("Can't retrieve player session from offline player!");
-        }
-
         final UUID userId = ProfileUtil.getUUID(player);
         final PlayerSession session;
         if(activeSessions.containsKey(userId)) {
             session = activeSessions.get(userId);
         } else {
             session = preloadCache.getUnchecked(userId);
-            activeSessions.put(userId, session);
-            preloadCache.invalidate(userId);
+            if(player.isOnline()) {
+                activeSessions.put(userId, session);
+                preloadCache.invalidate(userId);
+            }
         }
 
         return session;
