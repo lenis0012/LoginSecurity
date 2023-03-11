@@ -16,6 +16,7 @@ import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 import com.lenis0012.bukkit.loginsecurity.util.InventorySerializer;
 import com.lenis0012.bukkit.loginsecurity.util.MetaData;
 import com.lenis0012.bukkit.loginsecurity.util.UserIdMode;
+import io.papermc.lib.PaperLib;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
@@ -169,6 +170,12 @@ public class PlayerListener implements Listener {
             if(!result.isSuccess()) {
                 LoginSecurity.getInstance().getLogger().log(Level.SEVERE, "Failed to save player location", result.getError());
                 player.teleport(rememberedLocation.asLocation());
+            } else if(session.isAuthorized() && player.isOnline()) {
+                LoginSecurity.getInstance().getLogger().log(Level.WARNING, "Player was logged in prematurely while still saving location");
+                PaperLib.teleportAsync(player, rememberedLocation.asLocation());
+                session.getProfile().setLoginLocationId(null);
+                session.saveProfileAsync();
+                LoginSecurity.getDatastore().getLocationRepository().delete(rememberedLocation);
             }
         });
     }
