@@ -84,9 +84,16 @@ public class ThreadingModule extends Module<LoginSecurity> implements Listener {
         }
 
         final long lastLogout = sessionTime;
+        try {
+            if(Bukkit.spigot().getConfig().getBoolean("settings.bungeecord", false)) {
+                return;
+            }
+        } catch (Exception e) {
+            // ignore
+        }
 
         // Ip check
-        final String ipAddress = player.getAddress().getAddress().toString();
+        final String ipAddress = event.getAddress().toString();
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
         if(!ipAddress.equals(session.getProfile().getIpAddress())) {
             // Invalid IP
