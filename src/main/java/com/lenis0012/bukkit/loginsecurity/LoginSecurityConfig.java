@@ -58,12 +58,6 @@ public class LoginSecurityConfig extends AbstractConfig {
     @ConfigKey(path = "join.location")
     private String location = "DEFAULT";
     @ConfigHeader({
-            "Hides the player's inventory until they log in.",
-            "DEPRECATED: This feature is being redesigned to be more reliable, see 'hide-inventory-safe'"
-    })
-    @ConfigKey(path="join.hide-inventory")
-    private boolean hideInventoryOld = false;
-    @ConfigHeader({
             "Safely hides the player's inventory until the player is logged in",
             "This required ProtocolLib to be installed",
     })
