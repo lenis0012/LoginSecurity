@@ -4,8 +4,13 @@ import com.google.common.collect.Lists;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurityConfig;
 import com.lenis0012.bukkit.loginsecurity.events.AuthModeChangedEvent;
+import com.lenis0012.bukkit.loginsecurity.session.AuthAction;
 import com.lenis0012.bukkit.loginsecurity.session.AuthMode;
+import com.lenis0012.bukkit.loginsecurity.session.AuthService;
 import com.lenis0012.bukkit.loginsecurity.session.PlayerSession;
+import com.lenis0012.bukkit.loginsecurity.session.action.ActionCallback;
+import com.lenis0012.bukkit.loginsecurity.session.action.BypassAction;
+import com.lenis0012.bukkit.loginsecurity.session.action.LoginAction;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerLocation;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 import com.lenis0012.bukkit.loginsecurity.util.InventorySerializer;
@@ -97,6 +102,16 @@ public class PlayerListener implements Listener {
         }
     }
 
+    @EventHandler
+    public void onPlayerLogin(PlayerLoginEvent event) {
+        final Player player = event.getPlayer();
+        final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
+
+        if(!session.isRegistered() && player.isPermissionSet("ls.bypass") && player.hasPermission("ls.bypass")) {
+            session.performAction(new BypassAction(AuthService.PLAYER, player));
+        }
+    }
+
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
         // Unload player
@@ -155,7 +170,7 @@ public class PlayerListener implements Listener {
         }
 
         final Player player = session.getPlayer();
-        if(player == null || !session.isLoggedIn() || !player.hasPermission("loginsecurity.update")) {
+        if(player == null || !session.isLoggedIn() || !player.hasPermission("ls.update")) {
             return;
         }
 

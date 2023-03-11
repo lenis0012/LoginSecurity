@@ -5,5 +5,6 @@ public enum AuthActionType {
     REGISTER,
     REMOVE_PASSWORD,
     CHANGE_PASSWORD,
-    LOGOUT
+    LOGOUT,
+    BYPASS
 }

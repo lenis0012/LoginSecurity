@@ -36,7 +36,7 @@ public class CommandUnregister extends Command {
         }
 
         // Disable if password required
-        if(LoginSecurity.getConfiguration().isPasswordRequired()) {
+        if(LoginSecurity.getConfiguration().isPasswordRequired() && !(player.isPermissionSet("ls.bypass") && player.hasPermission("ls.bypass"))) {
             reply(false, translate(UNREGISTER_NOT_POSSIBLE));
             return;
         }

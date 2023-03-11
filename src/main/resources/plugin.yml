@@ -24,3 +24,10 @@ commands:
   lac:
     description: LoginSecurity Admin command.
     usage: /lac
+permissions:
+  ls.update:
+    description: Notify player of available updates
+    default: op
+  ls.bypass:
+    description: Bypass registration requirement
+    default: false
