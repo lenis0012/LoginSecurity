@@ -1,13 +1,11 @@
 package com.lenis0012.bukkit.loginsecurity;
 
-import com.lenis0012.pluginutils.modules.configuration.AbstractConfig;
-import com.lenis0012.pluginutils.modules.configuration.ConfigurationModule;
-import com.lenis0012.pluginutils.modules.configuration.mapping.ConfigHeader;
-import com.lenis0012.pluginutils.modules.configuration.mapping.ConfigKey;
-import com.lenis0012.pluginutils.modules.configuration.mapping.ConfigMapper;
+import com.lenis0012.pluginutils.config.AbstractConfig;
+import com.lenis0012.pluginutils.config.ConfigurationModule;
+import com.lenis0012.pluginutils.config.mapping.ConfigHeader;
+import com.lenis0012.pluginutils.config.mapping.ConfigKey;
+import com.lenis0012.pluginutils.config.mapping.ConfigMapper;
 import lombok.Getter;
-
-import java.util.Locale;
 
 @Getter
 @ConfigMapper(fileName = "config.yml", header = {

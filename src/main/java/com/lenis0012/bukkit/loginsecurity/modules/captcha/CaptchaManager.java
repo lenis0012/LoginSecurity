@@ -2,7 +2,7 @@ package com.lenis0012.bukkit.loginsecurity.modules.captcha;
 
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.util.MetaData;
-import com.lenis0012.pluginutils.Module;
+import com.lenis0012.pluginutils.modules.Module;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

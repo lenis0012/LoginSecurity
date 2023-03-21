@@ -9,7 +9,7 @@ import com.lenis0012.bukkit.loginsecurity.session.PlayerSession;
 import com.lenis0012.bukkit.loginsecurity.session.action.ActionCallback;
 import com.lenis0012.bukkit.loginsecurity.session.action.ActionResponse;
 import com.lenis0012.bukkit.loginsecurity.session.action.RegisterAction;
-import com.lenis0012.pluginutils.modules.command.Command;
+import com.lenis0012.pluginutils.command.Command;
 import org.bukkit.entity.Player;
 
 import static com.lenis0012.bukkit.loginsecurity.LoginSecurity.translate;

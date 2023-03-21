@@ -13,6 +13,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.jdkVersion>1.8</project.jdkVersion>
+        <lenisutils.version>2.4.1</lenisutils.version>
     </properties>
 
     <profiles>
@@ -72,7 +73,7 @@
         <!-- CodeMC repo -->
         <repository>
             <id>codemc-releases</id>
-            <url>https://repo.codemc.io/repository/maven-releases/</url>
+            <url>https://repo.codemc.io/repository/maven-public/</url>
         </repository>
 
         <!-- ProtocolLib repo -->
@@ -114,17 +115,28 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.lenis0012.bukkit</groupId>
-            <artifactId>lenisutils</artifactId>
-            <version>1.0.1</version>
-            <scope>compile</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
             <groupId>com.comphenix.protocol</groupId>
             <artifactId>ProtocolLib</artifactId>
             <version>4.7.0</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.lenis0012.pluginutils</groupId>
+            <artifactId>lenisutils-module-system</artifactId>
+            <version>${lenisutils.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.lenis0012.pluginutils</groupId>
+            <artifactId>lenisutils-config</artifactId>
+            <version>${lenisutils.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.lenis0012.pluginutils</groupId>
+            <artifactId>lenisutils-command</artifactId>
+            <version>${lenisutils.version}</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>io.papermc</groupId>
