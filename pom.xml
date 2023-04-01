@@ -13,6 +13,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.jdkVersion>1.8</project.jdkVersion>
+        <api.plugin.version>1.19</api.plugin.version>
     </properties>
 
     <profiles>
@@ -227,6 +228,7 @@
                             <artifact>*:*</artifact>
                             <excludes>
                                 <exclude>META-INF/maven/**</exclude>
+                                <exclude>META-INF/MANIFEST.MF</exclude>
                             </excludes>
                         </filter>
                     </filters>

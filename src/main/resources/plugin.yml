@@ -1,6 +1,7 @@
 name: ${project.name}
 version: ${project.version}
 main: com.lenis0012.bukkit.loginsecurity.LoginSecurity
+api-version: ${api.plugin.version}
 author: lenis0012
 description: 'The #1 Auth plugin'
 softdepend: [ProtocolLib]
