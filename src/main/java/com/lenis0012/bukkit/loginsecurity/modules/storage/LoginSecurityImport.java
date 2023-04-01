@@ -6,7 +6,7 @@ import com.lenis0012.bukkit.loginsecurity.database.LocationRepository;
 import com.lenis0012.bukkit.loginsecurity.database.LoginSecurityDatabase;
 import com.lenis0012.bukkit.loginsecurity.database.ProfileRepository;
 import com.lenis0012.bukkit.loginsecurity.database.datasource.SingleConnectionDataSource;
-import com.lenis0012.pluginutils.modules.configuration.Configuration;
+import com.lenis0012.pluginutils.config.CommentConfiguration;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
@@ -67,7 +67,7 @@ public class LoginSecurityImport implements StorageImport {
         if(storageModule.getPlatform().equalsIgnoreCase("mysql")) {
             return new SingleConnectionDataSource(loginSecurity, storageModule.createSqliteDataSource());
         } else {
-            final Configuration configuration = new Configuration(new File(loginSecurity.getDataFolder(), "database.yml"));
+            final CommentConfiguration configuration = new CommentConfiguration(new File(loginSecurity.getDataFolder(), "database.yml"));
             configuration.reload();
             return new SingleConnectionDataSource(loginSecurity, storageModule.createMysqlDataSource(configuration));
         }

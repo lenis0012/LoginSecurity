@@ -12,7 +12,7 @@ import com.lenis0012.bukkit.loginsecurity.session.action.ChangePassAction;
 import com.lenis0012.bukkit.loginsecurity.session.action.LoginAction;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 import com.lenis0012.bukkit.loginsecurity.util.MetaData;
-import com.lenis0012.pluginutils.modules.command.Command;
+import com.lenis0012.pluginutils.command.Command;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 

@@ -8,7 +8,7 @@ import com.lenis0012.bukkit.loginsecurity.session.AuthService;
 import com.lenis0012.bukkit.loginsecurity.session.PlayerSession;
 import com.lenis0012.bukkit.loginsecurity.session.action.ChangePassAction;
 import com.lenis0012.bukkit.loginsecurity.session.action.RemovePassAction;
-import com.lenis0012.pluginutils.modules.command.Command;
+import com.lenis0012.pluginutils.command.Command;
 import com.lenis0012.updater.api.Updater;
 import com.lenis0012.updater.api.Version;
 import org.bukkit.Bukkit;

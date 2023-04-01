@@ -7,7 +7,7 @@ import com.lenis0012.bukkit.loginsecurity.session.PlayerSession;
 import com.lenis0012.bukkit.loginsecurity.session.action.ActionResponse;
 import com.lenis0012.bukkit.loginsecurity.session.action.RemovePassAction;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
-import com.lenis0012.pluginutils.modules.command.Command;
+import com.lenis0012.pluginutils.command.Command;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -36,7 +36,7 @@ public class CommandUnregister extends Command {
         }
 
         // Disable if password required
-        if(LoginSecurity.getConfiguration().isPasswordRequired()) {
+        if(LoginSecurity.getConfiguration().isPasswordRequired() && !(player.isPermissionSet("ls.bypass") && player.hasPermission("ls.bypass"))) {
             reply(false, translate(UNREGISTER_NOT_POSSIBLE));
             return;
         }

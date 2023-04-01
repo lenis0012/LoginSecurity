@@ -4,9 +4,8 @@ import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.session.AuthAction;
 import com.lenis0012.bukkit.loginsecurity.session.AuthService;
 import com.lenis0012.bukkit.loginsecurity.session.PlayerSession;
-import com.lenis0012.bukkit.loginsecurity.session.action.ActionResponse;
 import com.lenis0012.bukkit.loginsecurity.session.action.LogoutAction;
-import com.lenis0012.pluginutils.modules.command.Command;
+import com.lenis0012.pluginutils.command.Command;
 import org.bukkit.entity.Player;
 
 import static com.lenis0012.bukkit.loginsecurity.LoginSecurity.translate;

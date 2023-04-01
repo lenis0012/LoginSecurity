@@ -4,12 +4,13 @@ import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurityConfig;
 import com.lenis0012.bukkit.loginsecurity.commands.*;
 import com.lenis0012.bukkit.loginsecurity.modules.language.LanguageModule;
-import com.lenis0012.pluginutils.Module;
+import com.lenis0012.pluginutils.modules.Module;
 import com.lenis0012.updater.api.ReleaseType;
 import com.lenis0012.updater.api.Updater;
 import com.lenis0012.updater.api.UpdaterFactory;
 import com.lenis0012.updater.api.Version;
 import org.bstats.bukkit.Metrics;
+import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -48,8 +49,8 @@ public class GeneralModule extends Module<LoginSecurity> {
 
     private void setupMetrics() {
         // Create metrics
-        final Metrics metrics = new Metrics(plugin);
-        metrics.addCustomChart(new Metrics.SimplePie("language", () ->
+        final Metrics metrics = new Metrics(plugin, 4637);
+        metrics.addCustomChart(new SimplePie("language", () ->
                 plugin.getModule(LanguageModule.class).getTranslation().getName()));
     }
 

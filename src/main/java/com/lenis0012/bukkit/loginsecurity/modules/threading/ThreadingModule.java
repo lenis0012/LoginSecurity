@@ -6,16 +6,16 @@ import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurityConfig;
 import com.lenis0012.bukkit.loginsecurity.session.AuthService;
 import com.lenis0012.bukkit.loginsecurity.session.PlayerSession;
-import com.lenis0012.bukkit.loginsecurity.session.action.LoginAction;
+import com.lenis0012.bukkit.loginsecurity.session.action.BypassAction;
 import com.lenis0012.bukkit.loginsecurity.util.MetaData;
 import com.lenis0012.bukkit.loginsecurity.util.ProfileUtil;
-import com.lenis0012.pluginutils.Module;
+import com.lenis0012.pluginutils.modules.Module;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.UUID;
@@ -71,8 +71,8 @@ public class ThreadingModule extends Module<LoginSecurity> implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerJoin(final PlayerJoinEvent event) {
+    @EventHandler(priority = EventPriority.LOW)
+    public void onPlayerLogin(final PlayerLoginEvent event) {
         final Player player = event.getPlayer();
         final UUID profileId = ProfileUtil.getUUID(player);
         final Long sessionTime = sessionCache.getIfPresent(profileId);
@@ -82,9 +82,16 @@ public class ThreadingModule extends Module<LoginSecurity> implements Listener {
         }
 
         final long lastLogout = sessionTime;
+        try {
+            if(Bukkit.spigot().getConfig().getBoolean("settings.bungeecord", false)) {
+                return;
+            }
+        } catch (Exception e) {
+            // ignore
+        }
 
         // Ip check
-        final String ipAddress = player.getAddress().getAddress().toString();
+        final String ipAddress = event.getAddress().toString();
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
         if(!ipAddress.equals(session.getProfile().getIpAddress())) {
             // Invalid IP
@@ -93,10 +100,7 @@ public class ThreadingModule extends Module<LoginSecurity> implements Listener {
 
         // Allow log in once
         final int seconds = (int) ((System.currentTimeMillis() - lastLogout) / 1000L);
-        session.performActionAsync(new LoginAction(AuthService.SESSION, plugin), response -> {
-            if(response.isSuccess()) {
-                player.sendMessage(translate(SESSION_CONTINUE).param("sec", seconds).toString());
-            }
-        });
+        session.performAction(new BypassAction(AuthService.SESSION, plugin));
+        player.sendMessage(translate(SESSION_CONTINUE).param("sec", seconds).toString());
     }
 }

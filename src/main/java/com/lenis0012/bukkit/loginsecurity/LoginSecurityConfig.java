@@ -1,13 +1,11 @@
 package com.lenis0012.bukkit.loginsecurity;
 
-import com.lenis0012.pluginutils.modules.configuration.AbstractConfig;
-import com.lenis0012.pluginutils.modules.configuration.ConfigurationModule;
-import com.lenis0012.pluginutils.modules.configuration.mapping.ConfigHeader;
-import com.lenis0012.pluginutils.modules.configuration.mapping.ConfigKey;
-import com.lenis0012.pluginutils.modules.configuration.mapping.ConfigMapper;
+import com.lenis0012.pluginutils.config.AbstractConfig;
+import com.lenis0012.pluginutils.config.ConfigurationModule;
+import com.lenis0012.pluginutils.config.mapping.ConfigHeader;
+import com.lenis0012.pluginutils.config.mapping.ConfigKey;
+import com.lenis0012.pluginutils.config.mapping.ConfigMapper;
 import lombok.Getter;
-
-import java.util.Locale;
 
 @Getter
 @ConfigMapper(fileName = "config.yml", header = {
@@ -57,12 +55,6 @@ public class LoginSecurityConfig extends AbstractConfig {
     })
     @ConfigKey(path = "join.location")
     private String location = "DEFAULT";
-    @ConfigHeader({
-            "Hides the player's inventory until they log in.",
-            "DEPRECATED: This feature is being redesigned to be more reliable, see 'hide-inventory-safe'"
-    })
-    @ConfigKey(path="join.hide-inventory")
-    private boolean hideInventoryOld = false;
     @ConfigHeader({
             "Safely hides the player's inventory until the player is logged in",
             "This required ProtocolLib to be installed",

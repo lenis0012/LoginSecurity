@@ -87,6 +87,23 @@ public class LocationRepository {
         }
     }
 
+    public void delete(PlayerLocation serializedLocation) {
+        Bukkit.getScheduler().runTaskAsynchronously(loginSecurity, () -> deleteBlocking(serializedLocation));
+    }
+
+    public boolean deleteBlocking(PlayerLocation serializedLocation) {
+        try(
+            Connection connection = dataSource.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM ls_locations WHERE id=?;")
+        ) {
+            preparedStatement.setInt(1, serializedLocation.getId());
+            return preparedStatement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            loginSecurity.getLogger().log(Level.WARNING, "Failed to delete player login location", e);
+            return false;
+        }
+    }
+
     public void iterateAllBlocking(SQLConsumer<PlayerLocation> consumer) throws SQLException {
         try(Connection connection = dataSource.getConnection()) {
             try(Statement statement = connection.createStatement()) {

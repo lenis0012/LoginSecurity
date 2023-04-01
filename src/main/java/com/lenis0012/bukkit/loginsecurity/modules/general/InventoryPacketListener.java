@@ -6,6 +6,7 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
+import com.lenis0012.bukkit.loginsecurity.session.PlayerSession;
 import org.bukkit.plugin.Plugin;
 
 public class InventoryPacketListener extends PacketAdapter {
@@ -28,7 +29,8 @@ public class InventoryPacketListener extends PacketAdapter {
             return;
         }
 
-        if(LoginSecurity.getSessionManager().getPlayerSession(event.getPlayer()).isAuthorized()) {
+        PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(event.getPlayer());
+        if(session.isAuthorized() || !session.isRegistered()) {
             return;
         }
 

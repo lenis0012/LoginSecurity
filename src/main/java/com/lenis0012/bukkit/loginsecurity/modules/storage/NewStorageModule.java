@@ -5,8 +5,8 @@ import com.lenis0012.bukkit.loginsecurity.database.LoginSecurityDatabase;
 import com.lenis0012.bukkit.loginsecurity.database.datasource.SingleConnectionDataSource;
 import com.lenis0012.bukkit.loginsecurity.database.datasource.sqlite.SQLiteConnectionPoolDataSource;
 import com.lenis0012.bukkit.loginsecurity.util.ReflectionBuilder;
-import com.lenis0012.pluginutils.Module;
-import com.lenis0012.pluginutils.modules.configuration.Configuration;
+import com.lenis0012.pluginutils.config.CommentConfiguration;
+import com.lenis0012.pluginutils.modules.Module;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 
@@ -30,7 +30,7 @@ public class NewStorageModule extends Module<LoginSecurity> {
         // Create backup
         final File configFile = new File(plugin.getDataFolder(), "database.yml");
         if(!configFile.exists()) copyFile(plugin.getResource("database.yml"), configFile);
-        final Configuration config = new Configuration(configFile);
+        final CommentConfiguration config = new CommentConfiguration(configFile);
         config.reload();
 
         ConnectionPoolDataSource dataSourceConfig;
@@ -61,7 +61,7 @@ public class NewStorageModule extends Module<LoginSecurity> {
         }
     }
 
-    ConnectionPoolDataSource createMysqlDataSource(Configuration config) {
+    ConnectionPoolDataSource createMysqlDataSource(CommentConfiguration config) {
         if (ReflectionBuilder.classExists("com.mysql.cj.jdbc.MysqlConnectionPoolDataSource")) {
             return createMysqlDataSourceCJ(config);
         } else if(ReflectionBuilder.classExists("com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource")) {
@@ -70,7 +70,7 @@ public class NewStorageModule extends Module<LoginSecurity> {
         throw new IllegalStateException("Failed to create MySQL data source (no compatible driver found)");
     }
 
-    private ConnectionPoolDataSource createMysqlDataSourceCJ(Configuration config) {
+    private ConnectionPoolDataSource createMysqlDataSourceCJ(CommentConfiguration config) {
         return new ReflectionBuilder("com.mysql.cj.jdbc.MysqlConnectionPoolDataSource")
             .call("setUrl", "jdbc:mysql://" + config.getString("mysql.host") + "/" + config.getString("mysql.database"))
             .call("setUser", config.getString("mysql.username"))
@@ -78,7 +78,7 @@ public class NewStorageModule extends Module<LoginSecurity> {
             .build(ConnectionPoolDataSource.class);
     }
 
-    private ConnectionPoolDataSource createMysqlDataSourceOld(Configuration config) {
+    private ConnectionPoolDataSource createMysqlDataSourceOld(CommentConfiguration config) {
         return new ReflectionBuilder("com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource")
             .call("setUrl", "jdbc:mysql://" + config.getString("mysql.host") + "/" + config.getString("mysql.database"))
             .call("setUser", config.getString("mysql.username"))

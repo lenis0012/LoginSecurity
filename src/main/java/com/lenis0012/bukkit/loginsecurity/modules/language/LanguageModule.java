@@ -1,7 +1,7 @@
 package com.lenis0012.bukkit.loginsecurity.modules.language;
 
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
-import com.lenis0012.pluginutils.Module;
+import com.lenis0012.pluginutils.modules.Module;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;

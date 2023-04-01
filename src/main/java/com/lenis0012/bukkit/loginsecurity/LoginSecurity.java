@@ -10,15 +10,15 @@ import com.lenis0012.bukkit.loginsecurity.modules.storage.NewStorageModule;
 import com.lenis0012.bukkit.loginsecurity.modules.threading.ThreadingModule;
 import com.lenis0012.bukkit.loginsecurity.session.SessionManager;
 import com.lenis0012.bukkit.loginsecurity.util.LoggingFilter;
-import com.lenis0012.pluginutils.PluginHolder;
-import com.lenis0012.pluginutils.modules.configuration.ConfigurationModule;
+import com.lenis0012.pluginutils.config.ConfigurationModule;
+import com.lenis0012.pluginutils.modules.ModularPlugin;
 import org.apache.logging.log4j.LogManager;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 
-public class LoginSecurity extends PluginHolder {
+public class LoginSecurity extends ModularPlugin {
     private static final ExecutorService executorService = Executors.newCachedThreadPool();
 
     /**

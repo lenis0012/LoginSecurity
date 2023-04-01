@@ -4,13 +4,19 @@ import com.google.common.collect.Lists;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurityConfig;
 import com.lenis0012.bukkit.loginsecurity.events.AuthModeChangedEvent;
+import com.lenis0012.bukkit.loginsecurity.session.AuthAction;
 import com.lenis0012.bukkit.loginsecurity.session.AuthMode;
+import com.lenis0012.bukkit.loginsecurity.session.AuthService;
 import com.lenis0012.bukkit.loginsecurity.session.PlayerSession;
+import com.lenis0012.bukkit.loginsecurity.session.action.ActionCallback;
+import com.lenis0012.bukkit.loginsecurity.session.action.BypassAction;
+import com.lenis0012.bukkit.loginsecurity.session.action.LoginAction;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerLocation;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 import com.lenis0012.bukkit.loginsecurity.util.InventorySerializer;
 import com.lenis0012.bukkit.loginsecurity.util.MetaData;
 import com.lenis0012.bukkit.loginsecurity.util.UserIdMode;
+import io.papermc.lib.PaperLib;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
@@ -31,6 +37,7 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -97,6 +104,16 @@ public class PlayerListener implements Listener {
         }
     }
 
+    @EventHandler
+    public void onPlayerLogin(PlayerLoginEvent event) {
+        final Player player = event.getPlayer();
+        final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
+
+        if(!session.isRegistered() && player.isPermissionSet("ls.bypass") && player.hasPermission("ls.bypass")) {
+            session.performAction(new BypassAction(AuthService.PLAYER, player));
+        }
+    }
+
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
         // Unload player
@@ -130,21 +147,37 @@ public class PlayerListener implements Listener {
         if(config.isBlindness()) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Integer.MAX_VALUE, 1));
         }
+    }
 
-        // Reset location
-        if(profile.getLoginLocationId() == null && !player.isDead()) {
-            final Location origin = player.getLocation().clone();
-            if(general.getLocationMode() == LocationMode.SPAWN) {
-                player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
-                final PlayerLocation serializedLocation = new PlayerLocation(origin);
-                LoginSecurity.getDatastore().getLocationRepository().insertLoginLocation(profile, serializedLocation, result -> {
-                    if(!result.isSuccess()) {
-                        LoginSecurity.getInstance().getLogger().log(Level.SEVERE, "Failed to save player location", result.getError());
-                        player.teleport(origin);
-                    }
-                });
-            }
+    @EventHandler
+    public void onPlayerSpawn(PlayerSpawnLocationEvent event) {
+        final Player player = event.getPlayer();
+        final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
+        if(general.getLocationMode() != LocationMode.SPAWN) {
+            return;
         }
+        if(session.isAuthorized()) {
+            return;
+        }
+        // Don't update location if already done in previous login
+        if(session.getProfile().getLoginLocationId() != null) {
+            return;
+        }
+
+        PlayerLocation rememberedLocation = new PlayerLocation(event.getSpawnLocation());
+        event.setSpawnLocation(Bukkit.getWorlds().get(0).getSpawnLocation());
+        LoginSecurity.getDatastore().getLocationRepository().insertLoginLocation(session.getProfile(), rememberedLocation, result -> {
+            if(!result.isSuccess()) {
+                LoginSecurity.getInstance().getLogger().log(Level.SEVERE, "Failed to save player location", result.getError());
+                player.teleport(rememberedLocation.asLocation());
+            } else if(session.isAuthorized() && player.isOnline()) {
+                LoginSecurity.getInstance().getLogger().log(Level.WARNING, "Player was logged in prematurely while still saving location");
+                PaperLib.teleportAsync(player, rememberedLocation.asLocation());
+                session.getProfile().setLoginLocationId(null);
+                session.saveProfileAsync();
+                LoginSecurity.getDatastore().getLocationRepository().delete(rememberedLocation);
+            }
+        });
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -155,7 +188,7 @@ public class PlayerListener implements Listener {
         }
 
         final Player player = session.getPlayer();
-        if(player == null || !session.isLoggedIn() || !player.hasPermission("loginsecurity.update")) {
+        if(player == null || !session.isLoggedIn() || !player.hasPermission("ls.update")) {
             return;
         }
 
