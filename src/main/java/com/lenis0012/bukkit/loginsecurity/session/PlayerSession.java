@@ -151,10 +151,16 @@ public class PlayerSession {
      * @param action to perform
      */
     public ActionResponse performAction(AuthAction action) {
-        AuthActionEvent event = new AuthActionEvent(this, action);
-        Bukkit.getPluginManager().callEvent(event);
-        if(event.isCancelled()) {
-            return new ActionResponse(false, event.getCancelledMessage());
+        boolean sync = Bukkit.isPrimaryThread();
+
+        if(sync) {
+            Bukkit.getScheduler().runTaskAsynchronously(LoginSecurity.getInstance(), () -> Bukkit.getPluginManager().callEvent(new AuthActionEvent(this, action)));
+        } else {
+            AuthActionEvent event = new AuthActionEvent(this, action);
+            Bukkit.getPluginManager().callEvent(event);
+            if(event.isCancelled()) {
+                return new ActionResponse(false, event.getCancelledMessage());
+            }
         }
 
         // Run
@@ -166,8 +172,12 @@ public class PlayerSession {
 
         // If auth mode changed, run event
         if(previous != mode) {
-            AuthModeChangedEvent event1 = new AuthModeChangedEvent(this, previous, mode);
-            Bukkit.getPluginManager().callEvent(event1);
+            AuthModeChangedEvent event = new AuthModeChangedEvent(this, previous, mode);
+            if(sync) {
+                Bukkit.getScheduler().runTaskAsynchronously(LoginSecurity.getInstance(), () -> Bukkit.getPluginManager().callEvent(event));
+            } else {
+                Bukkit.getPluginManager().callEvent(event);
+            }
         }
 
         // Complete
