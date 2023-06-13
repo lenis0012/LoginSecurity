@@ -16,7 +16,7 @@ public class InventoryPacketListener extends PacketAdapter {
     }
 
     public InventoryPacketListener(Plugin plugin) {
-        super(plugin, ListenerPriority.LOW, PacketType.Play.Server.WINDOW_ITEMS, PacketType.Play.Server.SET_SLOT, PacketType.Play.Server.WINDOW_DATA);
+        super(plugin, ListenerPriority.LOW, PacketType.Play.Server.WINDOW_ITEMS, PacketType.Play.Server.SET_SLOT, PacketType.Play.Server.WINDOW_DATA, PacketType.Play.Client.WINDOW_CLICK);
     }
 
     @Override
