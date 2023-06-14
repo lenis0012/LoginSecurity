@@ -16,24 +16,37 @@ public class InventoryPacketListener extends PacketAdapter {
     }
 
     public InventoryPacketListener(Plugin plugin) {
-        super(plugin, ListenerPriority.LOW, PacketType.Play.Server.WINDOW_ITEMS, PacketType.Play.Server.SET_SLOT, PacketType.Play.Server.WINDOW_DATA);
+        super(plugin, ListenerPriority.LOW, PacketType.Play.Server.WINDOW_ITEMS, PacketType.Play.Server.SET_SLOT, PacketType.Play.Server.WINDOW_DATA, PacketType.Play.Client.WINDOW_CLICK);
     }
 
-    @Override
-    public void onPacketSending(PacketEvent event) {
+    private boolean hideInvCheck(PacketEvent event) {
         if(!LoginSecurity.getConfiguration().isHideInventory()) {
-            return;
+            return false;
         }
 
         if(event.getPacket().getIntegers().read(0) != 0) {
-            return;
+            return false;
         }
 
         PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(event.getPlayer());
         if(session.isAuthorized() || !session.isRegistered()) {
-            return;
+            return false;
         }
 
-        event.setCancelled(true);
+        return true;
+    }
+    
+    @Override
+    public void onPacketReceiving(PacketEvent event) {
+        if (hideInvCheck(event) == true) {
+            event.setCancelled(true);
+        }
+    }
+
+    @Override
+    public void onPacketSending(PacketEvent event) {
+        if (hideInvCheck(event) == true) {
+            event.setCancelled(true);
+        }
     }
 }
