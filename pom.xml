@@ -292,6 +292,7 @@
                     <tagNameFormat>v@{project.version}</tagNameFormat>
                     <allowTimestampedSnapshots>true</allowTimestampedSnapshots>
                     <autoResolveSnapshots>plugins</autoResolveSnapshots>
+                    <scmCommentPrefix>chore(release): </scmCommentPrefix>
 
                     <!-- projectVersionPolicyConfig for the ConventionalCommitsVersionPolicy is an XML structure:  -->
                     <projectVersionPolicyConfig>
