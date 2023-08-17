@@ -64,7 +64,7 @@
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
 
-        <!-- Jitpack repo -->
+        <!-- Jitpack repo (Vault) -->
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
@@ -105,7 +105,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.16.5-R0.1-SNAPSHOT</version>
+            <version>1.13.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -228,7 +228,6 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <createDependencyReducedPom>false</createDependencyReducedPom>
                     <relocations>
                         <!-- Relocate utils -->
                         <relocation>
