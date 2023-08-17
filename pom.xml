@@ -291,6 +291,9 @@
                 <configuration>
                     <projectVersionPolicyId>ConventionalCommitsVersionPolicy</projectVersionPolicyId>
                     <tagNameFormat>v@{project.version}</tagNameFormat>
+                    <allowTimestampedSnapshots>true</allowTimestampedSnapshots>
+                    <autoResolveSnapshots>plugins</autoResolveSnapshots>
+
                     <!-- projectVersionPolicyConfig for the ConventionalCommitsVersionPolicy is an XML structure:  -->
                     <projectVersionPolicyConfig>
                         <!-- versionTag: A regex with 1 capture group that MUST extract the project.version from the SCM tag. -->
