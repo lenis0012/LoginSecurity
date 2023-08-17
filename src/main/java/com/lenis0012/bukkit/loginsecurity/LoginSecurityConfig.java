@@ -51,7 +51,7 @@ public class LoginSecurityConfig extends AbstractConfig {
     private boolean blindness = true;
     @ConfigHeader({
             "Temporarily login location until player has logged in.",
-            "Available options: DEFAULT, SPAWN, RANDOM"
+            "Available options: DEFAULT, SPAWN"
     })
     @ConfigKey(path = "join.location")
     private String location = "DEFAULT";

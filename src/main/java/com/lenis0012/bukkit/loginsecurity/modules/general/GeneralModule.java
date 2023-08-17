@@ -21,7 +21,7 @@ import java.lang.reflect.Method;
 import java.util.logging.Level;
 
 public class GeneralModule extends Module<LoginSecurity> {
-    private LocationMode locationMode;
+    private LocationMode locationMode = LocationMode.DEFAULT;
     private Updater updater;
 
     public GeneralModule(LoginSecurity plugin) {
@@ -35,8 +35,12 @@ public class GeneralModule extends Module<LoginSecurity> {
         setupUpdater();
         setupMetrics();
 
-        // This line is so alone :(  I feel bad for him
-        this.locationMode = LocationMode.valueOf(LoginSecurity.getConfiguration().getLocation().toUpperCase());
+        String locationMode = LoginSecurity.getConfiguration().getLocation();
+        try {
+            this.locationMode = LocationMode.valueOf(locationMode.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            logger().log(Level.WARNING, "Using unsupported location mode '{0}'. This will do noting.", locationMode);
+        }
     }
 
     @Override
