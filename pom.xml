@@ -16,6 +16,10 @@
         <lenisutils.version>2.4.1</lenisutils.version>
     </properties>
 
+    <scm>
+        <developerConnection>git@github.com:lenis0012/LoginSecurity-2.git</developerConnection>
+    </scm>
+
     <profiles>
         <profile>
             <id>bukkit</id>
@@ -286,6 +290,12 @@
                 </dependencies>
                 <configuration>
                     <projectVersionPolicyId>ConventionalCommitsVersionPolicy</projectVersionPolicyId>
+                    <tagNameFormat>v@{project.version}</tagNameFormat>
+                    <!-- projectVersionPolicyConfig for the ConventionalCommitsVersionPolicy is an XML structure:  -->
+                    <projectVersionPolicyConfig>
+                        <!-- versionTag: A regex with 1 capture group that MUST extract the project.version from the SCM tag. -->
+                        <versionTag>^v([0-9]+\.[0-9]+\.[0-9]+)$</versionTag>
+                    </projectVersionPolicyConfig>
                 </configuration>
             </plugin>
         </plugins>
