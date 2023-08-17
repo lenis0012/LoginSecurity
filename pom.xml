@@ -17,7 +17,7 @@
     </properties>
 
     <scm>
-        <developerConnection>git@github.com:lenis0012/LoginSecurity-2.git</developerConnection>
+        <developerConnection>scm:git:git@github.com:lenis0012/LoginSecurity-2.git</developerConnection>
     </scm>
 
     <profiles>
