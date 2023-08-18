@@ -1,6 +1,5 @@
 package com.lenis0012.bukkit.loginsecurity.database.datasource;
 
-import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitTask;

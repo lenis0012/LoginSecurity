@@ -2,7 +2,12 @@ package com.lenis0012.bukkit.loginsecurity.modules.general;
 
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurityConfig;
-import com.lenis0012.bukkit.loginsecurity.commands.*;
+import com.lenis0012.bukkit.loginsecurity.commands.CommandAdmin;
+import com.lenis0012.bukkit.loginsecurity.commands.CommandChangePass;
+import com.lenis0012.bukkit.loginsecurity.commands.CommandLogin;
+import com.lenis0012.bukkit.loginsecurity.commands.CommandLogout;
+import com.lenis0012.bukkit.loginsecurity.commands.CommandRegister;
+import com.lenis0012.bukkit.loginsecurity.commands.CommandUnregister;
 import com.lenis0012.bukkit.loginsecurity.modules.language.LanguageModule;
 import com.lenis0012.pluginutils.modules.Module;
 import com.lenis0012.updater.api.ReleaseType;
