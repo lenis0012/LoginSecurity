@@ -47,27 +47,22 @@ public class ProfileUtil {
     }
 
     /**
-     * Check whether or not we should use online-mode UUIDs.
+     * Check whether we should use online-mode UUIDs.
      *
      * @return Online mode UUID.
      */
     public static boolean useOnlineUUID() {
-        return Bukkit.getOnlineMode() || isBungeecord();
+        return Bukkit.getOnlineMode();
     }
 
     /**
-     * Check whether or not bungeecord support is enabled.
+     * Check whether BungeeCord support is enabled.
      *
-     * @return bungeecord support
+     * @return BungeeCord support
+     * @deprecated BungeeCord support check in unreliable. WIll be removed in future version.
      */
+    @Deprecated
     public static boolean isBungeecord() {
-        return false; // We don't know whether or not bungee is in online-mode
-//        try {
-//            Class<?> spigotConfig = Class.forName("org.spigotmc.SpigotConfig");
-//            Field bungee = spigotConfig.getField("bungee");
-//            return bungee.getBoolean(null);
-//        } catch(Exception e) {
-//            return false; // Couldn't detect spigot
-//        }
+        return false; // We don't know whether bungee is in online-mode
     }
 }

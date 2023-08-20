@@ -78,16 +78,12 @@ public class ThreadingModule extends Module<LoginSecurity> implements Listener {
         final Long sessionTime = sessionCache.getIfPresent(profileId);
         MetaData.set(player, "ls_login_time", System.currentTimeMillis());
         if(sessionTime == null) {
+            // No recent session present
             return;
         }
-
-        final long lastLogout = sessionTime;
-        try {
-            if(Bukkit.spigot().getConfig().getBoolean("settings.bungeecord", false)) {
-                return;
-            }
-        } catch (Exception e) {
-            // ignore
+        if(event.getAddress() == null) {
+            // This can happen in legacy versions, apparently.
+            return;
         }
 
         // Ip check
@@ -99,7 +95,7 @@ public class ThreadingModule extends Module<LoginSecurity> implements Listener {
         }
 
         // Allow log in once
-        final int seconds = (int) ((System.currentTimeMillis() - lastLogout) / 1000L);
+        final int seconds = (int) ((System.currentTimeMillis() - sessionTime) / 1000L);
         session.performAction(new BypassAction(AuthService.SESSION, plugin));
         player.sendMessage(translate(SESSION_CONTINUE).param("sec", seconds).toString());
     }
