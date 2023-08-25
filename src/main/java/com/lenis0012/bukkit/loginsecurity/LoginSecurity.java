@@ -90,7 +90,7 @@ public class LoginSecurity extends ModularPlugin {
 
         // Filter log
         org.apache.logging.log4j.core.Logger consoleLogger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
-        consoleLogger.addFilter(new LoggingFilter());
+        consoleLogger.addFilter(new LoggingFilter(config));
 
         // Register modules
         registry.registerModules(
