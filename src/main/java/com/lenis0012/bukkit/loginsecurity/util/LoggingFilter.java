@@ -19,31 +19,26 @@ public class LoggingFilter extends AbstractFilter {
     private final LoginSecurityConfig loginSecurityConfig;
 
     Result denyIfExposesPassword(String message) {
-        if (message == null)
-			return Result.NEUTRAL;
+        if(message == null) {
+            return Result.NEUTRAL;
+        }
 
         message = message.toLowerCase();
-        final StringBuilder issuedBuilder = new StringBuilder("issued server command: ");
-        final int issuedStartingLength = issuedBuilder.length();
-        for(final String word : filteredWords) {
-			if (message.startsWith(word))
-				return Result.DENY;
-            issuedBuilder.replace(issuedStartingLength, issuedBuilder.length(), word);
-            if (message.contains(issuedBuilder))
-				return Result.DENY;
+        for(String word : filteredWords) {
+            if(message.startsWith(word) || message.contains("issued server command: " + word)) {
+                return Result.DENY;
+            }
         }
 
         if(loginSecurityConfig.isUseCommandShortcut()) {
-            final String loginShortcut = loginSecurityConfig.getLoginCommandShortcut();
+            final String loginCommandShortcut = loginSecurityConfig.getLoginCommandShortcut();
             final String registerShortcut = loginSecurityConfig.getRegisterCommandShortcut();
-			if (message.startsWith(loginShortcut) || message.startsWith(registerShortcut))
-				return Result.DENY;
-            issuedBuilder.replace(issuedStartingLength, issuedBuilder.length(), loginShortcut);
-            if (message.contains(issuedBuilder))
-				return Result.DENY;
-            issuedBuilder.replace(issuedStartingLength, issuedBuilder.length(), registerShortcut);
-            if (message.contains(issuedBuilder))
+            if(message.startsWith(loginCommandShortcut)
+                    || message.contains("issued server command: " + loginCommandShortcut)
+                    || message.startsWith(registerShortcut)
+                    || message.contains("issued server command: " + registerShortcut)) {
                 return Result.DENY;
+            }
         }
 
         return Result.NEUTRAL;
