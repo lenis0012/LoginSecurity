@@ -18,7 +18,7 @@ public class LoggingFilter extends AbstractFilter {
 
     private final LoginSecurityConfig loginSecurityConfig;
 
-    private Result denyIfExposesPassword(String message) {
+    Result denyIfExposesPassword(String message) {
         if(message == null) {
             return Result.NEUTRAL;
         }
