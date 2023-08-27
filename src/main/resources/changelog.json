@@ -1,27 +1,25 @@
 {
-  "version": "LoginSecurity v3.1.1",
+  "version": "LoginSecurity v3.2.1",
   "data":
   [
     [
       "---[ Changelog ]---",
       "",
-      "- Fix MySQL support on recent Minecraft versions",
+      "- Fixed log leaking when using command shortcuts",
       "",
-      "Please check spigot-mc.org for the full changelog."
+      "- Fixed session continuation when BungeeCord is enabled",
+      "",
+      "- Fixed intermittent error with session timeout",
     ],
     [
-      "---[ Dev Notes ]---",
       "",
-      "As you may have noticed, LoginSecurity is not being actively worked on.",
-      "I intend to add some minor requested features and fix bugs, but I will not make any promises."
+      "Please check spigot-mc.org for the full changelog.",
+      "",
+      "--[ Special thanks ]--",
+      "",
+      "Special thanks to @voidpointer0x00 and @Deauthorized for recent contributions."
     ],
     [
-      "====[ DONATE ]====",
-      "",
-      "Donate please :)",
-      "$1 = 1 HUG",
-      "",
-      "paypal.me/lenis0012",
       "=====[ SOCIAL ]=====",
       "IGN: lenis",
       "Twitter: @lenis0012",
