@@ -208,6 +208,7 @@
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy-agent</artifactId>
             <version>1.14.6</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
