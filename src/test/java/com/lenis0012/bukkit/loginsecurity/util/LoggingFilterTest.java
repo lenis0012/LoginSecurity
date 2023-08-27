@@ -30,6 +30,7 @@ public class LoggingFilterTest {
 		return Arrays.asList(new Object[][] {
 				/* shortcuts enabled */
 				{new LoggingFilter(shortcutsEnabled), "/l qwerty", DENY},
+				{new LoggingFilter(shortcutsEnabled), "/luckperms help", NEUTRAL},
 				{new LoggingFilter(shortcutsEnabled), "Hey, use /l to log in!", NEUTRAL},
 				{new LoggingFilter(shortcutsEnabled), "/reg qwerty", DENY},
 				{new LoggingFilter(shortcutsEnabled), "Hey, use /reg to register!", NEUTRAL},
@@ -37,6 +38,7 @@ public class LoggingFilterTest {
 				{new LoggingFilter(shortcutsEnabled), "_voidpointer issued server command: /reg qwerty", DENY},
 				/* shortcuts disabled */
 				{new LoggingFilter(shortcutsDisabled), "/l qwerty", NEUTRAL},
+				{new LoggingFilter(shortcutsEnabled), "/luckperms help", NEUTRAL},
 				{new LoggingFilter(shortcutsDisabled), "Hey, use /l to log in!", NEUTRAL},
 				{new LoggingFilter(shortcutsDisabled), "/reg qwerty", NEUTRAL},
 				{new LoggingFilter(shortcutsDisabled), "Hey, use /reg to register!", NEUTRAL},

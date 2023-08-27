@@ -31,10 +31,10 @@ public class LoggingFilter extends AbstractFilter {
         }
 
         if(loginSecurityConfig.isUseCommandShortcut()) {
-            final String loginCommandShortcut = loginSecurityConfig.getLoginCommandShortcut();
-            final String registerShortcut = loginSecurityConfig.getRegisterCommandShortcut();
-            if(message.startsWith(loginCommandShortcut)
-                    || message.contains("issued server command: " + loginCommandShortcut)
+            final String loginShortcut = loginSecurityConfig.getLoginCommandShortcut().trim() + ' ';
+            final String registerShortcut = loginSecurityConfig.getRegisterCommandShortcut().trim() + ' ';
+            if(message.startsWith(loginShortcut)
+                    || message.contains("issued server command: " + loginShortcut)
                     || message.startsWith(registerShortcut)
                     || message.contains("issued server command: " + registerShortcut)) {
                 return Result.DENY;
