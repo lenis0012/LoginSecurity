@@ -31,7 +31,7 @@ public class CommandRegister extends Command {
 
     @Override
     public void execute() {
-        final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player)3
+        final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
         final String password = getArg(0);
 
         LoginSecurityConfig config = LoginSecurity.getConfiguration();
