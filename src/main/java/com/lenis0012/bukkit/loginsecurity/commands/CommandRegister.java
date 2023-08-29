@@ -10,6 +10,7 @@ import com.lenis0012.bukkit.loginsecurity.session.action.ActionCallback;
 import com.lenis0012.bukkit.loginsecurity.session.action.ActionResponse;
 import com.lenis0012.bukkit.loginsecurity.session.action.RegisterAction;
 import com.lenis0012.pluginutils.command.Command;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import static com.lenis0012.bukkit.loginsecurity.LoginSecurity.translate;
@@ -30,12 +31,19 @@ public class CommandRegister extends Command {
 
     @Override
     public void execute() {
-        final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
+        final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player)3
         final String password = getArg(0);
 
         LoginSecurityConfig config = LoginSecurity.getConfiguration();
+        if(!config.isRegistrationEnabled()) {
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', config.getRegistrationDisabledMessage()));
+            return;
+        }
+
         if(password.length() < config.getPasswordMinLength() || password.length() > config.getPasswordMaxLength()) {
-            reply(false, translate(GENERAL_PASSWORD_LENGTH).param("min", config.getPasswordMinLength()).param("max", config.getPasswordMaxLength()));
+            reply(false, translate(GENERAL_PASSWORD_LENGTH)
+                .param("min", config.getPasswordMinLength())
+                .param("max", config.getPasswordMaxLength()));
             return;
         }
 

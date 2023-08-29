@@ -75,6 +75,15 @@ public class LoginSecurityConfig extends AbstractConfig {
     @ConfigKey(path="username.max-length")
     private int usernameMaxLength = 16;
 
+    /**
+     * Registration settings
+     */
+    @ConfigHeader("Whether to accept new registrations.")
+    @ConfigKey(path="registration.enabled")
+    private boolean registrationEnabled = true;
+    @ConfigKey(path="registration.disabled-message")
+    private String registrationDisabledMessage = "&cRegistrations are currently disabled!";
+
     @ConfigHeader(path="command-shortcut", value="Shortcut that can be used as alternative to login/register command. Does not replace the defaults")
     @ConfigKey(path="command-shortcut.enabled")
     private boolean useCommandShortcut = false;
