@@ -2,19 +2,15 @@ package com.lenis0012.bukkit.loginsecurity.commands;
 
 import com.google.common.collect.Maps;
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
-import com.lenis0012.bukkit.loginsecurity.modules.general.GeneralModule;
 import com.lenis0012.bukkit.loginsecurity.modules.storage.StorageImport;
 import com.lenis0012.bukkit.loginsecurity.session.AuthService;
 import com.lenis0012.bukkit.loginsecurity.session.PlayerSession;
 import com.lenis0012.bukkit.loginsecurity.session.action.ChangePassAction;
 import com.lenis0012.bukkit.loginsecurity.session.action.RemovePassAction;
 import com.lenis0012.pluginutils.command.Command;
-import com.lenis0012.updater.api.Updater;
-import com.lenis0012.updater.api.Version;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -135,44 +131,5 @@ public class CommandAdmin extends Command {
 
         reply(true, "Importing profiles from " + source);
         Bukkit.getScheduler().runTaskAsynchronously(plugin, storageImport);
-    }
-
-    @SubCommand(description = "NoTrans:Download update from bukkit/spigot")
-    public void update() {
-        final Updater updater = plugin.getModule(GeneralModule.class).getUpdater();
-        final Version version = updater.getNewVersion();
-        if(version == null) {
-            reply(false, "Updater is not enabled!");
-            return;
-        }
-
-        if(!updater.hasUpdate()) {
-            reply(false, "No updated available!");
-            return;
-        }
-
-        reply(true, "Downloading " + version.getName() + "...");
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            String message = updater.downloadVersion();
-            final String response = message == null ? "&aUpdate successful, will be active on reboot." : "&c&lError: &c" + message;
-            Bukkit.getScheduler().runTask(plugin, () -> {
-                reply(response);
-
-                ItemStack changelog = updater.getChangelog();
-                if(changelog == null) {
-                    reply("&cChangelog isn't available for this version.");
-                    return;
-                }
-
-                ItemStack inHand = player.getItemInHand();
-                player.setItemInHand(changelog);
-                if(inHand != null) {
-                    player.getInventory().addItem(inHand);
-                }
-
-                reply("&llenis> &bCheck my changelog out! (I put it in your hand)");
-                player.updateInventory();
-            });
-        });
     }
 }

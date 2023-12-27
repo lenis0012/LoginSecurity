@@ -5,14 +5,11 @@ import com.lenis0012.bukkit.loginsecurity.LoginSecurityConfig;
 import com.lenis0012.bukkit.loginsecurity.commands.*;
 import com.lenis0012.bukkit.loginsecurity.modules.language.LanguageModule;
 import com.lenis0012.pluginutils.modules.Module;
-import com.lenis0012.updater.api.ReleaseType;
-import com.lenis0012.updater.api.Updater;
-import com.lenis0012.updater.api.UpdaterFactory;
-import com.lenis0012.updater.api.Version;
+import com.lenis0012.pluginutils.updater.Updater;
+import com.lenis0012.pluginutils.updater.UpdaterFactory;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -59,11 +56,13 @@ public class GeneralModule extends Module<LoginSecurity> {
     }
 
     private void setupUpdater() {
-        final UpdaterFactory factory = new UpdaterFactory(plugin);
         final LoginSecurityConfig config = LoginSecurity.getConfiguration();
-        this.updater = factory.newUpdater(getPluginFile(), config.isUpdaterEnabled());
-        if (updater != null)
-            updater.setChannel(ReleaseType.valueOf(config.getUpdaterChannel().toUpperCase()));
+        if(config.isUpdaterEnabled()) {
+            this.updater = UpdaterFactory.provideBest(plugin, plugin.getInternalClassLoader())
+                .getUpdater(plugin);
+        } else {
+            this.updater = null;
+        }
     }
 
     private void registerCommands() {
@@ -99,24 +98,7 @@ public class GeneralModule extends Module<LoginSecurity> {
         return updater;
     }
 
-    public void checkUpdates(final Player player) {
-        LoginSecurity.getExecutorService().execute(() -> {
-            if(!updater.hasUpdate()) {
-                return;
-            }
-
-            final Version version = updater.getNewVersion();
-            if(version == null || version.getType() == null) {
-                logger().log(Level.WARNING, "Updater was in unexpected state, please report on https://github.com/lenis0012/LoginSecurity-2/issues");
-                return;
-            }
-            Bukkit.getScheduler().runTask(plugin, () -> {
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                        "&bA new &3" + version.getType().toString() + " &bbuild for LoginSecurity is available! &3" +
-                                version.getName() + " &bfor &3" + version.getServerVersion()));
-                player.sendMessage(ChatColor.translateAlternateColorCodes('&',
-                        "&bUse &3/lac update &bto download the new version."));
-            });
-        });
+    public void checkUpdates(Player player) {
+        updater.notifyIfUpdateAvailable(player);
     }
 }

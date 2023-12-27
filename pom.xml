@@ -4,7 +4,7 @@
 
     <groupId>com.lenis0012.bukkit</groupId>
     <artifactId>loginsecurity</artifactId>
-    <version>3.3.0-SNAPSHOT</version>
+    <version>3.3.0</version>
     <name>LoginSecurity</name>
     <url>https://www.spigotmc.org/resources/loginsecurity.19362/</url>
 
@@ -16,41 +16,19 @@
 
     <profiles>
         <profile>
-            <id>bukkit</id>
-            <properties>
-                <project.updaterInfo>41702</project.updaterInfo>
-                <project.platform>Bukkit</project.platform>
-            </properties>
-            <dependencies>
-                <dependency>
-                    <groupId>com.lenis0012.updater</groupId>
-                    <artifactId>updater-bukkit</artifactId>
-                    <version>1.0</version>
-                    <scope>compile</scope>
-                    <optional>true</optional>
-                </dependency>
-            </dependencies>
-            <build>
-                <finalName>${project.name}-${project.version}-${project.platform}</finalName>
-            </build>
-        </profile>
-        <profile>
             <id>spigot</id>
             <properties>
-                <project.updaterInfo>https://raw.githubusercontent.com/lenis0012/LoginSecurity-2/master/latest_version.json</project.updaterInfo>
-                <project.platform>Spigot</project.platform>
+                <updater.manifestUrl>https://raw.githubusercontent.com/lenis0012/LoginSecurity/master/version_manifest.json</updater.manifestUrl>
             </properties>
             <dependencies>
                 <dependency>
-                    <groupId>com.lenis0012.updater</groupId>
-                    <artifactId>updater-spigot</artifactId>
-                    <version>1.0</version>
-                    <scope>compile</scope>
-                    <optional>true</optional>
+                    <groupId>com.lenis0012.pluginutils</groupId>
+                    <artifactId>lenisutils-updater-manifest</artifactId>
+                    <version>${lenisutils.version}</version>
                 </dependency>
             </dependencies>
             <build>
-                <finalName>${project.name}-${project.version}-${project.platform}</finalName>
+                <finalName>${project.name}-Spigot-${project.version}</finalName>
             </build>
         </profile>
     </profiles>
@@ -137,6 +115,11 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>com.lenis0012.pluginutils</groupId>
+            <artifactId>lenisutils-updater-api</artifactId>
+            <version>${lenisutils.version}</version>
+        </dependency>
+        <dependency>
             <groupId>io.papermc</groupId>
             <artifactId>paperlib</artifactId>
             <version>1.0.7</version>
@@ -169,12 +152,6 @@
             <artifactId>log4j-core</artifactId>
             <version>2.17.2</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.lenis0012.updater</groupId>
-            <artifactId>updater-api</artifactId>
-            <version>1.0</version>
-            <scope>compile</scope>
         </dependency>
 
         <!-- Metrics -->
@@ -270,14 +247,9 @@
                             <shadedPattern>com.lenis0012.bukkit.loginsecurity.libs.paper</shadedPattern>
                         </relocation>
                     </relocations>
-                    <filters>
-                        <filter>
-                            <artifact>*:*</artifact>
-                            <excludes>
-                                <exclude>META-INF/maven/**</exclude>
-                            </excludes>
-                        </filter>
-                    </filters>
+                    <transformers>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                    </transformers>
                 </configuration>
             </plugin>
         </plugins>

@@ -116,4 +116,8 @@ public class LoginSecurity extends ModularPlugin {
     public LoginSecurityDatabase datastore() {
         return getModule(NewStorageModule.class).getDatabase();
     }
+
+    public ClassLoader getInternalClassLoader() {
+        return getClassLoader();
+    }
 }
