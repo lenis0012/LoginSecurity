@@ -221,7 +221,6 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
-        <defaultGoal>clean install</defaultGoal>
         <!-- Plugins -->
         <plugins>
             <!-- Compiler plugin -->

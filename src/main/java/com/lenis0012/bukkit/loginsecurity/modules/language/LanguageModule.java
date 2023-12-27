@@ -13,7 +13,6 @@ import java.util.logging.Level;
 
 public class LanguageModule extends Module<LoginSecurity> {
     private Translation translation;
-    private LanguageAPI languageAPI;
 
     public LanguageModule(LoginSecurity plugin) {
         super(plugin);
@@ -24,7 +23,6 @@ public class LanguageModule extends Module<LoginSecurity> {
         logger().log(Level.INFO, "Loading base translations from \"en_us\"");
         Translation base = byResource("en_us", null);
 
-        this.languageAPI = new LanguageAPI();
         String languageCode = LoginSecurity.getConfiguration().getLanguage();
         logger().log(Level.INFO, "Loading specified translations from \"" + languageCode + "\"");
         File file = new File(plugin.getDataFolder(), languageCode + ".json");
@@ -41,12 +39,6 @@ public class LanguageModule extends Module<LoginSecurity> {
                 logger().log(Level.WARNING, "Can't find translation for " + languageCode + ". Are you upt to date?");
                 this.translation = base;
             }
-//            try {
-//                this.translation = languageAPI.getTranslation(languageCode, base);
-//            } catch (IOException e) {
-//                logger().log(Level.WARNING, "Couldn't get translation, defaulting to en_us", e);
-//                this.translation = base;
-//            }
         }
     }
 
