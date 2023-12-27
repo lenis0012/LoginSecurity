@@ -155,14 +155,14 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerSpawn(PlayerSpawnLocationEvent event) {
+    public void maskPlayerLocation(PlayerSpawnLocationEvent event) {
         final Player player = event.getPlayer();
         final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
         if(general.getLocationMode() != LocationMode.SPAWN) {
             return;
         }
-        if(session.isAuthorized()) {
-            return;
+        if(!session.isRegistered()) {
+            return; // Can't store location for non-registered players. and it shouldn't happen anyway
         }
         // Don't update location if already done in previous login
         if(session.getProfile().getLoginLocationId() != null) {
