@@ -84,21 +84,9 @@ public class GeneralModule extends Module<LoginSecurity> {
         }
     }
 
-    private File getPluginFile() {
-        try {
-            Method method = JavaPlugin.class.getDeclaredMethod("getFile");
-            method.setAccessible(true);
-            return (File) method.invoke(plugin);
-        } catch(Exception e) {
-            throw new RuntimeException("Couldn't get plugin file", e);
-        }
-    }
-
-    public Updater getUpdater() {
-        return updater;
-    }
-
     public void checkUpdates(Player player) {
-        updater.notifyIfUpdateAvailable(player);
+        if(updater != null) {
+            updater.notifyIfUpdateAvailable(player);
+        }
     }
 }

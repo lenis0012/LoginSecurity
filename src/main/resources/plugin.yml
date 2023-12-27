@@ -5,6 +5,7 @@ author: lenis0012
 description: 'The #1 Auth plugin'
 softdepend: [ProtocolLib]
 api-version: '1.13'
+manifest-url: ${updater.manifestUrl}
 commands:
   login:
     description: Login with your account.
