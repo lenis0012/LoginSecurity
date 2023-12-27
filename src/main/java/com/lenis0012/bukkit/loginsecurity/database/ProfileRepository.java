@@ -71,7 +71,17 @@ public class ProfileRepository {
     public void updateBlocking(PlayerProfile profile) throws SQLException {
         try(Connection connection = dataSource.getConnection()) {
             try(PreparedStatement statement = connection.prepareStatement(
-                    "UPDATE ls_players SET last_name=?,ip_address=?,password=?,hashing_algorithm=?,location_id=?,inventory_id=?,last_login=?,optlock=? WHERE id=?;")) {
+                    "UPDATE ls_players SET " +
+                        "last_name=?," +
+                        "ip_address=?," +
+                        "password=?," +
+                        "hashing_algorithm=?," +
+                        "location_id=?," +
+                        "inventory_id=?," +
+                        "last_login=?," +
+                        "optlock=? " +
+                        "WHERE id=?;"
+            )) {
 
                 prepareUpdate(statement, profile);
                 statement.executeUpdate();
