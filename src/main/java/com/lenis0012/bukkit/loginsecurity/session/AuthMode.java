@@ -1,36 +1,36 @@
 package com.lenis0012.bukkit.loginsecurity.session;
 
+import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
 import com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys;
+import org.jetbrains.annotations.Nullable;
 
-import static com.lenis0012.bukkit.loginsecurity.LoginSecurity.translate;
-import static com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys.MESSAGE_LOGIN;
-import static com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys.MESSAGE_REGISTER;
+import static com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys.*;
 
 public enum AuthMode {
     /**
      * When the player is logged in.
      */
-    AUTHENTICATED(null),
+    AUTHENTICATED,
     /**
      * When the player registered but not logged in.
      */
-    UNAUTHENTICATED(MESSAGE_LOGIN),
+    UNAUTHENTICATED,
     /**
      * When the player is not registered and not logged in.
      */
-    UNREGISTERED(MESSAGE_REGISTER);
+    UNREGISTERED;
 
-    private final String authMessage;
-
-    AuthMode(LanguageKeys authMessage) {
-        this.authMessage = authMessage != null ? translate(authMessage).toString() : null;
-    }
-
-    public boolean hasAuthMessage() {
-        return authMessage != null;
-    }
-
-    public String getAuthMessage() {
-        return authMessage;
+    @Nullable
+    public LanguageKeys getAuthMessage() {
+        switch (this) {
+            case UNAUTHENTICATED:
+                return MESSAGE_LOGIN;
+            case UNREGISTERED:
+                return LoginSecurity.getConfiguration().isRegisterConfirmPassword()
+                    ? MESSAGE_REGISTER2
+                    : MESSAGE_REGISTER;
+            default:
+                return null;
+        }
     }
 }

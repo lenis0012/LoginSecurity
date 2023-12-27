@@ -64,7 +64,7 @@ public class PlayerListener implements Listener {
         this.general = general;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
         // Check if player already online
         for(Player player : Bukkit.getOnlinePlayers()) {

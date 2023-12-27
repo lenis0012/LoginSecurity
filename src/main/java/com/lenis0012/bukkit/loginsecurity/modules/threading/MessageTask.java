@@ -1,6 +1,7 @@
 package com.lenis0012.bukkit.loginsecurity.modules.threading;
 
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
+import com.lenis0012.bukkit.loginsecurity.modules.language.LanguageKeys;
 import com.lenis0012.bukkit.loginsecurity.session.AuthMode;
 import com.lenis0012.bukkit.loginsecurity.session.PlayerSession;
 import com.lenis0012.bukkit.loginsecurity.util.MetaData;
@@ -8,6 +9,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import static com.lenis0012.bukkit.loginsecurity.LoginSecurity.translate;
 
 public class MessageTask extends BukkitRunnable {
     private final LoginSecurity plugin;
@@ -24,7 +27,8 @@ public class MessageTask extends BukkitRunnable {
             if(!player.isOnline()) continue; // NPC hotfix
             final PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
             final AuthMode authMode = session.getAuthMode();
-            if(!authMode.hasAuthMessage()) {
+            final LanguageKeys message = authMode.getAuthMessage();
+            if(message == null) {
                 // Auth mode does not have login message
                 continue;
             }
@@ -34,7 +38,7 @@ public class MessageTask extends BukkitRunnable {
                 continue;
             }
 
-            player.sendMessage(ChatColor.RED + authMode.getAuthMessage());
+            player.sendMessage(ChatColor.RED + translate(message).toString());
             MetaData.set(player, "ls_last_message", System.currentTimeMillis());
         }
     }
