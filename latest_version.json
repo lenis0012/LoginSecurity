@@ -1,8 +1,8 @@
 {
   "release": {
-    "name": "LoginSecurity v3.2.1",
+    "name": "LoginSecurity v3.3.0",
     "type": "release",
-    "gameVersion": "1.8 - 1.20.1",
-    "downloadURL": "https://ci.codemc.io/view/Author/job/lenis0012/job/LoginSecurity/129/artifact/target/LoginSecurity-3.2.1-Spigot.jar"
+    "gameVersion": "1.8 - 1.20.4",
+    "downloadURL": "https://ci.codemc.io/job/lenis0012/job/LoginSecurity/140/artifact/target/LoginSecurity-Spigot-3.3.0.jar"
   }
 }

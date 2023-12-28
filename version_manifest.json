@@ -2,8 +2,8 @@
   {
     "version": "3.3.0",
     "channel": "STABLE",
-    "downloadUrl": "https://ci.codemc.io/job/lenis0012/job/LoginSecurity/138/artifact/target/LoginSecurity-3.3.0-SNAPSHOT-Spigot.jar",
-    "changelogUrl": "https://www.spigotmc.org/resources/marriage-reloaded.18998/update?update=501777",
+    "downloadUrl": "https://ci.codemc.io/job/lenis0012/job/LoginSecurity/140/artifact/target/LoginSecurity-Spigot-3.3.0.jar",
+    "changelogUrl": "https://www.spigotmc.org/resources/loginsecurity.19362/update?update=527470",
     "minMcVersion": "1.8"
   }
 ]
