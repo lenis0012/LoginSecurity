@@ -1,6 +1,7 @@
 package com.lenis0012.bukkit.loginsecurity.session.action;
 
 import com.lenis0012.bukkit.loginsecurity.LoginSecurity;
+import com.lenis0012.bukkit.loginsecurity.LoginSecurityConfig;
 import com.lenis0012.bukkit.loginsecurity.hashing.Algorithm;
 import com.lenis0012.bukkit.loginsecurity.session.AuthAction;
 import com.lenis0012.bukkit.loginsecurity.session.AuthActionType;
@@ -11,6 +12,7 @@ import com.lenis0012.bukkit.loginsecurity.session.exceptions.ProfileRefreshExcep
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 public class RegisterAction extends AuthAction {
@@ -36,7 +38,17 @@ public class RegisterAction extends AuthAction {
         final String hash = Algorithm.BCRYPT.hash(password);
         profile.setPassword(hash);
         profile.setHashingAlgorithm(Algorithm.BCRYPT.getId());
+        profile.setIpAddress(session.getPlayer().getAddress().getAddress().toString());
         try {
+            LoginSecurityConfig config = LoginSecurity.getConfiguration();
+            ArrayList<PlayerProfile> ListByIp = plugin.datastore().getProfileRepository().SearchUsersByIP(profile.getIpAddress());
+            String ListUsersByIp = "";
+            for (PlayerProfile user : ListByIp) { ListUsersByIp += user.getLastName()+" ";}
+            if (ListByIp.size() >= config.getLimitAccounts()){
+                response.setSuccess(false);
+                response.setErrorMessage( "Accounts limit: "+config.getLimitAccounts()+" \n Registered accounts: "+ListByIp.size()+" \n You have reached the accounts limit, you can enter with: "+ListUsersByIp);
+                return null;
+            }
             plugin.datastore().getProfileRepository().insertBlocking(profile);
         } catch (SQLException e) {
             plugin.getLogger().log(Level.SEVERE, "Failed to register user", e);

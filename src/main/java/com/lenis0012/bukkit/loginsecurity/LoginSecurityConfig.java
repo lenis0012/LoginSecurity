@@ -44,6 +44,13 @@ public class LoginSecurityConfig extends AbstractConfig {
     private int passwordMaxLength = 32;
 
     /**
+     * accounts limit
+     */
+    @ConfigHeader("limit of accounts that can be registered from an IP")
+    @ConfigKey(path="Accounts.LimitAccounts")
+    private int LimitAccounts = 2;
+
+    /**
      * Join settings.
      */
     @ConfigHeader("When enabled, player gets a blindness effect when not logged in.")
