@@ -12,6 +12,7 @@ import com.lenis0012.bukkit.loginsecurity.storage.PlayerLocation;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 import com.lenis0012.bukkit.loginsecurity.util.MetaData;
 import com.lenis0012.bukkit.loginsecurity.util.UserIdMode;
+import com.lenis0012.bukkit.loginsecurity.util.OpNotifier;
 import io.papermc.lib.PaperLib;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -74,9 +75,18 @@ public class PlayerListener implements Listener {
                 PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
                 if(session.isAuthorized()) {
 		    if(config.isBanSimultaneous()) {
-		    	Bukkit.getBanList(BanList.Type.IP).addBan(event.getAddress().getHostAddress(), translate(BAN_ALREADY_ONLINE).toString() + player.getName(), null, "LoginSecurity");
+		    	BanList banlist = Bukkit.getBanList(BanList.Type.IP);
+			if(!banlist.isBanned(event.getAddress().getHostAddress())) {
+		    	    banlist.addBan(event.getAddress().getHostAddress(), 
+					    translate(BAN_ALREADY_ONLINE).toString() + player.getName(),
+					    null, "LoginSecurity");
+			    if(config.isBanNotifyOps()) {
+			        OpNotifier.notify("[LoginSecurity] " + event.getAddress().getHostAddress() +
+						" " + translate(BAN_ALREADY_ONLINE) + player.getName());
+			    }
+			}
                     	event.setLoginResult(Result.KICK_BANNED);
-                    	event.setKickMessage("[LoginSecurity] " + translate(BAN_ALREADY_ONLINE));
+                    	event.setKickMessage("[LoginSecurity] " + translate(BAN_ALREADY_ONLINE) + player.getName());
 		    } else {
                     	event.setLoginResult(Result.KICK_OTHER);
                     	event.setKickMessage("[LoginSecurity] " + translate(KICK_ALREADY_ONLINE));
