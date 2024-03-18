@@ -76,7 +76,8 @@ public enum LanguageKeys {
     /**
      * Ban messages
      */
-    BAN_ALREADY_ONLINE("banAlreadyOnline");
+    BAN_ALREADY_ONLINE("banAlreadyOnline"),
+    BAN_BRUTEFORCE_ATTEMPT("banBruteforceAttempt");
 
     private final String value;
 
