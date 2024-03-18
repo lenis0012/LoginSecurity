@@ -15,6 +15,7 @@ import com.lenis0012.bukkit.loginsecurity.util.UserIdMode;
 import io.papermc.lib.PaperLib;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.BanList;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -66,13 +67,20 @@ public class PlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
+        final LoginSecurityConfig config = LoginSecurity.getConfiguration();
         // Check if player already online
         for(Player player : Bukkit.getOnlinePlayers()) {
             if(player.getName().equalsIgnoreCase(event.getName())) {
                 PlayerSession session = LoginSecurity.getSessionManager().getPlayerSession(player);
                 if(session.isAuthorized()) {
-                    event.setLoginResult(Result.KICK_OTHER);
-                    event.setKickMessage("[LoginSecurity] " + translate(KICK_ALREADY_ONLINE));
+		    if(config.isBanSimultaneous()) {
+		    	Bukkit.getBanList(BanList.Type.IP).addBan(event.getAddress().getHostAddress(), translate(BAN_ALREADY_ONLINE).toString() + player.getName(), null, "LoginSecurity");
+                    	event.setLoginResult(Result.KICK_BANNED);
+                    	event.setKickMessage("[LoginSecurity] " + translate(BAN_ALREADY_ONLINE));
+		    } else {
+                    	event.setLoginResult(Result.KICK_OTHER);
+                    	event.setKickMessage("[LoginSecurity] " + translate(KICK_ALREADY_ONLINE));
+		    }
                     return;
                 }
             }
@@ -80,7 +88,6 @@ public class PlayerListener implements Listener {
 
         // Verify name
         final String name = event.getName();
-        final LoginSecurityConfig config = LoginSecurity.getConfiguration();
         if(config.isFilterSpecialChars() && !name.replaceAll("[^a-zA-Z0-9_]", "").equals(name)) {
             event.setLoginResult(Result.KICK_OTHER);
             event.setKickMessage("[LoginSecurity] " + translate(KICK_USERNAME_CHARS));

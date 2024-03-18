@@ -61,6 +61,9 @@ public class LoginSecurityConfig extends AbstractConfig {
     })
     @ConfigKey(path = "join.hide-inventory-safe")
     private boolean hideInventory = false;
+    @ConfigHeader("When enabled, automatically bans IPs trying to join as already logged in users")
+    @ConfigKey(path = "join.ban.simultaneous-login")
+    private boolean banSimultaneous = false;
 
     /**
      * Username settings.

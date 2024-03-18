@@ -72,7 +72,11 @@ public enum LanguageKeys {
     KICK_USERNAME_CHARS("kickUsernameChars"),
     KICK_USERNAME_LENGTH("kickUsernameLength"),
     KICK_TIME_OUT("kickTimeOut"),
-    KICK_USERNAME_REGISTERED("kickUsernameRegistered");
+    KICK_USERNAME_REGISTERED("kickUsernameRegistered"),
+    /**
+     * Ban messages
+     */
+    BAN_ALREADY_ONLINE("banAlreadyOnline");
 
     private final String value;
 
