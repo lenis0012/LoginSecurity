@@ -63,6 +63,19 @@ public class LoginSecurityConfig extends AbstractConfig {
     private boolean hideInventory = false;
 
     /**
+     * Ban settings.
+     */
+    @ConfigHeader("When enabled, automatically bans IPs trying to join as already logged in users")
+    @ConfigKey(path = "join.ban.simultaneous-login")
+    private boolean banSimultaneous = false;
+    @ConfigHeader("Notifies OPs in chat about LoginSecurity autobans")
+    @ConfigKey(path = "join.ban.notify-ops")
+    private boolean banNotifyOps = true;
+    @ConfigHeader("When enabled, automatically bans IPs which exceed 4 login tries")
+    @ConfigKey(path = "join.ban.bruteforce-attempt")
+    private boolean banBruteforceAttempt = false;
+
+    /**
      * Username settings.
      */
     @ConfigHeader({"Remove special characters like @ and # from the username.",
