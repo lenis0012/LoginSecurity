@@ -39,6 +39,8 @@ Now even lighter and faster than before!
 - 20+ supported languages and more to come
 
 # Installation
+Tested with java-17-openjdk
+
 ```shell script
 git clone https://github.com/lenis0012/LoginSecurity-2.git LoginSecurity
 cd LoginSecurity

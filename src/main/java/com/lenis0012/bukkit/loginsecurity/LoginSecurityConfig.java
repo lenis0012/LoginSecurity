@@ -61,6 +61,12 @@ public class LoginSecurityConfig extends AbstractConfig {
     })
     @ConfigKey(path = "join.hide-inventory-safe")
     private boolean hideInventory = false;
+    @ConfigHeader({
+            "Teleport player that have just issued a valid registeration command to a specific location. Leave empty to disable.",
+            "Example valid value is \"-123.3,75,34.3\" expressed as x,y,z coordinates",
+    })
+    @ConfigKey(path = "join.register.location")
+    private String joinRegisterLocation = "";
 
     /**
      * Username settings.
