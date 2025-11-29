@@ -12,8 +12,10 @@ import com.lenis0012.bukkit.loginsecurity.session.action.ChangePassAction;
 import com.lenis0012.bukkit.loginsecurity.session.action.LoginAction;
 import com.lenis0012.bukkit.loginsecurity.storage.PlayerProfile;
 import com.lenis0012.bukkit.loginsecurity.util.MetaData;
+import com.lenis0012.bukkit.loginsecurity.util.OpNotifier;
 import com.lenis0012.pluginutils.command.Command;
 import org.bukkit.Bukkit;
+import org.bukkit.BanList;
 import org.bukkit.entity.Player;
 
 import java.util.logging.Level;
@@ -35,7 +37,18 @@ public class CommandLogin extends Command {
         LoginSecurityConfig config = LoginSecurity.getConfiguration();
         int tries = MetaData.incrementAndGet(player, "ls_login_tries");
         if(tries > config.getMaxLoginTries()) {
-            player.kickPlayer("[LoginSecurity] " + translate(LOGIN_TRIES_EXCEEDED).param("max", config.getMaxLoginTries()).toString());
+	    if(config.isBanBruteforceAttempt()) {
+		if(config.isBanNotifyOps()) {
+		    OpNotifier.notify("[LoginSecurity] " + player.getAddress().getHostString() +
+						" " + translate(BAN_BRUTEFORCE_ATTEMPT) + player.getName());
+		}
+		Bukkit.getBanList(BanList.Type.IP).addBan(player.getAddress().getHostString(), 
+					    translate(BAN_BRUTEFORCE_ATTEMPT).toString() + player.getName(),
+					    null, "LoginSecurity");
+                player.kickPlayer("[LoginSecurity] " + translate(BAN_BRUTEFORCE_ATTEMPT) + player.getName());
+	    } else {
+                player.kickPlayer("[LoginSecurity] " + translate(LOGIN_TRIES_EXCEEDED).param("max", config.getMaxLoginTries()).toString());
+	    }
             return;
         }
 
