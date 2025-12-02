@@ -6,6 +6,7 @@ import com.lenis0012.pluginutils.config.mapping.ConfigHeader;
 import com.lenis0012.pluginutils.config.mapping.ConfigKey;
 import com.lenis0012.pluginutils.config.mapping.ConfigMapper;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 
 @Getter
 @ConfigMapper(fileName = "config.yml", header = {
@@ -70,6 +71,8 @@ public class LoginSecurityConfig extends AbstractConfig {
     })
     @ConfigKey(path="username.filter-special-chars")
     private boolean filterSpecialChars = true;
+    @ConfigKey(path="username.filter-regex")
+    private String filterRegex = "[^a-zA-Z0-9_]";
     @ConfigKey(path="username.min-length")
     private int usernameMinLength = 3;
     @ConfigKey(path="username.max-length")

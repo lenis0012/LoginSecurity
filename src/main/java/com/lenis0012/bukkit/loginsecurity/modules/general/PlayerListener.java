@@ -81,7 +81,7 @@ public class PlayerListener implements Listener {
         // Verify name
         final String name = event.getName();
         final LoginSecurityConfig config = LoginSecurity.getConfiguration();
-        if(config.isFilterSpecialChars() && !name.replaceAll("[^a-zA-Z0-9_]", "").equals(name)) {
+        if(config.isFilterSpecialChars() && !name.replaceAll(config.getFilterRegex(), "").equals(name)) {
             event.setLoginResult(Result.KICK_OTHER);
             event.setKickMessage("[LoginSecurity] " + translate(KICK_USERNAME_CHARS));
             return;
